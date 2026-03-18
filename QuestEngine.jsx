@@ -142,15 +142,27 @@ function getNextLevel(xp) {
   return LEVELS.find(l => l.xpRequired > xp) || null;
 }
 
-// ✅ FIX: Bosses are now strictly sequential.
-// Current boss = first boss whose HP is still > 0.
-// A boss is only "active" after all previous bosses have been defeated.
+// ✅ Bosses are strictly sequential.
+// Current boss = first boss where all PREVIOUS bosses are fully defeated (HP===0).
+// Locked bosses always have FULL HP regardless of what's stored — stored HP for
+// locked bosses is ignored and reset. This prevents the "25 HP locked boss" bug.
 function getCurrentBoss(bossHp) {
-  for (const b of BOSSES) {
+  for (let i = 0; i < BOSSES.length; i++) {
+    const b = BOSSES[i];
+    const prevDefeated = BOSSES.slice(0, i).every(prev => (bossHp[prev.id] ?? prev.hp) === 0);
+    if (!prevDefeated) return BOSSES[i - 1] || BOSSES[0]; // previous boss still alive
     const hp = bossHp[b.id] ?? b.hp;
     if (hp > 0) return b;
   }
   return null; // all bosses defeated
+}
+
+// Returns the EFFECTIVE hp of a boss — locked bosses always show full HP
+function getEffectiveBossHp(b, bossHp) {
+  const idx = BOSSES.findIndex(x => x.id === b.id);
+  const locked = BOSSES.slice(0, idx).some(prev => (bossHp[prev.id] ?? prev.hp) > 0);
+  if (locked) return b.hp; // locked = always full
+  return bossHp[b.id] ?? b.hp;
 }
 
 // ─── PARTICLES ──────────────────────────────────────────────────────────────
@@ -287,11 +299,23 @@ export default function QuestEngine() {
 
     setXp(newXp);
     setCompleted(prev => { const next = { ...prev }; delete next[quest.id]; return next; });
-    if (bossToRestore) {
-      const prevHp = bossHp[bossToRestore.id] ?? bossToRestore.hp;
-      const restored = Math.min(bossToRestore.hp, prevHp + quest.bossDmg);
-      setBossHp(prev => ({ ...prev, [bossToRestore.id]: restored }));
-    }
+    setBossHp(prev => {
+      const next = { ...prev };
+      // Restore HP to the target boss
+      if (bossToRestore) {
+        const prevHp = next[bossToRestore.id] ?? bossToRestore.hp;
+        next[bossToRestore.id] = Math.min(bossToRestore.hp, prevHp + quest.bossDmg);
+      }
+      // Reset HP of all bosses that are now locked (after this boss is revived)
+      // This prevents stale HP values being used when they become active again
+      const restoredBossIdx = BOSSES.findIndex(b => b.id === bossToRestore?.id);
+      BOSSES.forEach((b, i) => {
+        if (i > restoredBossIdx) {
+          delete next[b.id]; // remove stored HP — will default back to b.hp
+        }
+      });
+      return next;
+    });
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
 
@@ -348,8 +372,21 @@ export default function QuestEngine() {
         }}>⚡ LEVEL UP ⚡<br />{level.title}</div>
       )}
 
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 12px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "16px 16px" }}>
+        <style>{`
+          @media (min-width: 800px) {
+            .qe-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+            .qe-left { grid-column: 1; }
+            .qe-right { grid-column: 2; }
+            .qe-full { grid-column: 1 / -1; }
+          }
+          @media (max-width: 799px) {
+            .qe-layout { display: block; }
+          }
+        `}</style>
 
+        <div className="qe-layout">
+        <div className="qe-left">
         {/* ── Header ── */}
         <div style={{
           background: `linear-gradient(135deg, #0f172a, #1e1b4b)`,
@@ -414,6 +451,8 @@ export default function QuestEngine() {
           </div>
         )}
 
+        </div>{/* end qe-left */}
+        <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
@@ -536,10 +575,9 @@ export default function QuestEngine() {
         {activeTab === "bosses" && (
           <div>
             {BOSSES.map((b, idx) => {
-              const hp = bossHp[b.id] ?? b.hp;
+              const hp = getEffectiveBossHp(b, bossHp); // locked bosses always show full HP
               const pct = Math.round((hp / b.hp) * 100);
               const defeated = hp === 0;
-              // Boss is locked if any previous boss still has HP
               const locked = BOSSES.slice(0, idx).some(prev => (bossHp[prev.id] ?? prev.hp) > 0);
               return (
                 <div key={b.id} style={{
@@ -657,6 +695,8 @@ export default function QuestEngine() {
           </div>
         )}
 
+        </div>{/* end qe-right */}
+        </div>{/* end qe-layout */}
       </div>
     </div>
   );
