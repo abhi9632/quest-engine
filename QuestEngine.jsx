@@ -271,9 +271,42 @@ export default function QuestEngine() {
   const [showAddQuest, setShowAddQuest]       = useState(false);
   const [dlForm, setDlForm] = useState({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
   const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
-  const [editingDlId, setEditingDlId] = useState(null); // id of custom deadline being edited
+  const [editingDlId, setEditingDlId] = useState(null);
+
+  // ── Pomodoro ──────────────────────────────────────────────────────────────
+  const [pomodoroQuestId, setPomodoroQuestId] = useState(null);
+  const [pomodoroSeconds, setPomodoroSeconds] = useState(25 * 60);
+  const [pomodoroRunning, setPomodoroRunning] = useState(false);
+  const pomodoroRef = useRef(null);
+
+  // ── Brain Dump ────────────────────────────────────────────────────────────
+  const [brainDump, setBrainDump] = useState([]);
+  const [dumpInput, setDumpInput] = useState("");
+
+  // ── Recurring tasks (stored in firebase) ─────────────────────────────────
+  const [recurringTasks, setRecurringTasks] = useState([
+    { id:"rt1", title:"📓 Weekly Review (10 min)", desc:"What did I complete? What slipped? What's urgent next week?", category:"academic", xp:50, dayOfWeek:0 },
+    { id:"rt2", title:"📋 Check Upcoming Deadlines", desc:"Open the Deadlines tab and review the next 7 days", category:"academic", xp:15, dayOfWeek:1 },
+    { id:"rt3", title:"⚔️ Complete 1 CCA Domain Quest", desc:"Spend 30 min on any CCA prep domain", category:"cca", xp:30, dayOfWeek:3 },
+  ]);
+  const [recurringDone, setRecurringDone] = useState({}); // { "rt1_2026-W12": true }
+
+  // ── Quick capture ─────────────────────────────────────────────────────────
+  const [showQuickCapture, setShowQuickCapture] = useState(false);
+  const [quickInput, setQuickInput] = useState("");
+  const [quickType, setQuickType] = useState("quest"); // "quest" | "deadline"
+
+  // ── Daily Focus ───────────────────────────────────────────────────────────
+  const [focusDismissed, setFocusDismissed] = useState(false);
 
   // ── Load from Firebase ───────────────────────────────────────────────────
+  // Close quick capture on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") setShowQuickCapture(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   useEffect(() => {
     async function load() {
       try {
@@ -286,6 +319,8 @@ export default function QuestEngine() {
           setBossHp(d.bossHp || {});
           setCustomDeadlines(d.customDeadlines || []);
           setCustomQuests(d.customQuests || []);
+          setBrainDump(d.brainDump || []);
+          setRecurringDone(d.recurringDone || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -300,12 +335,12 @@ export default function QuestEngine() {
     async function save() {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone });
       } catch (e) { console.error("Save error", e); }
     }
     save();
     setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -393,6 +428,93 @@ export default function QuestEngine() {
     });
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
+
+  // ── Pomodoro timer ────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (pomodoroRunning) {
+      pomodoroRef.current = setInterval(() => {
+        setPomodoroSeconds(s => {
+          if (s <= 1) {
+            clearInterval(pomodoroRef.current);
+            setPomodoroRunning(false);
+            showToast("⏱ POMODORO DONE! Mark your quest complete?", "#f59e0b");
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(pomodoroRef.current);
+    }
+    return () => clearInterval(pomodoroRef.current);
+  }, [pomodoroRunning]);
+
+  const startPomodoro = (questId) => {
+    setPomodoroQuestId(questId);
+    setPomodoroSeconds(25 * 60);
+    setPomodoroRunning(true);
+  };
+  const stopPomodoro = () => { setPomodoroRunning(false); setPomodoroQuestId(null); };
+  const fmtTime = (s) => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+
+  // ── Brain Dump helpers ────────────────────────────────────────────────────
+  const addDumpEntry = () => {
+    if (!dumpInput.trim()) return;
+    const entry = { id: `bd_${Date.now()}`, text: dumpInput.trim(), ts: new Date().toLocaleTimeString("en-AU", {hour:"2-digit",minute:"2-digit"}) };
+    setBrainDump(prev => [entry, ...prev]);
+    setDumpInput("");
+  };
+  const deleteDumpEntry = (id) => setBrainDump(prev => prev.filter(e => e.id !== id));
+  const convertDumpToQuest = (entry) => {
+    const newQ = { id:`cq_${Date.now()}`, week:"Custom", category:"academic", title: entry.text, desc:"From brain dump", xp:30, bossDmg:24, urgent:false };
+    setCustomQuests(prev => [...prev, newQ]);
+    deleteDumpEntry(entry.id);
+    showToast("⚔️ Converted to quest!", "#34d399");
+  };
+
+  // ── Recurring tasks helpers ───────────────────────────────────────────────
+  const getWeekKey = () => {
+    const now = new Date();
+    const jan1 = new Date(now.getFullYear(), 0, 1);
+    const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+    return `${now.getFullYear()}-W${week}`;
+  };
+  const completeRecurring = (task) => {
+    const key = `${task.id}_${getWeekKey()}`;
+    setRecurringDone(prev => ({ ...prev, [key]: true }));
+    setXp(prev => prev + task.xp);
+    showToast(`+${task.xp} XP — recurring task done!`, "#34d399");
+  };
+  const isDayUnlocked = (dayOfWeek) => new Date().getDay() >= dayOfWeek;
+
+  // ── Quick capture ─────────────────────────────────────────────────────────
+  const submitQuickCapture = () => {
+    if (!quickInput.trim()) return;
+    if (quickType === "quest") {
+      const newQ = { id:`cq_${Date.now()}`, week:"Custom", category:"academic", title:quickInput.trim(), desc:"", xp:30, bossDmg:24, urgent:false };
+      setCustomQuests(prev => [...prev, newQ]);
+      showToast("⚔️ Quest captured!", "#34d399");
+    } else {
+      const newDl = { id:`cd_${Date.now()}`, label:quickInput.trim(), date:"", course:"Custom", type:"other", icon:"📌", prepDays:3, prepDesc:"" };
+      setCustomDeadlines(prev => [...prev, newDl]);
+      showToast("📅 Deadline captured! Add date in Deadlines tab.", "#60a5fa");
+    }
+    setQuickInput("");
+    setShowQuickCapture(false);
+  };
+
+  // ── Daily Focus Quest ─────────────────────────────────────────────────────
+  const getDailyFocus = () => {
+    const allQuests = [...QUESTS, ...customQuests];
+    const incomplete = allQuests.filter(q => !completed[q.id]);
+    if (!incomplete.length) return null;
+    // Priority: urgent + academic > urgent other > academic deadline > ailearn > project > jobsearch > cca
+    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5 };
+    const urgent = incomplete.filter(q => q.urgent);
+    if (urgent.length) return urgent.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9))[0];
+    return incomplete.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9))[0];
+  };
+  const dailyFocus = getDailyFocus();
 
   // ── Add custom deadline ───────────────────────────────────────────────────
   const addDeadline = () => {
@@ -580,6 +702,30 @@ export default function QuestEngine() {
         </div>
 
         {/* ── Current Boss ── */}
+        {/* ── Daily Focus Banner ── */}
+        {dailyFocus && !focusDismissed && !completed[dailyFocus.id] && (
+          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `2px solid ${level.color}88`, borderRadius: 14, padding: "12px 16px", marginBottom: 14 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:3 }}>🎯 TODAY'S FOCUS QUEST</div>
+                <div style={{ fontSize:14, fontWeight:700, color:"#e2e8f0", lineHeight:1.3 }}>{dailyFocus.title}</div>
+                <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>{dailyFocus.desc}</div>
+              </div>
+              <button onClick={() => setFocusDismissed(true)} style={{ background:"none", border:"none", color:"#334155", cursor:"pointer", fontSize:16, padding:"0 0 0 8px", flexShrink:0 }}>✕</button>
+            </div>
+            <div style={{ display:"flex", gap:8, marginTop:10 }}>
+              <button onClick={(e) => { completeQuest(dailyFocus, e); setFocusDismissed(true); }} style={{
+                flex:1, background: level.color, border:"none", borderRadius:8, padding:"6px 0",
+                color:"#000", fontWeight:700, fontSize:12, cursor:"pointer", fontFamily:"inherit"
+              }}>✓ Done</button>
+              <button onClick={() => { startPomodoro(dailyFocus.id); setFocusDismissed(true); setActiveTab("quests"); }} style={{
+                flex:1, background:"#1e293b", border:`1px solid ${level.color}44`, borderRadius:8, padding:"6px 0",
+                color: level.color, fontWeight:700, fontSize:12, cursor:"pointer", fontFamily:"inherit"
+              }}>⏱ 25 min Focus</button>
+            </div>
+          </div>
+        )}
+
         {boss ? (
           <div style={{
             background: "#0f172a", border: "1px solid #450a0a", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
@@ -614,7 +760,7 @@ export default function QuestEngine() {
         <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
+          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["recurring","🔁 Weekly"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
               background: activeTab === tab ? level.color : "#0f172a",
@@ -711,6 +857,33 @@ export default function QuestEngine() {
               ))}
             </div>
 
+            {/* ── Active Pomodoro Banner ── */}
+            {pomodoroQuestId && (
+              <div style={{ background:"#0f172a", border:`2px solid ${pomodoroSeconds < 60 ? "#ef4444" : "#f59e0b"}`, borderRadius:12, padding:"12px 16px", marginBottom:12 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2 }}>⏱ POMODORO ACTIVE</div>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:28, color: pomodoroSeconds < 60 ? "#ef4444" : "#f59e0b", lineHeight:1 }}>{fmtTime(pomodoroSeconds)}</div>
+                    <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>
+                      {[...QUESTS, ...customQuests].find(q => q.id === pomodoroQuestId)?.title || ""}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    <button onClick={() => setPomodoroRunning(r => !r)} style={{
+                      background:"#1e293b", border:"1px solid #334155", borderRadius:8, padding:"5px 12px",
+                      color:"#e2e8f0", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit"
+                    }}>{pomodoroRunning ? "⏸ Pause" : "▶ Resume"}</button>
+                    <button onClick={stopPomodoro} style={{
+                      background:"none", border:"none", color:"#475569", fontSize:11, cursor:"pointer", fontFamily:"inherit"
+                    }}>✕ Cancel</button>
+                  </div>
+                </div>
+                <div style={{ marginTop:8, height:4, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${(pomodoroSeconds/(25*60))*100}%`, background: pomodoroSeconds < 60 ? "#ef4444" : "#f59e0b", borderRadius:99, transition:"width 1s linear" }} />
+                </div>
+              </div>
+            )}
+
             {/* Custom Quests Section */}
             {customQuests.length > 0 && (filter === "all" || customQuests.some(q => q.category === filter)) && (
               <div style={{ marginBottom: 10 }}>
@@ -761,6 +934,11 @@ export default function QuestEngine() {
                         <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
                           <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color: done ? "#475569" : "#34d399" }}>+{quest.xp}</div>
                           <div style={{ fontSize:10, color:"#334155" }}>XP</div>
+                          {!done && (
+                            <button onClick={() => startPomodoro(quest.id)} title="25 min focus timer" style={{
+                              background:"none", border:"none", cursor:"pointer", fontSize:11, color: pomodoroQuestId === quest.id ? "#f59e0b" : "#475569", padding:0
+                            }}>⏱</button>
+                          )}
                           <button onClick={() => deleteQuest(quest.id)} style={{
                             background:"none", border:"none", cursor:"pointer", fontSize:11, color:"#475569", padding:0
                           }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#475569"}>
@@ -836,9 +1014,15 @@ export default function QuestEngine() {
                               <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none", marginTop: 3 }}>{quest.title}</div>
                               <div style={{ fontSize: 12, color: "#64748b", marginTop: 1 }}>{quest.desc}</div>
                             </div>
-                            <div style={{ textAlign: "right", flexShrink: 0 }}>
+                            <div style={{ textAlign: "right", flexShrink: 0, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3 }}>
                               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 16, color: done ? "#475569" : "#34d399" }}>+{quest.xp}</div>
                               <div style={{ fontSize: 10, color: "#334155" }}>XP</div>
+                              {!done && (
+                                <button onClick={() => startPomodoro(quest.id)} title="25 min focus timer" style={{
+                                  background:"none", border:"none", cursor:"pointer", fontSize:12,
+                                  color: pomodoroQuestId === quest.id ? "#f59e0b" : "#334155", padding:0, lineHeight:1
+                                }}>⏱</button>
+                              )}
                             </div>
                           </div>
                         );
@@ -1104,6 +1288,126 @@ export default function QuestEngine() {
           </div>
         )}
 
+        {/* ── BRAIN DUMP TAB ── */}
+        {activeTab === "braindump" && (
+          <div>
+            <div style={{ fontSize:12, color:"#64748b", marginBottom:12 }}>Capture anything from class, mind, or notifications. Convert to quest later.</div>
+
+            {/* Input row */}
+            <div style={{ display:"flex", gap:8, marginBottom:14 }}>
+              <input
+                type="text" value={dumpInput} placeholder="Type anything — idea, task, reminder..."
+                onChange={e => setDumpInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && addDumpEntry()}
+                style={{ flex:1, background:"#1e293b", border:"1px solid #334155", borderRadius:8,
+                  padding:"8px 12px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }}
+              />
+              <button onClick={addDumpEntry} style={{
+                background:"#064e3b", border:"1px solid #34d399", borderRadius:8, padding:"8px 14px",
+                color:"#34d399", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit"
+              }}>+ Add</button>
+            </div>
+
+            {brainDump.length === 0 && (
+              <div style={{ textAlign:"center", color:"#334155", fontSize:13, padding:"30px 0" }}>
+                Nothing dumped yet. Start typing above 👆
+              </div>
+            )}
+
+            {brainDump.map(entry => (
+              <div key={entry.id} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:12, padding:"12px 14px", marginBottom:8, display:"flex", alignItems:"flex-start", gap:10 }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, color:"#e2e8f0", lineHeight:1.4 }}>{entry.text}</div>
+                  <div style={{ fontSize:10, color:"#334155", marginTop:4 }}>{entry.ts}</div>
+                </div>
+                <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+                  <button onClick={() => convertDumpToQuest(entry)} title="Convert to quest" style={{
+                    background:"#064e3b", border:"1px solid #34d39944", borderRadius:6, padding:"3px 8px",
+                    color:"#34d399", fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"inherit"
+                  }}>→ Quest</button>
+                  <button onClick={() => deleteDumpEntry(entry.id)} style={{
+                    background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#334155"
+                  }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#334155"}>🗑</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── RECURRING TASKS TAB ── */}
+        {activeTab === "recurring" && (
+          <div>
+            <div style={{ fontSize:12, color:"#64748b", marginBottom:14 }}>Weekly tasks that reset every Monday. Tick them once per week.</div>
+
+            {/* Weekly Review — Sunday unlock */}
+            {(() => {
+              const today = new Date().getDay(); // 0=Sun
+              const isWeekend = today === 0 || today === 6;
+              return (
+                <div style={{ background:"#0f172a", border:`1px solid ${isWeekend ? "#f59e0b88" : "#1e293b"}`, borderRadius:14, padding:16, marginBottom:10 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ display:"flex", gap:6, alignItems:"center", marginBottom:4, flexWrap:"wrap" }}>
+                        {isWeekend && <span style={{ fontSize:10, background:"#451a03", color:"#f59e0b", padding:"1px 7px", borderRadius:4, fontWeight:700 }}>UNLOCKED SUNDAY</span>}
+                        <span style={{ fontSize:10, background:"#064e3b", color:"#34d399", padding:"1px 7px", borderRadius:4, fontWeight:700 }}>📊 Weekly Review</span>
+                      </div>
+                      <div style={{ fontSize:14, fontWeight:700, color: isWeekend ? "#e2e8f0" : "#475569" }}>📊 Weekly Review (10 min)</div>
+                      <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>What did I finish? What slipped? What must happen next week?</div>
+                    </div>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:"#f59e0b", flexShrink:0 }}>+50 XP</div>
+                  </div>
+                  {isWeekend ? (
+                    (() => {
+                      const key = `weekly_review_${getWeekKey()}`;
+                      const done = recurringDone[key];
+                      return done ? (
+                        <div style={{ fontSize:12, color:"#34d399", fontWeight:700 }}>✅ Done this week!</div>
+                      ) : (
+                        <button onClick={() => { setRecurringDone(p => ({...p, [key]:true})); setXp(x => x+50); showToast("+50 XP — Weekly review done!", "#f59e0b"); }} style={{
+                          width:"100%", background:"#451a03", border:"1px solid #f59e0b", borderRadius:8,
+                          color:"#f59e0b", fontWeight:700, fontSize:13, padding:"7px", cursor:"pointer", fontFamily:"inherit"
+                        }}>✓ Mark Weekly Review Done</button>
+                      );
+                    })()
+                  ) : (
+                    <div style={{ fontSize:11, color:"#334155" }}>🔒 Unlocks on Sunday</div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* Other recurring tasks */}
+            {recurringTasks.map(task => {
+              const key = `${task.id}_${getWeekKey()}`;
+              const done = !!recurringDone[key];
+              const unlocked = isDayUnlocked(task.dayOfWeek);
+              const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+              const cat = CATEGORY_META[task.category] || CATEGORY_META.academic;
+              return (
+                <div key={task.id} style={{ background:"#0f172a", border:`1px solid ${done ? "#34d39944" : unlocked ? "#1e293b" : "#0f172a"}`, borderRadius:14, padding:14, marginBottom:8, opacity: unlocked ? 1 : 0.45 }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
+                    <button onClick={() => !done && unlocked && completeRecurring(task)} disabled={done || !unlocked} style={{
+                      width:28, height:28, borderRadius:8, flexShrink:0, cursor: (done || !unlocked) ? "default" : "pointer",
+                      border: done ? "2px solid #34d399" : `2px solid ${cat.color}`,
+                      background: done ? "#34d399" : "transparent",
+                      fontSize:13, color: done ? "#000" : cat.color, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center"
+                    }}>{done ? "✓" : "○"}</button>
+                    <div style={{ flex:1 }}>
+                      <div style={{ display:"flex", gap:6, marginBottom:3, flexWrap:"wrap" }}>
+                        <span style={{ fontSize:10, background: cat.bg, color: cat.color, padding:"1px 6px", borderRadius:4, fontWeight:700 }}>{cat.label}</span>
+                        <span style={{ fontSize:10, color:"#334155" }}>Unlocks {days[task.dayOfWeek]}</span>
+                      </div>
+                      <div style={{ fontSize:14, fontWeight:700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none" }}>{task.title}</div>
+                      <div style={{ fontSize:12, color:"#64748b", marginTop:1 }}>{task.desc}</div>
+                    </div>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color: done ? "#475569" : "#34d399", flexShrink:0 }}>+{task.xp}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* ── STATS TAB ── */}
         {activeTab === "stats" && (
           <div>
@@ -1160,6 +1464,46 @@ export default function QuestEngine() {
         </div>{/* end qe-right */}
         </div>{/* end qe-layout */}
       </div>
+
+      {/* ── Quick Capture Floating Button ── */}
+      <button onClick={() => setShowQuickCapture(v => !v)} style={{
+        position:"fixed", bottom:24, right:24, width:52, height:52, borderRadius:"50%",
+        background: level.color, border:"none", fontSize:22, cursor:"pointer",
+        boxShadow:`0 4px 20px ${level.color}66`, zIndex:9990,
+        display:"flex", alignItems:"center", justifyContent:"center",
+        transition:"transform 0.15s"
+      }} onMouseEnter={e=>e.currentTarget.style.transform="scale(1.1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+        {showQuickCapture ? "✕" : "⚡"}
+      </button>
+
+      {/* ── Quick Capture Modal ── */}
+      {showQuickCapture && (
+        <div style={{ position:"fixed", bottom:88, right:24, width:300, background:"#0f172a", border:`2px solid ${level.color}44`, borderRadius:16, padding:16, zIndex:9989, boxShadow:"0 8px 32px #00000088" }}>
+          <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color: level.color, letterSpacing:1, marginBottom:10 }}>⚡ QUICK CAPTURE</div>
+          <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+            {[["quest","⚔️ Quest"],["deadline","📅 Deadline"]].map(([t,l]) => (
+              <button key={t} onClick={() => setQuickType(t)} style={{
+                flex:1, padding:"5px 0", borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit",
+                background: quickType === t ? level.color : "#1e293b",
+                color: quickType === t ? "#000" : "#64748b", border:"none"
+              }}>{l}</button>
+            ))}
+          </div>
+          <input
+            autoFocus type="text" value={quickInput}
+            placeholder={quickType === "quest" ? "What needs to be done?" : "What's the deadline?"}
+            onChange={e => setQuickInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && submitQuickCapture()}
+            style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:8,
+              padding:"8px 12px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none", marginBottom:8 }}
+          />
+          <button onClick={submitQuickCapture} style={{
+            width:"100%", background: level.color, border:"none", borderRadius:8,
+            padding:"8px 0", color:"#000", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit"
+          }}>Add {quickType === "quest" ? "Quest" : "Deadline"} →</button>
+          <div style={{ fontSize:10, color:"#334155", marginTop:6, textAlign:"center" }}>Press Enter or click Add · Esc to close</div>
+        </div>
+      )}
     </div>
   );
 }
