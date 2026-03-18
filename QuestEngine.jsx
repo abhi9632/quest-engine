@@ -270,18 +270,27 @@ export default function QuestEngine() {
     }
   };
 
-  // ✅ Undo also correctly restores HP to the right boss
+  // ✅ Undo: restore HP to the correct boss.
+  // Logic: if there's a defeated boss (HP=0), the undo should revive the LAST
+  // defeated boss first (since that's what the quest kill contributed to).
+  // Otherwise restore to the current active boss.
   const uncompleteQuest = (quest) => {
     if (!completed[quest.id]) return;
     const newXp = Math.max(0, xp - quest.xp);
-    // Find the current boss BEFORE removing XP (same logic — first with HP > 0)
-    const boss = getCurrentBoss(bossHp);
+
+    // Find the boss to restore HP to:
+    // Priority 1 — last defeated boss (hp===0), i.e. the most recently killed one
+    // Priority 2 — current active boss (first with hp > 0)
+    const lastDefeated = [...BOSSES].reverse().find(b => (bossHp[b.id] ?? b.hp) === 0);
+    const currentActive = getCurrentBoss(bossHp);
+    const bossToRestore = lastDefeated || currentActive;
+
     setXp(newXp);
     setCompleted(prev => { const next = { ...prev }; delete next[quest.id]; return next; });
-    if (boss) {
-      const prevHp = bossHp[boss.id] ?? boss.hp;
-      const restored = Math.min(boss.hp, prevHp + quest.bossDmg);
-      setBossHp(prev => ({ ...prev, [boss.id]: restored }));
+    if (bossToRestore) {
+      const prevHp = bossHp[bossToRestore.id] ?? bossToRestore.hp;
+      const restored = Math.min(bossToRestore.hp, prevHp + quest.bossDmg);
+      setBossHp(prev => ({ ...prev, [bossToRestore.id]: restored }));
     }
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
