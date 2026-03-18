@@ -271,6 +271,7 @@ export default function QuestEngine() {
   const [showAddQuest, setShowAddQuest]       = useState(false);
   const [dlForm, setDlForm] = useState({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
   const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+  const [editingDlId, setEditingDlId] = useState(null); // id of custom deadline being edited
 
   // ── Load from Firebase ───────────────────────────────────────────────────
   useEffect(() => {
@@ -413,6 +414,33 @@ export default function QuestEngine() {
     showToast("📅 Deadline added!", "#60a5fa");
   };
 
+  // ── Start editing a custom deadline ──────────────────────────────────────
+  const startEditDeadline = (d) => {
+    setDlForm({ label: d.label, date: d.date, course: d.course, type: d.type, prepDays: String(d.prepDays), prepDesc: d.prepDesc });
+    setEditingDlId(d.id);
+    setShowAddDeadline(true);
+  };
+
+  // ── Save edited deadline ──────────────────────────────────────────────────
+  const saveEditDeadline = () => {
+    if (!dlForm.label.trim() || !dlForm.date) return;
+    const typeIcons = { assignment:"📝", quiz:"📋", practical:"🔬", exam:"🧠", submission:"📤", other:"📌" };
+    setCustomDeadlines(prev => prev.map(d => d.id === editingDlId ? {
+      ...d,
+      label: dlForm.label.trim(),
+      date: dlForm.date,
+      course: dlForm.course.trim() || "Custom",
+      type: dlForm.type,
+      icon: typeIcons[dlForm.type] || "📌",
+      prepDays: parseInt(dlForm.prepDays) || 3,
+      prepDesc: dlForm.prepDesc.trim() || `Prepare for ${dlForm.label.trim()}`,
+    } : d));
+    setDlForm({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
+    setEditingDlId(null);
+    setShowAddDeadline(false);
+    showToast("✏️ Deadline updated!", "#60a5fa");
+  };
+
   // ── Delete custom deadline ────────────────────────────────────────────────
   const deleteDeadline = (id) => {
     setCustomDeadlines(prev => prev.filter(d => d.id !== id));
@@ -465,7 +493,8 @@ export default function QuestEngine() {
     <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap');
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { background: #080c14 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
         @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-60px); } }
         @keyframes levelUp { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.08); opacity:1; } }
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
@@ -900,7 +929,7 @@ export default function QuestEngine() {
               <div style={{ fontSize: 12, color: "#64748b" }}>
                 <span style={{ color: "#f59e0b" }}>🟡 &lt;14d</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7d</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3d</span>
               </div>
-              <button onClick={() => setShowAddDeadline(v => !v)} style={{
+              <button onClick={() => { setShowAddDeadline(v => !v); if (showAddDeadline) { setEditingDlId(null); setDlForm({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" }); } }} style={{
                 background: showAddDeadline ? "#334155" : "#1e3a5f", border: "1px solid #60a5fa44",
                 color: "#60a5fa", borderRadius: 8, padding: "5px 12px", fontSize: 12,
                 fontWeight: 700, cursor: "pointer", fontFamily: "inherit"
@@ -910,7 +939,7 @@ export default function QuestEngine() {
             {/* ── Add Deadline Form ── */}
             {showAddDeadline && (
               <div style={{ background: "#0f172a", border: "1px solid #60a5fa44", borderRadius: 12, padding: 14, marginBottom: 14 }}>
-                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#60a5fa", letterSpacing: 1, marginBottom: 10 }}>NEW DEADLINE</div>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#60a5fa", letterSpacing: 1, marginBottom: 10 }}>{editingDlId ? "✏️ EDIT DEADLINE" : "NEW DEADLINE"}</div>
                 {[
                   { label:"Title *", key:"label", type:"text", placeholder:"e.g. FID Group Report" },
                   { label:"Due Date *", key:"date", type:"date", placeholder:"" },
@@ -938,19 +967,33 @@ export default function QuestEngine() {
                     ))}
                   </select>
                 </div>
-                <button onClick={addDeadline} style={{
+                <button onClick={editingDlId ? saveEditDeadline : addDeadline} style={{
                   width:"100%", background:"#1e3a5f", border:"1px solid #60a5fa",
                   color:"#60a5fa", borderRadius:8, padding:"8px", fontSize:13,
                   fontWeight:700, cursor:"pointer", fontFamily:"inherit", letterSpacing:0.5
-                }}>📅 ADD DEADLINE</button>
+                }}>{editingDlId ? "✏️ SAVE CHANGES" : "📅 ADD DEADLINE"}</button>
               </div>
             )}
 
-            {[...DEADLINES, ...customDeadlines].map(d => {
+            {[...DEADLINES, ...customDeadlines]
+              .map(d => {
+                const today = new Date(); today.setHours(0,0,0,0);
+                return { ...d, _daysLeft: Math.round((new Date(d.date) - today) / (1000*60*60*24)) };
+              })
+              .sort((a, b) => {
+                // Past deadlines always go to the bottom
+                if (a._daysLeft < 0 && b._daysLeft >= 0) return 1;
+                if (b._daysLeft < 0 && a._daysLeft >= 0) return -1;
+                // Both past: sort by most recently past first
+                if (a._daysLeft < 0 && b._daysLeft < 0) return b._daysLeft - a._daysLeft;
+                // Both upcoming: most urgent (fewest days) first
+                return a._daysLeft - b._daysLeft;
+              })
+              .map(d => {
               const today = new Date();
               today.setHours(0,0,0,0);
               const due = new Date(d.date);
-              const daysLeft = Math.round((due - today) / (1000*60*60*24));
+              const daysLeft = d._daysLeft;
               const isPast = daysLeft < 0;
               const isToday = daysLeft === 0;
               const prepStart = daysLeft <= d.prepDays && !isPast;
@@ -1036,15 +1079,24 @@ export default function QuestEngine() {
                     </div>
                   )}
 
-                  {/* Delete button — only for custom deadlines */}
+                  {/* Edit + Delete buttons — only for custom deadlines */}
                   {d.id.startsWith("cd_") && (
-                    <button onClick={() => deleteDeadline(d.id)} style={{
-                      marginTop: 8, background: "none", border: "none", cursor: "pointer",
-                      fontSize: 11, color: "#475569", padding: 0, fontFamily: "inherit"
-                    }} onMouseEnter={e => e.target.style.color="#f87171"}
-                       onMouseLeave={e => e.target.style.color="#475569"}>
-                      🗑 Remove
-                    </button>
+                    <div style={{ marginTop: 8, display:"flex", gap: 12 }}>
+                      <button onClick={() => startEditDeadline(d)} style={{
+                        background: "none", border: "none", cursor: "pointer",
+                        fontSize: 11, color: "#60a5fa", padding: 0, fontFamily: "inherit"
+                      }} onMouseEnter={e => e.target.style.color="#93c5fd"}
+                         onMouseLeave={e => e.target.style.color="#60a5fa"}>
+                        ✏️ Edit
+                      </button>
+                      <button onClick={() => deleteDeadline(d.id)} style={{
+                        background: "none", border: "none", cursor: "pointer",
+                        fontSize: 11, color: "#475569", padding: 0, fontFamily: "inherit"
+                      }} onMouseEnter={e => e.target.style.color="#f87171"}
+                         onMouseLeave={e => e.target.style.color="#475569"}>
+                        🗑 Remove
+                      </button>
+                    </div>
                   )}
                 </div>
               );
