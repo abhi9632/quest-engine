@@ -262,6 +262,16 @@ export default function QuestEngine() {
   const [completedCount, setCompletedCount] = useState(0);
   const particleId = useRef(0);
 
+  // ── Custom user-added deadlines & quests (persisted in Firebase) ─────────
+  const [customDeadlines, setCustomDeadlines] = useState([]);
+  const [customQuests, setCustomQuests]       = useState([]);
+
+  // ── Add-form state ────────────────────────────────────────────────────────
+  const [showAddDeadline, setShowAddDeadline] = useState(false);
+  const [showAddQuest, setShowAddQuest]       = useState(false);
+  const [dlForm, setDlForm] = useState({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
+  const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+
   // ── Load from Firebase ───────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
@@ -273,6 +283,8 @@ export default function QuestEngine() {
           setXp(d.xp || 0);
           setCompleted(d.completed || {});
           setBossHp(d.bossHp || {});
+          setCustomDeadlines(d.customDeadlines || []);
+          setCustomQuests(d.customQuests || []);
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -287,12 +299,12 @@ export default function QuestEngine() {
     async function save() {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests });
       } catch (e) { console.error("Save error", e); }
     }
     save();
     setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -381,6 +393,62 @@ export default function QuestEngine() {
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
 
+  // ── Add custom deadline ───────────────────────────────────────────────────
+  const addDeadline = () => {
+    if (!dlForm.label.trim() || !dlForm.date) return;
+    const typeIcons = { assignment:"📝", quiz:"📋", practical:"🔬", exam:"🧠", submission:"📤", other:"📌" };
+    const newDl = {
+      id: `cd_${Date.now()}`,
+      label: dlForm.label.trim(),
+      date: dlForm.date,
+      course: dlForm.course.trim() || "Custom",
+      type: dlForm.type,
+      icon: typeIcons[dlForm.type] || "📌",
+      prepDays: parseInt(dlForm.prepDays) || 3,
+      prepDesc: dlForm.prepDesc.trim() || `Prepare for ${dlForm.label.trim()}`,
+    };
+    setCustomDeadlines(prev => [...prev, newDl]);
+    setDlForm({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
+    setShowAddDeadline(false);
+    showToast("📅 Deadline added!", "#60a5fa");
+  };
+
+  // ── Delete custom deadline ────────────────────────────────────────────────
+  const deleteDeadline = (id) => {
+    setCustomDeadlines(prev => prev.filter(d => d.id !== id));
+    showToast("🗑 Deadline removed", "#94a3b8");
+  };
+
+  // ── Add custom quest ──────────────────────────────────────────────────────
+  const addQuest = () => {
+    if (!qForm.title.trim()) return;
+    const newQ = {
+      id: `cq_${Date.now()}`,
+      week: qForm.week.trim() || "Custom",
+      category: qForm.category,
+      title: qForm.title.trim(),
+      desc: qForm.desc.trim() || "",
+      xp: parseInt(qForm.xp) || 30,
+      bossDmg: Math.round((parseInt(qForm.xp) || 30) * 0.8),
+      link: qForm.link.trim() || undefined,
+      urgent: qForm.urgent,
+    };
+    setCustomQuests(prev => [...prev, newQ]);
+    setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+    setShowAddQuest(false);
+    showToast("⚔️ Quest added!", "#34d399");
+  };
+
+  // ── Delete custom quest ───────────────────────────────────────────────────
+  const deleteQuest = (id) => {
+    setCustomQuests(prev => prev.filter(q => q.id !== id));
+    if (completed[id]) {
+      setXp(prev => Math.max(0, prev - (customQuests.find(q => q.id === id)?.xp || 0)));
+      setCompleted(prev => { const next = {...prev}; delete next[id]; return next; });
+    }
+    showToast("🗑 Quest removed", "#94a3b8");
+  };
+
   const level = getCurrentLevel(xp);
   const nextLevel = getNextLevel(xp);
   const boss = getCurrentBoss(bossHp);
@@ -463,7 +531,7 @@ export default function QuestEngine() {
             </div>
             <div style={{ textAlign: "right" }}>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: level.color }}>{completedCount}</div>
-              <div style={{ fontSize: 10, color: "#475569", letterSpacing: 1 }}>/{QUESTS.length} QUESTS</div>
+              <div style={{ fontSize: 10, color: "#475569", letterSpacing: 1 }}>/{QUESTS.length + customQuests.length} QUESTS</div>
               <div style={{ fontSize: 10, color: "#475569", marginTop: 2 }}>{defeatedCount}/{BOSSES.length} BOSSES 💀</div>
             </div>
           </div>
@@ -531,6 +599,64 @@ export default function QuestEngine() {
         {/* ── QUESTS TAB ── */}
         {activeTab === "quests" && (
           <div>
+            {/* Add Quest button */}
+            <div style={{ display:"flex", justifyContent:"flex-end", marginBottom: 10 }}>
+              <button onClick={() => setShowAddQuest(v => !v)} style={{
+                background: showAddQuest ? "#334155" : "#064e3b", border: "1px solid #34d39944",
+                color: "#34d399", borderRadius: 8, padding: "5px 12px", fontSize: 12,
+                fontWeight: 700, cursor: "pointer", fontFamily: "inherit"
+              }}>{showAddQuest ? "✕ Cancel" : "+ Add Quest"}</button>
+            </div>
+
+            {/* ── Add Quest Form ── */}
+            {showAddQuest && (
+              <div style={{ background: "#0f172a", border: "1px solid #34d39944", borderRadius: 12, padding: 14, marginBottom: 14 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#34d399", letterSpacing: 1, marginBottom: 10 }}>NEW QUEST</div>
+                {[
+                  { label:"Title *", key:"title", placeholder:"e.g. Read assigned paper" },
+                  { label:"Description", key:"desc", placeholder:"What exactly needs to be done" },
+                  { label:"Week / Group", key:"week", placeholder:"e.g. Week 7 or Custom" },
+                  { label:"Resource Link", key:"link", placeholder:"https://... (optional)" },
+                ].map(f => (
+                  <div key={f.key} style={{ marginBottom: 8 }}>
+                    <div style={{ fontSize: 10, color: "#475569", marginBottom: 3, letterSpacing: 0.5 }}>{f.label.toUpperCase()}</div>
+                    <input type="text" value={qForm[f.key]} placeholder={f.placeholder}
+                      onChange={e => setQForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                      style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:6,
+                        padding:"6px 10px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }} />
+                  </div>
+                ))}
+                <div style={{ display:"flex", gap:8, marginBottom:8 }}>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize: 10, color: "#475569", marginBottom: 3, letterSpacing: 0.5 }}>CATEGORY</div>
+                    <select value={qForm.category} onChange={e => setQForm(prev => ({ ...prev, category: e.target.value }))}
+                      style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:6,
+                        padding:"6px 10px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                      {Object.entries(CATEGORY_META).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ width:80 }}>
+                    <div style={{ fontSize: 10, color: "#475569", marginBottom: 3, letterSpacing: 0.5 }}>XP</div>
+                    <input type="number" value={qForm.xp} min="5" max="200"
+                      onChange={e => setQForm(prev => ({ ...prev, xp: e.target.value }))}
+                      style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:6,
+                        padding:"6px 10px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }} />
+                  </div>
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                  <input type="checkbox" id="urgentCheck" checked={qForm.urgent}
+                    onChange={e => setQForm(prev => ({ ...prev, urgent: e.target.checked }))}
+                    style={{ accentColor:"#ef4444", width:14, height:14 }} />
+                  <label htmlFor="urgentCheck" style={{ fontSize:12, color:"#94a3b8", cursor:"pointer" }}>Mark as URGENT</label>
+                </div>
+                <button onClick={addQuest} style={{
+                  width:"100%", background:"#064e3b", border:"1px solid #34d399",
+                  color:"#34d399", borderRadius:8, padding:"8px", fontSize:13,
+                  fontWeight:700, cursor:"pointer", fontFamily:"inherit", letterSpacing:0.5
+                }}>⚔️ ADD QUEST</button>
+              </div>
+            )}
+
             {/* Category filters */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
               {[["all","🌐 All"], ...Object.entries(CATEGORY_META).map(([k,v]) => [k, v.label])].map(([k, label]) => (
@@ -546,7 +672,7 @@ export default function QuestEngine() {
             <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
               {[
                 { label: "Done", value: completedCount, color: "#34d399" },
-                { label: "Remaining", value: QUESTS.length - completedCount, color: "#f59e0b" },
+                { label: "Remaining", value: QUESTS.length + customQuests.length - completedCount, color: "#f59e0b" },
                 { label: "Total XP", value: xp, color: level.color },
               ].map(s => (
                 <div key={s.label} style={{ flex: 1, background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, padding: "10px 14px", textAlign: "center" }}>
@@ -555,6 +681,69 @@ export default function QuestEngine() {
                 </div>
               ))}
             </div>
+
+            {/* Custom Quests Section */}
+            {customQuests.length > 0 && (filter === "all" || customQuests.some(q => q.category === filter)) && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "11px 16px", background: "#0f172a", borderRadius: 10,
+                  border: "1px solid #34d39944"
+                }}>
+                  <span style={{ fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, color: "#34d399" }}>
+                    ✨ Custom Quests
+                  </span>
+                  <span style={{ fontSize: 11, color: "#64748b" }}>
+                    {customQuests.filter(q => completed[q.id]).length}/{customQuests.length}
+                  </span>
+                </div>
+                <div style={{ border: "1px solid #34d39944", borderTop: "none", borderRadius: "0 0 10px 10px", overflow: "hidden" }}>
+                  {customQuests.filter(q => filter === "all" || q.category === filter).map((quest, i) => {
+                    const done = !!completed[quest.id];
+                    const cat = CATEGORY_META[quest.category] || CATEGORY_META.academic;
+                    return (
+                      <div key={quest.id} style={{
+                        padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
+                        background: done ? "#0d1a0d" : "#080c14", display: "flex", alignItems: "center", gap: 12
+                      }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0 }}>
+                          <button className="quest-btn" onClick={(e) => done ? null : completeQuest(quest, e)} disabled={done} style={{
+                            width: 28, height: 28, borderRadius: 8, cursor: done ? "default" : "pointer",
+                            border: done ? "2px solid #34d399" : `2px solid ${cat.color}`,
+                            background: done ? "#34d399" : "transparent",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 13, color: done ? "#000" : cat.color, fontWeight: 900
+                          }}>{done ? "✓" : "○"}</button>
+                          {done && (
+                            <button onClick={() => uncompleteQuest(quest)} style={{
+                              background:"none", border:"none", cursor:"pointer", fontSize:10, color:"#475569", padding:0
+                            }} onMouseEnter={e=>e.target.style.color="#94a3b8"} onMouseLeave={e=>e.target.style.color="#475569"}>↩ undo</button>
+                          )}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            {quest.urgent && !done && <span style={{ fontSize: 10, background: "#7f1d1d", color: "#fca5a5", padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>URGENT</span>}
+                            <span style={{ fontSize: 10, background: cat.bg, color: cat.color, padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>{cat.label}</span>
+                            {quest.link && <a href={quest.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, background: "#1e293b", color: "#60a5fa", padding: "1px 7px", borderRadius: 4, fontWeight: 700, textDecoration: "none", border: "1px solid #334155" }}>🔗 Open</a>}
+                          </div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none", marginTop: 3 }}>{quest.title}</div>
+                          {quest.desc && <div style={{ fontSize: 12, color: "#64748b", marginTop: 1 }}>{quest.desc}</div>}
+                        </div>
+                        <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
+                          <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color: done ? "#475569" : "#34d399" }}>+{quest.xp}</div>
+                          <div style={{ fontSize:10, color:"#334155" }}>XP</div>
+                          <button onClick={() => deleteQuest(quest.id)} style={{
+                            background:"none", border:"none", cursor:"pointer", fontSize:11, color:"#475569", padding:0
+                          }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#475569"}>
+                            🗑
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Weeks */}
             {weeks.map(week => {
@@ -707,10 +896,57 @@ export default function QuestEngine() {
         {/* ── DEADLINES TAB ── */}
         {activeTab === "deadlines" && (
           <div>
-            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, lineHeight: 1.5 }}>
-              Countdowns to every deadline. <span style={{ color: "#f59e0b" }}>🟡 &lt;14 days</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7 days</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3 days</span>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: "#64748b" }}>
+                <span style={{ color: "#f59e0b" }}>🟡 &lt;14d</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7d</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3d</span>
+              </div>
+              <button onClick={() => setShowAddDeadline(v => !v)} style={{
+                background: showAddDeadline ? "#334155" : "#1e3a5f", border: "1px solid #60a5fa44",
+                color: "#60a5fa", borderRadius: 8, padding: "5px 12px", fontSize: 12,
+                fontWeight: 700, cursor: "pointer", fontFamily: "inherit"
+              }}>{showAddDeadline ? "✕ Cancel" : "+ Add Deadline"}</button>
             </div>
-            {DEADLINES.map(d => {
+
+            {/* ── Add Deadline Form ── */}
+            {showAddDeadline && (
+              <div style={{ background: "#0f172a", border: "1px solid #60a5fa44", borderRadius: 12, padding: 14, marginBottom: 14 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#60a5fa", letterSpacing: 1, marginBottom: 10 }}>NEW DEADLINE</div>
+                {[
+                  { label:"Title *", key:"label", type:"text", placeholder:"e.g. FID Group Report" },
+                  { label:"Due Date *", key:"date", type:"date", placeholder:"" },
+                  { label:"Course", key:"course", type:"text", placeholder:"e.g. iOS Development" },
+                  { label:"Days to prep", key:"prepDays", type:"number", placeholder:"7" },
+                  { label:"Prep notes", key:"prepDesc", type:"text", placeholder:"What to do before this deadline" },
+                ].map(f => (
+                  <div key={f.key} style={{ marginBottom: 8 }}>
+                    <div style={{ fontSize: 10, color: "#475569", marginBottom: 3, letterSpacing: 0.5 }}>{f.label.toUpperCase()}</div>
+                    <input
+                      type={f.type} value={dlForm[f.key]} placeholder={f.placeholder}
+                      onChange={e => setDlForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                      style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:6,
+                        padding:"6px 10px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }}
+                    />
+                  </div>
+                ))}
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, color: "#475569", marginBottom: 3, letterSpacing: 0.5 }}>TYPE</div>
+                  <select value={dlForm.type} onChange={e => setDlForm(prev => ({ ...prev, type: e.target.value }))}
+                    style={{ width:"100%", background:"#1e293b", border:"1px solid #334155", borderRadius:6,
+                      padding:"6px 10px", color:"#e2e8f0", fontSize:13, fontFamily:"inherit", outline:"none" }}>
+                    {["assignment","quiz","practical","exam","submission","other"].map(t => (
+                      <option key={t} value={t}>{t.charAt(0).toUpperCase()+t.slice(1)}</option>
+                    ))}
+                  </select>
+                </div>
+                <button onClick={addDeadline} style={{
+                  width:"100%", background:"#1e3a5f", border:"1px solid #60a5fa",
+                  color:"#60a5fa", borderRadius:8, padding:"8px", fontSize:13,
+                  fontWeight:700, cursor:"pointer", fontFamily:"inherit", letterSpacing:0.5
+                }}>📅 ADD DEADLINE</button>
+              </div>
+            )}
+
+            {[...DEADLINES, ...customDeadlines].map(d => {
               const today = new Date();
               today.setHours(0,0,0,0);
               const due = new Date(d.date);
@@ -798,6 +1034,17 @@ export default function QuestEngine() {
                       </div>
                       <div style={{ fontSize: 11, color: "#94a3b8" }}>{d.prepDesc}</div>
                     </div>
+                  )}
+
+                  {/* Delete button — only for custom deadlines */}
+                  {d.id.startsWith("cd_") && (
+                    <button onClick={() => deleteDeadline(d.id)} style={{
+                      marginTop: 8, background: "none", border: "none", cursor: "pointer",
+                      fontSize: 11, color: "#475569", padding: 0, fontFamily: "inherit"
+                    }} onMouseEnter={e => e.target.style.color="#f87171"}
+                       onMouseLeave={e => e.target.style.color="#475569"}>
+                      🗑 Remove
+                    </button>
                   )}
                 </div>
               );
