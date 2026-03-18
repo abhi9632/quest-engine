@@ -51,11 +51,11 @@ const QUESTS = [
   { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false },
   { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false },
   { id:"q16", week:"Week 6 · Mar 24–31",    category:"jobsearch", title:"Push OpenAI Script to GitHub",      desc:"Write a README. Your first AI repo!", link:"https://github.com", xp:40, bossDmg:35, urgent:false },
-  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + All 5 Domains",desc:"Read the exam guide then all 5 domain pages on claudecertifications.com. 45 min.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
+  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
 
   // ── WEEK 7 · Apr 1–7 ───────────────────────────────────────────────────────
   { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false },
-  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering",desc:"20% of exam. Study: explicit criteria, few-shot prompting, JSON schemas, tool_use, validation-retry loops.", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
+  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
   { id:"q18", week:"Week 7 · Apr 1–7",      category:"academic",  title:"IP Assignment 1 — Push to finish",  desc:"Due Apr 5. Don't leave for day of.", xp:80, bossDmg:65, urgent:true },
   { id:"q19", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit IP Assignment 1",            desc:"Apr 5 — Very High priority 🔴", xp:100, bossDmg:80, urgent:true },
   { id:"q20", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit FID Persona",                desc:"Apr 5 — alongside IP A1 🔴", xp:70, bossDmg:55, urgent:true },
@@ -63,7 +63,7 @@ const QUESTS = [
 
   // ── WEEK 8 · Apr 7–13 ──────────────────────────────────────────────────────
   { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false },
-  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP",desc:"18% of exam. Study: tool descriptions, structured errors, MCP .mcp.json config, 4-5 tools per agent max.", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
+  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
   { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false },
   { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false },
   { id:"q25", week:"Week 8 · Apr 7–13",     category:"jobsearch", title:"Add Google AI Cert to LinkedIn",    desc:"Add under Licences & Certifications", link:"https://www.linkedin.com/in/", xp:20, bossDmg:15, urgent:false },
@@ -73,7 +73,7 @@ const QUESTS = [
   { id:"q27", week:"Week 9 · Apr 14–20",    category:"project",   title:"Set Up Project 1 Repo: AI Doc Q&A", desc:"GitHub repo + README skeleton + empty FastAPI app", xp:30, bossDmg:25, urgent:false },
   { id:"q28", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build PDF Chunking + Embedding Logic",desc:"Load PDF → chunk → embed → store in ChromaDB", xp:70, bossDmg:60, urgent:false },
   { id:"q29", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build /ask Endpoint (RAG pipeline)", desc:"Retrieve chunks → generate answer with citations", xp:80, bossDmg:65, urgent:false },
-  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability",desc:"15% of exam. Study: progressive summarisation risks, escalation patterns, error propagation, provenance.", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false },
+  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false },
   { id:"q30", week:"Week 9 · Apr 14–20",    category:"project",   title:"Deploy Project 1 to Render",         desc:"Get a live public URL — this is what employers will see", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q31", week:"Week 9 · Apr 14–20",    category:"project",   title:"Write Project 1 README + Diagram",   desc:"What it does, tech stack, architecture diagram (draw.io)", xp:40, bossDmg:35, urgent:false },
 
@@ -81,13 +81,13 @@ const QUESTS = [
   { id:"q32", week:"Week 10 · Apr 21–27",   category:"academic",  title:"Submit iOS Assignment 2",            desc:"Apr 27 deadline 🔴 Start Day 1 of this week — 15–20 hrs total", xp:90, bossDmg:75, urgent:true },
   { id:"q33", week:"Week 10 · Apr 21–27",   category:"project",   title:"Sketch Project 2 Architecture",      desc:"JD Analyser: JD + resume → match score + skills gap + cover letter bullets", xp:20, bossDmg:15, urgent:false },
   { id:"q34", week:"Week 10 · Apr 21–27",   category:"project",   title:"Build Project 2 /analyse Endpoint",  desc:"Prompt engineering for skill extraction. Return JSON.", xp:80, bossDmg:65, urgent:false },
-  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture",desc:"27% of exam — BIGGEST SECTION. Study: agentic loops, hub-and-spoke multi-agent, hooks, sessions, task decomposition.", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false },
+  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false },
 
   // ── WEEK 11 · Apr 28–May 3 ─────────────────────────────────────────────────
   { id:"q35", week:"Week 11 · Apr 28–May 3",category:"academic",  title:"Submit FID Practical",               desc:"May 1 deadline 🔴 8–10 hrs needed. Prepare all week.", xp:100, bossDmg:80, urgent:true },
   { id:"q36", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Deploy Project 2 + Write README",    desc:"Same standard as Project 1. Get live URL.", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q37", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Record 90-sec Loom Demo of Project 2",desc:"Paste JD → show analysis output. Add link to README.", link:"https://www.loom.com", xp:50, bossDmg:40, urgent:false },
-  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config",desc:"20% of exam. Study: CLAUDE.md hierarchy, slash commands, plan mode, CI/CD with -p flag, batch API.", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false },
+  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false },
 
   // ── WEEK 12 · May 5–11 ─────────────────────────────────────────────────────
   { id:"q38", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Update Resume (AI Projects First)",  desc:"Lead with AI projects, Java backend second. 1 page max.", xp:40, bossDmg:35, urgent:false },
@@ -129,6 +129,68 @@ const ACHIEVEMENTS = [
   { id: "a6", title: "Double Deploy",      desc: "Deploy Project 2 as well",          icon: "🛸",  xpThreshold: 1800 },
   { id: "a7", title: "Claude Architect",   desc: "Pass the CCA Exam",                 icon: "🧠",  xpThreshold: 3400 },
   { id: "a8", title: "Sydney AI Engineer", desc: "Reach max level",                   icon: "🏆",  xpThreshold: 3600 },
+];
+
+// ─── DEADLINES ──────────────────────────────────────────────────────────────
+// date: YYYY-MM-DD string (parsed at runtime for countdown)
+// prepDays: how many days before to start prep
+// prepDesc: what to do before the deadline
+const DEADLINES = [
+  {
+    id: "d1", label: "iOS Quiz 1", date: "2026-03-12", course: "iOS Development",
+    type: "quiz", icon: "📱",
+    prepDays: 3, prepDesc: "Revise all iOS lecture notes — 2 sessions of 1.5 hrs each"
+  },
+  {
+    id: "d2", label: "Team Charter", date: "2026-03-13", course: "FID",
+    type: "submission", icon: "📝",
+    prepDays: 1, prepDesc: "Draft team roles and responsibilities — 1 hr max"
+  },
+  {
+    id: "d3", label: "iOS Assignment 1", date: "2026-03-22", course: "iOS Development",
+    type: "assignment", icon: "📱",
+    prepDays: 7, prepDesc: "Start 7 days out — 2 hrs/day for 5 days, final polish day 6"
+  },
+  {
+    id: "d4", label: "IP Quiz 1", date: "2026-03-23", course: "Internet Programming",
+    type: "quiz", icon: "🌐",
+    prepDays: 3, prepDesc: "Revise IP lecture notes — focus on JS fundamentals and DOM"
+  },
+  {
+    id: "d5", label: "IP Assignment 1 — Dynamic Web Interface", date: "2026-04-05", course: "Internet Programming",
+    type: "assignment", icon: "🌐",
+    prepDays: 10, prepDesc: "Start 10 days out — scaffold project early, don't leave HTML/CSS/JS to last week"
+  },
+  {
+    id: "d6", label: "FID Persona", date: "2026-04-05", course: "FID",
+    type: "assignment", icon: "🎨",
+    prepDays: 5, prepDesc: "Start persona research 5 days out — user interviews, affinity mapping, write-up"
+  },
+  {
+    id: "d7", label: "iOS Assignment 2", date: "2026-04-27", course: "iOS Development",
+    type: "assignment", icon: "📱",
+    prepDays: 10, prepDesc: "Start 10 days out — plan features first, code second. Submit with 1 day buffer."
+  },
+  {
+    id: "d8", label: "FID Practical", date: "2026-05-01", course: "FID",
+    type: "practical", icon: "🎨",
+    prepDays: 7, prepDesc: "Prepare all week — 2 hrs/day. Know the brief inside out before practical day."
+  },
+  {
+    id: "d9", label: "IP Quiz 2", date: "2026-05-11", course: "Internet Programming",
+    type: "quiz", icon: "🌐",
+    prepDays: 3, prepDesc: "Revise IP notes from Weeks 7–12 — focus on advanced JS, APIs, async"
+  },
+  {
+    id: "d10", label: "IP Assignment 2 — Advanced Frontend (Group)", date: "2026-05-24", course: "Internet Programming",
+    type: "assignment", icon: "👥",
+    prepDays: 14, prepDesc: "Kickoff group meeting 14 days out — divide work immediately. Don't trust others to start without you."
+  },
+  {
+    id: "d11", label: "🏆 CCA Foundations Exam", date: "2026-06-15", course: "Claude Certified Architect",
+    type: "exam", icon: "🧠",
+    prepDays: 21, prepDesc: "Final 3 weeks: complete all 5 domain guides + practice exam + review weak areas"
+  },
 ];
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
@@ -455,7 +517,7 @@ export default function QuestEngine() {
         <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
+          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
               background: activeTab === tab ? level.color : "#0f172a",
@@ -636,6 +698,107 @@ export default function QuestEngine() {
                     <div style={{ fontSize: 12, color: "#64748b" }}>{a.desc}</div>
                   </div>
                   {unlocked && <div style={{ marginLeft: "auto", fontSize: 10, background: "#064e3b", color: "#34d399", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>UNLOCKED</div>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── DEADLINES TAB ── */}
+        {activeTab === "deadlines" && (
+          <div>
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14, lineHeight: 1.5 }}>
+              Countdowns to every deadline. <span style={{ color: "#f59e0b" }}>🟡 &lt;14 days</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7 days</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3 days</span>
+            </div>
+            {DEADLINES.map(d => {
+              const today = new Date();
+              today.setHours(0,0,0,0);
+              const due = new Date(d.date);
+              const daysLeft = Math.round((due - today) / (1000*60*60*24));
+              const isPast = daysLeft < 0;
+              const isToday = daysLeft === 0;
+              const prepStart = daysLeft <= d.prepDays && !isPast;
+
+              const urgencyColor = isPast ? "#34d399"
+                : isToday ? "#ef4444"
+                : daysLeft <= 3 ? "#ef4444"
+                : daysLeft <= 7 ? "#f97316"
+                : daysLeft <= 14 ? "#f59e0b"
+                : "#60a5fa";
+
+              const urgencyBg = isPast ? "#064e3b"
+                : daysLeft <= 3 ? "#450a0a"
+                : daysLeft <= 7 ? "#431407"
+                : daysLeft <= 14 ? "#451a03"
+                : "#1e3a5f";
+
+              const typeColors = {
+                quiz: "#a78bfa", assignment: "#60a5fa",
+                submission: "#34d399", practical: "#f59e0b",
+                exam: "#fbbf24"
+              };
+
+              return (
+                <div key={d.id} style={{
+                  background: "#0f172a",
+                  border: `1px solid ${isPast ? "#1e293b" : urgencyColor + "66"}`,
+                  borderRadius: 14, padding: "14px 16px", marginBottom: 10,
+                  opacity: isPast ? 0.55 : 1
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 4 }}>
+                        <span style={{ fontSize: 10, background: urgencyBg, color: typeColors[d.type] || "#94a3b8", padding: "1px 7px", borderRadius: 4, fontWeight: 700 }}>
+                          {d.icon} {d.type.toUpperCase()}
+                        </span>
+                        <span style={{ fontSize: 10, color: "#475569" }}>{d.course}</span>
+                      </div>
+                      <div style={{ fontFamily: "'Bebas Neue'", fontSize: 18, color: isPast ? "#475569" : "#e2e8f0", letterSpacing: 0.5 }}>
+                        {isPast ? "✅ " : ""}{d.label}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>
+                        Due: {new Date(d.date).toLocaleDateString("en-AU", { weekday:"short", day:"numeric", month:"short" })}
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right", flexShrink: 0 }}>
+                      {isPast ? (
+                        <div style={{ fontFamily: "'Bebas Neue'", fontSize: 20, color: "#34d399" }}>DONE</div>
+                      ) : isToday ? (
+                        <div style={{ fontFamily: "'Bebas Neue'", fontSize: 20, color: "#ef4444", animation: "pulse 1s infinite" }}>TODAY!</div>
+                      ) : (
+                        <>
+                          <div style={{ fontFamily: "'Bebas Neue'", fontSize: 28, color: urgencyColor, lineHeight: 1 }}>{daysLeft}</div>
+                          <div style={{ fontSize: 10, color: "#475569" }}>DAYS LEFT</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Countdown bar */}
+                  {!isPast && (
+                    <div style={{ marginTop: 10, height: 4, background: "#1e293b", borderRadius: 99, overflow: "hidden" }}>
+                      <div style={{
+                        height: "100%",
+                        width: `${Math.min(100, Math.max(2, ((d.prepDays - daysLeft) / d.prepDays) * 100))}%`,
+                        background: urgencyColor,
+                        borderRadius: 99, transition: "width 0.4s"
+                      }} />
+                    </div>
+                  )}
+
+                  {/* Prep reminder — shows when within prepDays window */}
+                  {prepStart && (
+                    <div style={{
+                      marginTop: 10, padding: "8px 10px",
+                      background: urgencyBg, borderRadius: 8,
+                      borderLeft: `3px solid ${urgencyColor}`
+                    }}>
+                      <div style={{ fontSize: 10, color: urgencyColor, fontWeight: 700, marginBottom: 2 }}>
+                        ⚡ PREP TIME — {daysLeft <= 3 ? "URGENT" : `start now, ${daysLeft} days left`}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#94a3b8" }}>{d.prepDesc}</div>
+                    </div>
+                  )}
                 </div>
               );
             })}
