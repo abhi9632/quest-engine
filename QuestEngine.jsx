@@ -258,6 +258,7 @@ export default function QuestEngine() {
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState("Week 4 · Mar 10–16");
   const [loaded, setLoaded]           = useState(false);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const particleId = useRef(0);
@@ -325,22 +326,23 @@ export default function QuestEngine() {
         }
       } catch (e) { console.error("Load error", e); }
       setLoaded(true);
+      setInitialLoadDone(true);
     }
     load();
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || !initialLoadDone) return;
     async function save() {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone } , { merge: true });  // ← THIS IS THE KEY FIX)
       } catch (e) { console.error("Save error", e); }
     }
     save();
     setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded, initialLoadDone]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
