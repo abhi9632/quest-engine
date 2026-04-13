@@ -110,6 +110,40 @@ const QUESTS = [
   { id:"q48", week:"June · Exam + Apply",   category:"jobsearch", title:"Pin Both Projects + Update GitHub",  desc:"Customise GitHub profile. Pin AI Doc Q&A and JD Analyser.", link:"https://github.com", xp:20, bossDmg:15, urgent:false },
   { id:"q49", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 Enterprise Applications",   desc:"Target: WiseTech Global, Macquarie Tech, CBA Tech, Deloitte AI, Accenture", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+java&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
   { id:"q50", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 More Applications",         desc:"Don't stop. Keep the pipeline full. Track everything in Notion.", xp:100, bossDmg:80, urgent:false },
+
+  // ─── INTERVIEW PREP — 4-WEEK PLAN ────────────────────────────────────────
+  // Week 1: Foundations
+  { id:"q51", week:"Interview Prep · Week 1", category:"interview", title:"Java Refresh + 3 Easy Array Problems", desc:"Revisit generics, collections, lambdas. Solve 3 Easy array problems on LeetCode in Java.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q52", week:"Interview Prep · Week 1", category:"interview", title:"Big O Notation + 5 String Problems", desc:"Watch CS Dojo Big O video. 5 Easy string manipulation problems. Revise HashMap internals.", xp:40, bossDmg:30, link:"https://youtube.com/watch?v=D6xkbGLQesk", urgent:false },
+  { id:"q53", week:"Interview Prep · Week 1", category:"interview", title:"Linked Lists — Implement + 3 Problems", desc:"William Fiset LL playlist. Reverse LL, Detect Cycle, Merge Two Lists. Implement LL from scratch.", xp:50, bossDmg:40, link:"https://youtube.com/playlist?list=PLDV1Zeh2NRsB6SWUrDFW2RmDotAfPbeHu", urgent:false },
+  { id:"q54", week:"Interview Prep · Week 1", category:"interview", title:"Stacks & Queues — 3 Classic Problems", desc:"Valid Parentheses, Min Stack, Daily Temperatures. Implement Stack using arrays.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q55", week:"Interview Prep · Week 1", category:"interview", title:"HashMaps + Sets — Two Sum, Group Anagrams, Top K", desc:"Two Sum, Group Anagrams, Top K Frequent. Understand collision handling conceptually.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q56", week:"Interview Prep · Week 1", category:"interview", title:"W1 Sat: Anthropic API Hello World (Java/Python)", desc:"Set up Anthropic API key. Build CLI chatbot in Java or Python — 50 lines. Read Anthropic docs overview.", xp:50, bossDmg:40, link:"https://docs.anthropic.com", urgent:false },
+  { id:"q57", week:"Interview Prep · Week 1", category:"interview", title:"W1 Sun: Review — Re-solve 3 Struggled Problems", desc:"Re-solve 3 problems you struggled with this week. Write pseudocode for each pattern learned.", xp:30, bossDmg:20, link:"https://neetcode.io/practice", urgent:false },
+  // Week 2: Patterns
+  { id:"q58", week:"Interview Prep · Week 2", category:"interview", title:"Two Pointers — Container, 3Sum, Trapping Rain", desc:"Container With Most Water, 3Sum, Trapping Rain Water. Pattern: reduce search space from both ends.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q59", week:"Interview Prep · Week 2", category:"interview", title:"Sliding Window — 3 Classic Problems", desc:"Longest Substring No Repeat, Max Subarray, Min Window Substring. Expand/shrink window pattern.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q60", week:"Interview Prep · Week 2", category:"interview", title:"Binary Search — Rotated Array + Koko Bananas", desc:"Search in Rotated Array, Find Min in Rotated, Koko Eating Bananas. Apply to answer-space not just sorted arrays.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q61", week:"Interview Prep · Week 2", category:"interview", title:"Trees DFS — Invert, Max Depth, Path Sum, LCA", desc:"NeetCode Tree playlist. Invert Tree, Max Depth, Path Sum, LCA. Implement recursive DFS from scratch.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q62", week:"Interview Prep · Week 2", category:"interview", title:"Trees BFS — Level Order, Right Side View, Zigzag", desc:"Queue-based BFS pattern. 5 tree problems timed at 20 min each.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q63", week:"Interview Prep · Week 2", category:"interview", title:"W2 Sat: Extend CLI Chatbot + Prompt Engineering", desc:"Add conversation history to your chatbot. Study system prompts, temperature, few-shot basics.", xp:50, bossDmg:40, link:"https://docs.anthropic.com", urgent:false },
+  { id:"q64", week:"Interview Prep · Week 2", category:"interview", title:"W2 Sun: Pramp Mock Interview #1", desc:"First Pramp session. Review NeetCode solutions for unsolved problems. Mark completed Blind 75.", xp:80, bossDmg:65, link:"https://www.pramp.com", urgent:false },
+  // Week 3: Advanced Patterns
+  { id:"q65", week:"Interview Prep · Week 3", category:"interview", title:"Graphs BFS/DFS — Islands, Clone Graph, Pacific Atlantic", desc:"Adjacency list in Java (HashMap). Number of Islands, Clone Graph, Pacific Atlantic. NeetCode Graphs video.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q66", week:"Interview Prep · Week 3", category:"interview", title:"Graphs Advanced — Topological Sort, Word Ladder", desc:"Course Schedule (topological sort), Word Ladder. Union-Find concept. 3 Medium graph problems timed.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q67", week:"Interview Prep · Week 3", category:"interview", title:"Backtracking — Subsets, Permutations, Combo Sum", desc:"Subsets, Permutations, Combination Sum, N-Queens. Pattern: choose → explore → unchoose.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q68", week:"Interview Prep · Week 3", category:"interview", title:"1D Dynamic Programming — Stairs, Robber, Coin Change", desc:"Climbing Stairs, House Robber, Coin Change, Decode Ways. dp[i] = f(dp[i-1], dp[i-2]) pattern.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q69", week:"Interview Prep · Week 3", category:"interview", title:"2D Dynamic Programming — Unique Paths, LCS, Knapsack", desc:"Unique Paths, Longest Common Subsequence, 0/1 Knapsack. Draw the DP table on paper first.", xp:65, bossDmg:55, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q70", week:"Interview Prep · Week 3", category:"interview", title:"W3 Sat: Start Resume Analyzer (FastAPI + Claude API)", desc:"Spec: user uploads resume → Claude returns feedback JSON. Start building, deploy on Railway/Render.", xp:60, bossDmg:50, link:"https://docs.anthropic.com", urgent:false },
+  { id:"q71", week:"Interview Prep · Week 3", category:"interview", title:"W3 Sun: Pramp Mock Interview #2 + LeetCode Contest", desc:"Pramp session #2. LeetCode weekly contest attempt (no pressure). Review weak patterns from the week.", xp:80, bossDmg:65, link:"https://www.pramp.com", urgent:false },
+  // Week 4: Interview Mode
+  { id:"q72", week:"Interview Prep · Week 4", category:"interview", title:"Heaps + Priority Queue — Top K, Kth Largest, Merge K", desc:"Top K Elements, Kth Largest, Merge K Sorted Lists. Java PriorityQueue deep dive. 4 Mediums timed.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q73", week:"Interview Prep · Week 4", category:"interview", title:"Intervals + Greedy — Merge, Non-overlap, Meeting Rooms", desc:"Merge Intervals, Non-overlapping, Meeting Rooms II. Activity selection pattern. 3 Medium timed.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q74", week:"Interview Prep · Week 4", category:"interview", title:"Full Mock Day — 3 LeetCode + Pramp #3 (Record Yourself)", desc:"1 Easy + 2 Medium (timed, no hints). Pramp session #3. Record yourself explaining one solution.", xp:100, bossDmg:80, link:"https://www.pramp.com", urgent:true },
+  { id:"q75", week:"Interview Prep · Week 4", category:"interview", title:"CS Fundamentals — OS, DBMS, Networks", desc:"OS: Processes/Threads, Deadlock, Scheduling. DBMS: ACID, Indexing, SQL joins. Networks: HTTP, REST, TCP/IP.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
+  { id:"q76", week:"Interview Prep · Week 4", category:"interview", title:"System Design Lite — URL Shortener + SOLID + Patterns", desc:"Gaurav Sen System Design intro. Design URL Shortener on whiteboard. SOLID + Factory/Singleton/Observer.", xp:55, bossDmg:45, link:"https://youtube.com/@gauravsen", urgent:false },
+  { id:"q77", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sat: Deploy Resume Analyzer + Add to Resume", desc:"Finish Resume Analyzer — deploy on Railway/Render. Add to resume: 'Built AI resume analyzer using Claude API'.", xp:70, bossDmg:55, link:"https://railway.app", urgent:false },
+  { id:"q78", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sun: Final Review — 10 Blind 75 from Memory", desc:"Re-do 10 Blind 75 problems from memory. Review all patterns cheat sheet. Sleep early. You're ready.", xp:60, bossDmg:50, link:"https://leetcode.com/discuss/general-discussion/460599", urgent:false },
 ];
 
 const CATEGORY_META = {
@@ -118,6 +152,7 @@ const CATEGORY_META = {
   project:   { label: "🚀 Project",     color: "#60a5fa", bg: "#1e3a5f" },
   jobsearch: { label: "💼 Job Search",  color: "#fbbf24", bg: "#451a03" },
   cca:       { label: "🧠 CCA Prep",    color: "#a78bfa", bg: "#2e1065" },
+  interview: { label: "⚔️ Interview",   color: "#f97316", bg: "#431407" },
 };
 
 const ACHIEVEMENTS = [
@@ -258,7 +293,6 @@ export default function QuestEngine() {
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState("Week 4 · Mar 10–16");
   const [loaded, setLoaded]           = useState(false);
-  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const particleId = useRef(0);
@@ -326,23 +360,22 @@ export default function QuestEngine() {
         }
       } catch (e) { console.error("Load error", e); }
       setLoaded(true);
-      setInitialLoadDone(true);
     }
     load();
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
   useEffect(() => {
-    if (!loaded || !initialLoadDone) return;
+    if (!loaded) return;
     async function save() {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone } , { merge: true });  // ← THIS IS THE KEY FIX)
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone });
       } catch (e) { console.error("Save error", e); }
     }
     save();
     setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded, initialLoadDone]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -1441,6 +1474,39 @@ export default function QuestEngine() {
                 <div>📝 Sit real exam: June 2026</div>
                 <div>💰 Cost: $99 (or free via Deloitte partner)</div>
                 <div style={{ marginTop: 8, color: "#a78bfa", fontWeight: 700 }}>Domains: Agentic (27%) · Code (20%) · Prompts (20%) · Tools/MCP (18%) · Context (15%)</div>
+              </div>
+            </div>
+
+            {/* Interview Prep Reference */}
+            <div style={{ background: "#0f172a", border: "1px solid #f9731644", borderRadius: 14, padding: 16, marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 14, color: "#f97316", letterSpacing: 2, marginBottom: 12 }}>⚔️ LIVE CODING STRATEGY</div>
+              {[
+                { n:"01", label:"Clarify",            detail:"Ask 2–3 questions before coding. Edge cases? Input size? Return type?" },
+                { n:"02", label:"Brute force first",  detail:"State O(n²) solution verbally. Then say 'I can optimize this.'" },
+                { n:"03", label:"Think aloud",         detail:"Say everything you're thinking. Silence kills interviews." },
+                { n:"04", label:"Write clean code",    detail:"Meaningful variable names. No 'x', 'tmp' without context." },
+                { n:"05", label:"Test your code",      detail:"Trace through 1 example manually. Then edge case (empty, one element)." },
+                { n:"06", label:"Dry run before submit",detail:"Read every line once more. Catch off-by-one errors." },
+              ].map((s,i) => (
+                <div key={i} style={{ display:"flex", gap:10, marginBottom:8, fontSize:12, color:"#94a3b8", lineHeight:1.4 }}>
+                  <span style={{ color:"#f97316", fontFamily:"'Bebas Neue'", fontSize:14, flexShrink:0, minWidth:26 }}>{s.n}</span>
+                  <span><span style={{ color:"#e2e8f0", fontWeight:700 }}>{s.label}:</span> {s.detail}</span>
+                </div>
+              ))}
+              <div style={{ marginTop:14, borderTop:"1px solid #1e293b", paddingTop:12 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#f97316", letterSpacing:2, marginBottom:8 }}>DSA WEEKLY PROGRESSION</div>
+                {[
+                  { week:"Week 1", mix:"8–10 Easy · 0 Medium",        goal:"Build fluency" },
+                  { week:"Week 2", mix:"5 Easy · 5 Medium",            goal:"Pattern recognition" },
+                  { week:"Week 3", mix:"3 Easy · 8 Medium",            goal:"Timed solving" },
+                  { week:"Week 4", mix:"2 Easy · 8 Medium · 1 Hard",   goal:"Interview simulation" },
+                ].map((r,i) => (
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#94a3b8", padding:"4px 0", borderBottom: i<3 ? "1px solid #1e293b":"none" }}>
+                    <span style={{ color:["#00FF94","#00C8FF","#FF6B6B","#FFB347"][i], fontWeight:700 }}>{r.week}</span>
+                    <span>{r.mix}</span>
+                    <span style={{ color:"#475569" }}>{r.goal}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
