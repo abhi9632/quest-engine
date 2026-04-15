@@ -228,6 +228,45 @@ const DEADLINES = [
   },
 ];
 
+// ─── DSA TRACKER ────────────────────────────────────────────────────────────
+
+const DSA_DAYS = [
+  // Phase 1 — Foundations (Days 1–14)
+  { day:1,  phase:1, topic:"Arrays Basics",         problems:[283,485,26,1] },
+  { day:2,  phase:1, topic:"Arrays Continued",      problems:[121,53,189,217] },
+  { day:3,  phase:1, topic:"Strings",               problems:[125,242,387,344] },
+  { day:4,  phase:1, topic:"HashMaps",              problems:[1,49,128,560] },
+  { day:5,  phase:1, topic:"Two Pointers",          problems:[167,15,11,125] },
+  { day:6,  phase:1, topic:"Sliding Window",        problems:[3,643,209,424] },
+  { day:7,  phase:1, topic:"Review Day",            problems:[], reviewDay:true },
+  { day:8,  phase:1, topic:"Linked List",           problems:[206,21,141,876] },
+  { day:9,  phase:1, topic:"Linked List II",        problems:[19,143,2,160] },
+  { day:10, phase:1, topic:"Stacks",                problems:[20,155,232,739] },
+  { day:11, phase:1, topic:"Queues",                problems:[225,933,346] },
+  { day:12, phase:1, topic:"Binary Search",         problems:[704,374,278,35] },
+  { day:13, phase:1, topic:"Binary Search II",      problems:[153,33,74,162] },
+  { day:14, phase:1, topic:"Review Day",            problems:[], reviewDay:true },
+  // Phase 2 — Trees (Days 15–19)
+  { day:15, phase:2, topic:"Tree Basics + DFS",     problems:[104,112,226,100] },
+  { day:16, phase:2, topic:"Tree DFS",              problems:[257,543,124,236] },
+  { day:17, phase:2, topic:"Tree BFS",              problems:[102,107,103,199] },
+  { day:18, phase:2, topic:"BST",                   problems:[700,701,230,98] },
+  { day:19, phase:2, topic:"Review Trees",          problems:[], reviewDay:true },
+  // Phase 3 — Graphs + DP (Days 20–28)
+  { day:20, phase:3, topic:"Graph BFS/DFS",         problems:[200,133,695,417] },
+  { day:21, phase:3, topic:"Graph Advanced",        problems:[207,210,994,286] },
+  { day:22, phase:3, topic:"DP 1D",                 problems:[70,198,322,139] },
+  { day:23, phase:3, topic:"DP 1D II",              problems:[300,416,494,91] },
+  { day:24, phase:3, topic:"DP 2D",                 problems:[62,63,1143,309] },
+  { day:25, phase:3, topic:"Backtracking",          problems:[78,46,39,79] },
+  { day:26, phase:3, topic:"Heaps",                 problems:[215,347,295,23] },
+  { day:27, phase:3, topic:"Review + Mock",         problems:[], mockDay:true, mockLabel:"Pramp Session" },
+  { day:28, phase:3, topic:"Mock Day",              problems:[], mockDay:true, mockLabel:"3 Timed Problems" },
+];
+
+const DSA_PHASE_LABELS = { 1:"Phase 1 — Foundations", 2:"Phase 2 — Trees", 3:"Phase 3 — Graphs + DP" };
+const DSA_PHASE_RANGES = { 1:[1,14], 2:[15,19], 3:[20,28] };
+
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
 function getCurrentLevel(xp) {
@@ -331,6 +370,9 @@ export default function QuestEngine() {
   const [quickInput, setQuickInput] = useState("");
   const [quickType, setQuickType] = useState("quest"); // "quest" | "deadline"
 
+  // ── DSA Tracker ──────────────────────────────────────────────────────────
+  const [dsaProgress, setDsaProgress] = useState({}); // { "d1-283": { status:"pending"|"completed"|"struggled", note:"" } }
+
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
 
@@ -356,6 +398,7 @@ export default function QuestEngine() {
           setCustomQuests(d.customQuests || []);
           setBrainDump(d.brainDump || []);
           setRecurringDone(d.recurringDone || {});
+          setDsaProgress(d.dsaProgress || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -370,12 +413,12 @@ export default function QuestEngine() {
     async function save() {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, dsaProgress });
       } catch (e) { console.error("Save error", e); }
     }
     save();
     setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, dsaProgress, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -634,6 +677,61 @@ export default function QuestEngine() {
     showToast("🗑 Quest removed", "#94a3b8");
   };
 
+  // ── DSA Tracker handlers ─────────────────────────────────────────────────
+  const getDsaKey = (day, prob) => `d${day}-${prob}`;
+
+  const cycleDsaStatus = (day, prob, e) => {
+    const key = getDsaKey(day, prob);
+    const current = dsaProgress[key] || { status:"pending", note:"" };
+    const next = current.status === "pending" ? "completed" : current.status === "completed" ? "struggled" : "pending";
+
+    const prevStatus = current.status;
+    setDsaProgress(prev => ({ ...prev, [key]: { ...current, status: next } }));
+
+    const boss = getCurrentBoss(bossHp);
+    if (next === "completed") {
+      spawnParticle(e);
+      setXp(prev => prev + 15);
+      if (boss) setBossHp(prev => ({ ...prev, [boss.id]: Math.max(0, (prev[boss.id] ?? boss.hp) - 12) }));
+      showToast("+15 XP — Problem Solved! 🔥", "#34d399");
+    } else if (next === "struggled") {
+      setXp(prev => prev + 8);
+      if (boss) setBossHp(prev => ({ ...prev, [boss.id]: Math.max(0, (prev[boss.id] ?? boss.hp) - 6) }));
+      showToast("+8 XP — Logged as struggle 😤", "#f59e0b");
+    } else {
+      // reverting back to pending — remove any XP that was awarded
+      if (prevStatus === "completed") setXp(prev => Math.max(0, prev - 15));
+      else if (prevStatus === "struggled") setXp(prev => Math.max(0, prev - 8));
+    }
+  };
+
+  const updateDsaNote = (day, prob, note) => {
+    const key = getDsaKey(day, prob);
+    setDsaProgress(prev => ({ ...prev, [key]: { ...(prev[key] || { status:"struggled" }), note } }));
+  };
+
+  const getDsaPhaseStats = (phase) => {
+    const days = DSA_DAYS.filter(d => d.phase === phase);
+    let total = 0, done = 0, struggled = 0;
+    days.forEach(d => {
+      if (d.reviewDay || d.mockDay) { total += 1; const k = getDsaKey(d.day, "review"); const s = dsaProgress[k]?.status; if (s === "completed") done++; else if (s === "struggled") struggled++; return; }
+      d.problems.forEach(p => { total++; const s = dsaProgress[getDsaKey(d.day,p)]?.status; if (s === "completed") done++; else if (s === "struggled") struggled++; });
+    });
+    return { total, done, struggled };
+  };
+
+  const getAllStruggled = () => {
+    const result = [];
+    DSA_DAYS.forEach(d => {
+      if (d.reviewDay || d.mockDay) return;
+      d.problems.forEach(p => {
+        const key = getDsaKey(d.day, p);
+        if (dsaProgress[key]?.status === "struggled") result.push({ day: d.day, topic: d.topic, prob: p, note: dsaProgress[key]?.note || "" });
+      });
+    });
+    return result;
+  };
+
   const level = getCurrentLevel(xp);
   const nextLevel = getNextLevel(xp);
   const boss = getCurrentBoss(bossHp);
@@ -795,7 +893,7 @@ export default function QuestEngine() {
         <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["recurring","🔁 Weekly"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
+          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["recurring","🔁 Weekly"], ["dsa","🧩 DSA"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
               background: activeTab === tab ? level.color : "#0f172a",
@@ -1116,6 +1214,131 @@ export default function QuestEngine() {
             })}
           </div>
         )}
+
+        {/* ── DSA TRACKER TAB ── */}
+        {activeTab === "dsa" && (() => {
+          const struggled = getAllStruggled();
+          return (
+            <div>
+              {/* Phase progress bars */}
+              <div style={{ display:"flex", gap:8, marginBottom:14 }}>
+                {[1,2,3].map(ph => {
+                  const stats = getDsaPhaseStats(ph);
+                  const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
+                  const phColors = { 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
+                  return (
+                    <div key={ph} style={{ flex:1, background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px" }}>
+                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:phColors[ph], letterSpacing:1, marginBottom:4 }}>PHASE {ph}</div>
+                      <div style={{ fontSize:12, color:"#e2e8f0", marginBottom:6 }}>{stats.done}/{stats.total} <span style={{ color:"#64748b" }}>· {stats.struggled} 😤</span></div>
+                      <div style={{ height:5, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
+                        <div style={{ height:"100%", width:`${pct}%`, background:phColors[ph], borderRadius:99, transition:"width 0.3s" }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Revisit queue */}
+              {struggled.length > 0 && (
+                <div style={{ background:"#1a0a00", border:"1px solid #f97316aa", borderRadius:12, padding:14, marginBottom:14 }}>
+                  <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#f97316", letterSpacing:2, marginBottom:8 }}>😤 REVISIT QUEUE — {struggled.length} problem{struggled.length > 1 ? "s" : ""}</div>
+                  {struggled.map(s => (
+                    <div key={`${s.day}-${s.prob}`} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, fontSize:12 }}>
+                      <span style={{ color:"#64748b", width:52, flexShrink:0 }}>Day {s.day}</span>
+                      <a href={`https://leetcode.com/problems/${s.prob}`} target="_blank" rel="noopener noreferrer"
+                        style={{ color:"#f97316", fontWeight:700, textDecoration:"none" }}>#{s.prob}</a>
+                      <span style={{ color:"#94a3b8", flex:1 }}>{s.topic}</span>
+                      {s.note && <span style={{ color:"#475569", fontStyle:"italic", fontSize:11 }}>{s.note}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Day cards by phase */}
+              {[1,2,3].map(ph => {
+                const phaseDays = DSA_DAYS.filter(d => d.phase === ph);
+                const phColors = { 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
+                return (
+                  <div key={ph} style={{ marginBottom:18 }}>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:phColors[ph], letterSpacing:2, marginBottom:8 }}>
+                      {DSA_PHASE_LABELS[ph]}
+                    </div>
+                    {phaseDays.map(dayObj => {
+                      // For review/mock days, use a single "review" pseudo-problem
+                      if (dayObj.reviewDay || dayObj.mockDay) {
+                        const key = getDsaKey(dayObj.day, "review");
+                        const prog = dsaProgress[key] || { status:"pending", note:"" };
+                        const statusIcon = prog.status === "completed" ? "✅" : prog.status === "struggled" ? "😤" : "⬜";
+                        const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
+                        return (
+                          <div key={dayObj.day} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                              <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:"#475569", width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
+                              <span style={{ fontSize:12, color:"#94a3b8", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
+                              <span style={{ fontSize:11, color:"#64748b" }}>{dayObj.mockLabel || "Use revisit queue"}</span>
+                              <button onClick={(e) => cycleDsaStatus(dayObj.day, "review", e)} style={{
+                                background:"none", border:`1px solid ${statusColor}44`, borderRadius:6,
+                                padding:"2px 8px", cursor:"pointer", fontSize:14, color:statusColor
+                              }}>{statusIcon}</button>
+                            </div>
+                            {prog.status === "struggled" && (
+                              <input value={prog.note} placeholder="Where did you get stuck?"
+                                onChange={e => updateDsaNote(dayObj.day, "review", e.target.value)}
+                                style={{ marginTop:6, width:"100%", background:"#1e293b", border:"1px solid #334155",
+                                  borderRadius:6, padding:"5px 9px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none" }} />
+                            )}
+                          </div>
+                        );
+                      }
+
+                      // Normal problem day
+                      const dayDone = dayObj.problems.filter(p => dsaProgress[getDsaKey(dayObj.day,p)]?.status === "completed").length;
+                      const dayStruggled = dayObj.problems.filter(p => dsaProgress[getDsaKey(dayObj.day,p)]?.status === "struggled").length;
+
+                      return (
+                        <div key={dayObj.day} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
+                            <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:phColors[ph], width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
+                            <span style={{ fontSize:12, color:"#e2e8f0", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
+                            <span style={{ fontSize:11, color:"#64748b" }}>
+                              {dayDone}/{dayObj.problems.length} ✅{dayStruggled > 0 ? `  ${dayStruggled} 😤` : ""}
+                            </span>
+                          </div>
+                          {dayObj.problems.map(prob => {
+                            const key = getDsaKey(dayObj.day, prob);
+                            const prog = dsaProgress[key] || { status:"pending", note:"" };
+                            const statusIcon = prog.status === "completed" ? "✅" : prog.status === "struggled" ? "😤" : "⬜";
+                            const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
+                            return (
+                              <div key={prob}>
+                                <div style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 0", borderTop:"1px solid #1e293b" }}>
+                                  <a href={`https://leetcode.com/problems/all/?search=${prob}`} target="_blank" rel="noopener noreferrer"
+                                    style={{ color:"#60a5fa", fontSize:12, fontWeight:700, textDecoration:"none", width:40, flexShrink:0 }}>#{prob}</a>
+                                  <span style={{ flex:1 }} />
+                                  <button onClick={(e) => cycleDsaStatus(dayObj.day, prob, e)} style={{
+                                    background:"none", border:`1px solid ${statusColor}44`, borderRadius:6,
+                                    padding:"2px 8px", cursor:"pointer", fontSize:14, color:statusColor,
+                                    transition:"all 0.15s"
+                                  }}>{statusIcon}</button>
+                                </div>
+                                {prog.status === "struggled" && (
+                                  <input value={prog.note} placeholder="Note where you got stuck…"
+                                    onChange={e => updateDsaNote(dayObj.day, prob, e.target.value)}
+                                    style={{ marginBottom:4, width:"100%", background:"#1e293b", border:"1px solid #f9731644",
+                                      borderRadius:6, padding:"5px 9px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none" }} />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* ── ACHIEVEMENTS TAB ── */}
         {activeTab === "achievements" && (
