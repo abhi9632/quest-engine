@@ -330,10 +330,11 @@ export default function QuestEngine() {
   const [toast, setToast]             = useState(null);
   const [activeTab, setActiveTab]     = useState("quests");
   const [filter, setFilter]           = useState("all");
-  const [expandedWeek, setExpandedWeek] = useState("Week 4 · Mar 10–16");
+  const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
+  const [bossHitAnim, setBossHitAnim] = useState(false);
   const particleId = useRef(0);
 
   // ── Custom user-added deadlines & quests (persisted in Firebase) ─────────
@@ -346,6 +347,7 @@ export default function QuestEngine() {
   const [dlForm, setDlForm] = useState({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
   const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
   const [editingDlId, setEditingDlId] = useState(null);
+  const [editingQuestId, setEditingQuestId] = useState(null);
 
   // ── Pomodoro ──────────────────────────────────────────────────────────────
   const [pomodoroQuestId, setPomodoroQuestId] = useState(null);
@@ -356,14 +358,7 @@ export default function QuestEngine() {
   // ── Brain Dump ────────────────────────────────────────────────────────────
   const [brainDump, setBrainDump] = useState([]);
   const [dumpInput, setDumpInput] = useState("");
-
-  // ── Recurring tasks (stored in firebase) ─────────────────────────────────
-  const [recurringTasks, setRecurringTasks] = useState([
-    { id:"rt1", title:"📓 Weekly Review (10 min)", desc:"What did I complete? What slipped? What's urgent next week?", category:"academic", xp:50, dayOfWeek:0 },
-    { id:"rt2", title:"📋 Check Upcoming Deadlines", desc:"Open the Deadlines tab and review the next 7 days", category:"academic", xp:15, dayOfWeek:1 },
-    { id:"rt3", title:"⚔️ Complete 1 CCA Domain Quest", desc:"Spend 30 min on any CCA prep domain", category:"cca", xp:30, dayOfWeek:3 },
-  ]);
-  const [recurringDone, setRecurringDone] = useState({}); // { "rt1_2026-W12": true }
+  const [dumpConvert, setDumpConvert] = useState(null); // { entryId, category, week } — inline picker state
 
   // ── Quick capture ─────────────────────────────────────────────────────────
   const [showQuickCapture, setShowQuickCapture] = useState(false);
@@ -397,7 +392,6 @@ export default function QuestEngine() {
           setCustomDeadlines(d.customDeadlines || []);
           setCustomQuests(d.customQuests || []);
           setBrainDump(d.brainDump || []);
-          setRecurringDone(d.recurringDone || {});
           setDsaProgress(d.dsaProgress || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
@@ -408,17 +402,21 @@ export default function QuestEngine() {
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
+  // Debounced so rapid sequential state updates (e.g. after load) batch into
+  // a single write. merge:true ensures we never overwrite fields we didn't touch.
+  const saveTimerRef = useRef(null);
   useEffect(() => {
     if (!loaded) return;
-    async function save() {
+    setCompletedCount(Object.keys(completed).length);
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, dsaProgress });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress }, { merge: true });
       } catch (e) { console.error("Save error", e); }
-    }
-    save();
-    setCompletedCount(Object.keys(completed).length);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, recurringDone, dsaProgress, loaded]);
+    }, 600);
+    return () => clearTimeout(saveTimerRef.current);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -448,6 +446,8 @@ export default function QuestEngine() {
       const prevHp = bossHp[boss.id] ?? boss.hp;
       const newHp = Math.max(0, prevHp - quest.bossDmg);
       setBossHp(prev => ({ ...prev, [boss.id]: newHp }));
+      setBossHitAnim(true);
+      setTimeout(() => setBossHitAnim(false), 600);
       if (newHp === 0 && prevHp > 0) {
         // Find next boss to announce
         const bossIdx = BOSSES.findIndex(b => b.id === boss.id);
@@ -543,27 +543,15 @@ export default function QuestEngine() {
     setDumpInput("");
   };
   const deleteDumpEntry = (id) => setBrainDump(prev => prev.filter(e => e.id !== id));
-  const convertDumpToQuest = (entry) => {
-    const newQ = { id:`cq_${Date.now()}`, week:"Custom", category:"academic", title: entry.text, desc:"From brain dump", xp:30, bossDmg:24, urgent:false };
+  const confirmDumpConvert = (entry) => {
+    const cat = dumpConvert?.category || "academic";
+    const wk  = dumpConvert?.week    || "Custom";
+    const newQ = { id:`cq_${Date.now()}`, week: wk, category: cat, title: entry.text, desc:"From brain dump", xp:30, bossDmg:24, urgent:false };
     setCustomQuests(prev => [...prev, newQ]);
     deleteDumpEntry(entry.id);
+    setDumpConvert(null);
     showToast("⚔️ Converted to quest!", "#34d399");
   };
-
-  // ── Recurring tasks helpers ───────────────────────────────────────────────
-  const getWeekKey = () => {
-    const now = new Date();
-    const jan1 = new Date(now.getFullYear(), 0, 1);
-    const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-    return `${now.getFullYear()}-W${week}`;
-  };
-  const completeRecurring = (task) => {
-    const key = `${task.id}_${getWeekKey()}`;
-    setRecurringDone(prev => ({ ...prev, [key]: true }));
-    setXp(prev => prev + task.xp);
-    showToast(`+${task.xp} XP — recurring task done!`, "#34d399");
-  };
-  const isDayUnlocked = (dayOfWeek) => new Date().getDay() >= dayOfWeek;
 
   // ── Quick capture ─────────────────────────────────────────────────────────
   const submitQuickCapture = () => {
@@ -677,6 +665,31 @@ export default function QuestEngine() {
     showToast("🗑 Quest removed", "#94a3b8");
   };
 
+  // ── Edit custom quest ─────────────────────────────────────────────────────
+  const startEditQuest = (q) => {
+    setQForm({ title: q.title, desc: q.desc || "", category: q.category, xp: String(q.xp), week: q.week, link: q.link || "", urgent: q.urgent || false });
+    setEditingQuestId(q.id);
+    setShowAddQuest(true);
+  };
+  const saveEditQuest = () => {
+    if (!qForm.title.trim()) return;
+    setCustomQuests(prev => prev.map(q => q.id === editingQuestId ? {
+      ...q,
+      title: qForm.title.trim(),
+      desc: qForm.desc.trim(),
+      category: qForm.category,
+      xp: parseInt(qForm.xp) || 30,
+      bossDmg: Math.round((parseInt(qForm.xp) || 30) * 0.8),
+      week: qForm.week.trim() || "Custom",
+      link: qForm.link.trim() || undefined,
+      urgent: qForm.urgent,
+    } : q));
+    setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+    setEditingQuestId(null);
+    setShowAddQuest(false);
+    showToast("✏️ Quest updated!", "#34d399");
+  };
+
   // ── DSA Tracker handlers ─────────────────────────────────────────────────
   const getDsaKey = (day, prob) => `d${day}-${prob}`;
 
@@ -743,6 +756,16 @@ export default function QuestEngine() {
   const weeks = [...new Set(QUESTS.map(q => q.week))];
   const filtered = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
+
+  // Auto-detect current/most-relevant week: first week that has any incomplete quest
+  const currentWeek = (() => {
+    for (const w of weeks) {
+      if (QUESTS.filter(q => q.week === w).some(q => !completed[q.id])) return w;
+    }
+    return weeks[weeks.length - 1];
+  })();
+  // Resolve which week is open: expandedWeek state (null means auto)
+  const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
     <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden" }}>
@@ -862,6 +885,7 @@ export default function QuestEngine() {
         {boss ? (
           <div style={{
             background: "#0f172a", border: "1px solid #450a0a", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
+            animation: bossHitAnim ? "bossHit 0.6s ease-out" : "none",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
@@ -893,7 +917,7 @@ export default function QuestEngine() {
         <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["recurring","🔁 Weekly"], ["dsa","🧩 DSA"], ["achievements","🏆 Wins"], ["stats","📊 Stats"]].map(([tab, label]) => (
+          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["dsa","🧩 DSA"], ["stats","📊 Stats"]].map(([tab, label]) => (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
               background: activeTab === tab ? level.color : "#0f172a",
@@ -909,7 +933,7 @@ export default function QuestEngine() {
           <div>
             {/* Add Quest button */}
             <div style={{ display:"flex", justifyContent:"flex-end", marginBottom: 10 }}>
-              <button onClick={() => setShowAddQuest(v => !v)} style={{
+              <button onClick={() => { setShowAddQuest(v => !v); if (showAddQuest) { setEditingQuestId(null); setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false }); } }} style={{
                 background: showAddQuest ? "#334155" : "#064e3b", border: "1px solid #34d39944",
                 color: "#34d399", borderRadius: 8, padding: "5px 12px", fontSize: 12,
                 fontWeight: 700, cursor: "pointer", fontFamily: "inherit"
@@ -919,7 +943,7 @@ export default function QuestEngine() {
             {/* ── Add Quest Form ── */}
             {showAddQuest && (
               <div style={{ background: "#0f172a", border: "1px solid #34d39944", borderRadius: 12, padding: 14, marginBottom: 14 }}>
-                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#34d399", letterSpacing: 1, marginBottom: 10 }}>NEW QUEST</div>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize: 13, color: "#34d399", letterSpacing: 1, marginBottom: 10 }}>{editingQuestId ? "✏️ EDIT QUEST" : "NEW QUEST"}</div>
                 {[
                   { label:"Title *", key:"title", placeholder:"e.g. Read assigned paper" },
                   { label:"Description", key:"desc", placeholder:"What exactly needs to be done" },
@@ -957,11 +981,11 @@ export default function QuestEngine() {
                     style={{ accentColor:"#ef4444", width:14, height:14 }} />
                   <label htmlFor="urgentCheck" style={{ fontSize:12, color:"#94a3b8", cursor:"pointer" }}>Mark as URGENT</label>
                 </div>
-                <button onClick={addQuest} style={{
+                <button onClick={editingQuestId ? saveEditQuest : addQuest} style={{
                   width:"100%", background:"#064e3b", border:"1px solid #34d399",
                   color:"#34d399", borderRadius:8, padding:"8px", fontSize:13,
                   fontWeight:700, cursor:"pointer", fontFamily:"inherit", letterSpacing:0.5
-                }}>⚔️ ADD QUEST</button>
+                }}>{editingQuestId ? "✏️ SAVE QUEST" : "⚔️ ADD QUEST"}</button>
               </div>
             )}
 
@@ -1039,7 +1063,9 @@ export default function QuestEngine() {
                     return (
                       <div key={quest.id} style={{
                         padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
-                        background: done ? "#0d1a0d" : "#080c14", display: "flex", alignItems: "center", gap: 12
+                        background: done ? "#0d1a0d" : pomodoroQuestId === quest.id ? "#1a1400" : "#080c14",
+                        display: "flex", alignItems: "center", gap: 12,
+                        outline: pomodoroQuestId === quest.id ? "1px solid #f59e0b44" : "none"
                       }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0 }}>
                           <button className="quest-btn" onClick={(e) => done ? null : completeQuest(quest, e)} disabled={done} style={{
@@ -1072,6 +1098,11 @@ export default function QuestEngine() {
                               background:"none", border:"none", cursor:"pointer", fontSize:11, color: pomodoroQuestId === quest.id ? "#f59e0b" : "#475569", padding:0
                             }}>⏱</button>
                           )}
+                          <button onClick={() => startEditQuest(quest)} style={{
+                            background:"none", border:"none", cursor:"pointer", fontSize:11, color:"#475569", padding:0
+                          }} onMouseEnter={e=>e.target.style.color="#60a5fa"} onMouseLeave={e=>e.target.style.color="#475569"}>
+                            ✏️
+                          </button>
                           <button onClick={() => deleteQuest(quest.id)} style={{
                             background:"none", border:"none", cursor:"pointer", fontSize:11, color:"#475569", padding:0
                           }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#475569"}>
@@ -1090,18 +1121,23 @@ export default function QuestEngine() {
               const weekQuests = filtered.filter(q => q.week === week);
               if (!weekQuests.length) return null;
               const weekDone = weekQuests.filter(q => completed[q.id]).length;
-              const isOpen = expandedWeek === week;
+              const isOpen = openWeek === week;
+              const isCurrent = week === currentWeek;
               return (
                 <div key={week} style={{ marginBottom: 10 }}>
                   <div className="week-header" onClick={() => setExpandedWeek(isOpen ? null : week)} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    padding: "11px 16px", background: "#0f172a", borderRadius: isOpen ? "10px 10px 0 0" : 10,
-                    border: "1px solid #1e293b", transition: "all 0.15s"
+                    padding: "11px 16px", background: isCurrent ? "#0f1f1a" : "#0f172a",
+                    borderRadius: isOpen ? "10px 10px 0 0" : 10,
+                    border: `1px solid ${isCurrent ? "#34d39966" : "#1e293b"}`, transition: "all 0.15s"
                   }}>
                     <div>
-                      <span style={{ fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, color: weekDone === weekQuests.length ? "#34d399" : "#e2e8f0" }}>
+                      <span style={{ fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, color: weekDone === weekQuests.length ? "#34d399" : isCurrent ? "#34d399" : "#e2e8f0" }}>
                         {weekDone === weekQuests.length ? "✅ " : ""}{week}
                       </span>
+                      {isCurrent && weekDone < weekQuests.length && (
+                        <span style={{ marginLeft: 8, fontSize: 10, background: "#064e3b", color: "#34d399", padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>THIS WEEK</span>
+                      )}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <span style={{ fontSize: 11, color: "#64748b" }}>{weekDone}/{weekQuests.length}</span>
@@ -1120,8 +1156,11 @@ export default function QuestEngine() {
                         return (
                           <div key={quest.id} style={{
                             padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
-                            background: done ? "#0d1a0d" : "#080c14", display: "flex", alignItems: "center", gap: 12,
-                            transition: "background 0.2s"
+                            background: done ? "#0d1a0d" : pomodoroQuestId === quest.id ? "#1a1400" : "#080c14",
+                            display: "flex", alignItems: "center", gap: 12,
+                            transition: "background 0.2s",
+                            outline: pomodoroQuestId === quest.id ? "1px solid #f59e0b44" : "none",
+                            borderRadius: i === 0 ? "0" : "0"
                           }}>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0 }}>
                               <button className="quest-btn" onClick={(e) => done ? null : completeQuest(quest, e)} disabled={done} style={{
@@ -1218,6 +1257,23 @@ export default function QuestEngine() {
         {/* ── DSA TRACKER TAB ── */}
         {activeTab === "dsa" && (() => {
           const struggled = getAllStruggled();
+          // Current day = first day that has any non-pending problem
+          // or first day that isn't fully completed
+          const dsaCurrentDay = (() => {
+            for (const d of DSA_DAYS) {
+              if (d.reviewDay || d.mockDay) {
+                const k = getDsaKey(d.day, "review");
+                if (!dsaProgress[k] || dsaProgress[k].status === "pending") return d.day;
+              } else {
+                const allDone = d.problems.every(p => {
+                  const s = dsaProgress[getDsaKey(d.day, p)]?.status;
+                  return s === "completed" || s === "struggled";
+                });
+                if (!allDone) return d.day;
+              }
+            }
+            return 28;
+          })();
           return (
             <div>
               {/* Phase progress bars */}
@@ -1264,6 +1320,7 @@ export default function QuestEngine() {
                       {DSA_PHASE_LABELS[ph]}
                     </div>
                     {phaseDays.map(dayObj => {
+                      const isCurrentDay = dayObj.day === dsaCurrentDay;
                       // For review/mock days, use a single "review" pseudo-problem
                       if (dayObj.reviewDay || dayObj.mockDay) {
                         const key = getDsaKey(dayObj.day, "review");
@@ -1271,7 +1328,7 @@ export default function QuestEngine() {
                         const statusIcon = prog.status === "completed" ? "✅" : prog.status === "struggled" ? "😤" : "⬜";
                         const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
                         return (
-                          <div key={dayObj.day} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
+                          <div key={dayObj.day} style={{ background: isCurrentDay ? "#0f1f2e" : "#0f172a", border: isCurrentDay ? "1px solid #60a5fa88" : "1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
                             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                               <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:"#475569", width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
                               <span style={{ fontSize:12, color:"#94a3b8", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
@@ -1296,10 +1353,11 @@ export default function QuestEngine() {
                       const dayStruggled = dayObj.problems.filter(p => dsaProgress[getDsaKey(dayObj.day,p)]?.status === "struggled").length;
 
                       return (
-                        <div key={dayObj.day} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
+                        <div key={dayObj.day} style={{ background: isCurrentDay ? "#0f1f2e" : "#0f172a", border: isCurrentDay ? "1px solid #60a5fa88" : "1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
                           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
-                            <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:phColors[ph], width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
+                            <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color: isCurrentDay ? "#60a5fa" : phColors[ph], width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
                             <span style={{ fontSize:12, color:"#e2e8f0", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
+                            {isCurrentDay && <span style={{ fontSize:10, background:"#1e3a5f", color:"#60a5fa", padding:"1px 5px", borderRadius:4, fontWeight:700 }}>TODAY</span>}
                             <span style={{ fontSize:11, color:"#64748b" }}>
                               {dayDone}/{dayObj.problems.length} ✅{dayStruggled > 0 ? `  ${dayStruggled} 😤` : ""}
                             </span>
@@ -1340,36 +1398,23 @@ export default function QuestEngine() {
           );
         })()}
 
-        {/* ── ACHIEVEMENTS TAB ── */}
-        {activeTab === "achievements" && (
-          <div>
-            {ACHIEVEMENTS.map(a => {
-              const unlocked = unlockedAchievements.find(u => u.id === a.id);
-              return (
-                <div key={a.id} style={{
-                  background: "#0f172a", border: `1px solid ${unlocked ? "#34d39944" : "#1e293b"}`,
-                  borderRadius: 12, padding: "14px 16px", marginBottom: 8,
-                  display: "flex", alignItems: "center", gap: 14,
-                  opacity: unlocked ? 1 : 0.45
-                }}>
-                  <div style={{ fontSize: 28 }}>{unlocked ? a.icon : "🔒"}</div>
-                  <div>
-                    <div style={{ fontFamily: "'Bebas Neue'", fontSize: 16, color: unlocked ? "#e2e8f0" : "#475569", letterSpacing: 0.5 }}>{a.title}</div>
-                    <div style={{ fontSize: 12, color: "#64748b" }}>{a.desc}</div>
-                  </div>
-                  {unlocked && <div style={{ marginLeft: "auto", fontSize: 10, background: "#064e3b", color: "#34d399", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>UNLOCKED</div>}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* ── DEADLINES TAB ── */}
         {activeTab === "deadlines" && (
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: 12 }}>
-              <div style={{ fontSize: 12, color: "#64748b" }}>
-                <span style={{ color: "#f59e0b" }}>🟡 &lt;14d</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7d</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3d</span>
+              <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                <div style={{ fontSize: 12, color: "#64748b" }}>
+                  <span style={{ color: "#f59e0b" }}>🟡 &lt;14d</span> · <span style={{ color: "#f97316" }}>🟠 &lt;7d</span> · <span style={{ color: "#ef4444" }}>🔴 &lt;3d</span>
+                </div>
+                {customDeadlines.some(d => Math.round((new Date(d.date) - new Date().setHours(0,0,0,0)) / 86400000) < 0) && (
+                  <button onClick={() => {
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    setCustomDeadlines(prev => prev.filter(d => Math.round((new Date(d.date) - today) / 86400000) >= 0));
+                    showToast("🗑 Past deadlines cleared", "#94a3b8");
+                  }} style={{ background:"#1e293b", border:"1px solid #334155", color:"#64748b", borderRadius:6, padding:"3px 8px", fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+                    🗑 Clear Past
+                  </button>
+                )}
               </div>
               <button onClick={() => { setShowAddDeadline(v => !v); if (showAddDeadline) { setEditingDlId(null); setDlForm({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" }); } }} style={{
                 background: showAddDeadline ? "#334155" : "#1e3a5f", border: "1px solid #60a5fa44",
@@ -1573,96 +1618,51 @@ export default function QuestEngine() {
             )}
 
             {brainDump.map(entry => (
-              <div key={entry.id} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:12, padding:"12px 14px", marginBottom:8, display:"flex", alignItems:"flex-start", gap:10 }}>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:13, color:"#e2e8f0", lineHeight:1.4 }}>{entry.text}</div>
-                  <div style={{ fontSize:10, color:"#334155", marginTop:4 }}>{entry.ts}</div>
+              <div key={entry.id} style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:12, padding:"12px 14px", marginBottom:8 }}>
+                <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:13, color:"#e2e8f0", lineHeight:1.4 }}>{entry.text}</div>
+                    <div style={{ fontSize:10, color:"#334155", marginTop:4 }}>{entry.ts}</div>
+                  </div>
+                  <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+                    <button onClick={() => setDumpConvert(dumpConvert?.entryId === entry.id ? null : { entryId:entry.id, category:"academic", week:"Custom" })} style={{
+                      background: dumpConvert?.entryId === entry.id ? "#1e293b" : "#064e3b",
+                      border:"1px solid #34d39944", borderRadius:6, padding:"3px 8px",
+                      color:"#34d399", fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"inherit"
+                    }}>→ Quest</button>
+                    <button onClick={() => deleteDumpEntry(entry.id)} style={{
+                      background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#334155"
+                    }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#334155"}>🗑</button>
+                  </div>
                 </div>
-                <div style={{ display:"flex", gap:8, flexShrink:0 }}>
-                  <button onClick={() => convertDumpToQuest(entry)} title="Convert to quest" style={{
-                    background:"#064e3b", border:"1px solid #34d39944", borderRadius:6, padding:"3px 8px",
-                    color:"#34d399", fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"inherit"
-                  }}>→ Quest</button>
-                  <button onClick={() => deleteDumpEntry(entry.id)} style={{
-                    background:"none", border:"none", cursor:"pointer", fontSize:13, color:"#334155"
-                  }} onMouseEnter={e=>e.target.style.color="#f87171"} onMouseLeave={e=>e.target.style.color="#334155"}>🗑</button>
-                </div>
+                {/* Inline picker */}
+                {dumpConvert?.entryId === entry.id && (
+                  <div style={{ marginTop:10, padding:"10px 12px", background:"#1e293b", borderRadius:8, display:"flex", flexDirection:"column", gap:8 }}>
+                    <div style={{ display:"flex", gap:8 }}>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:10, color:"#475569", marginBottom:3, letterSpacing:0.5 }}>CATEGORY</div>
+                        <select value={dumpConvert.category} onChange={e => setDumpConvert(p => ({...p, category:e.target.value}))}
+                          style={{ width:"100%", background:"#0f172a", border:"1px solid #334155", borderRadius:6, padding:"5px 8px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none" }}>
+                          {Object.entries(CATEGORY_META).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+                        </select>
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:10, color:"#475569", marginBottom:3, letterSpacing:0.5 }}>WEEK</div>
+                        <select value={dumpConvert.week} onChange={e => setDumpConvert(p => ({...p, week:e.target.value}))}
+                          style={{ width:"100%", background:"#0f172a", border:"1px solid #334155", borderRadius:6, padding:"5px 8px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none" }}>
+                          <option value="Custom">Custom</option>
+                          {weeks.map(w => <option key={w} value={w}>{w}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <button onClick={() => confirmDumpConvert(entry)} style={{
+                      background:"#064e3b", border:"1px solid #34d399", borderRadius:6, padding:"6px 0",
+                      color:"#34d399", fontWeight:700, fontSize:12, cursor:"pointer", fontFamily:"inherit"
+                    }}>✓ Confirm Convert</button>
+                  </div>
+                )}
               </div>
             ))}
-          </div>
-        )}
-
-        {/* ── RECURRING TASKS TAB ── */}
-        {activeTab === "recurring" && (
-          <div>
-            <div style={{ fontSize:12, color:"#64748b", marginBottom:14 }}>Weekly tasks that reset every Monday. Tick them once per week.</div>
-
-            {/* Weekly Review — Sunday unlock */}
-            {(() => {
-              const today = new Date().getDay(); // 0=Sun
-              const isWeekend = today === 0 || today === 6;
-              return (
-                <div style={{ background:"#0f172a", border:`1px solid ${isWeekend ? "#f59e0b88" : "#1e293b"}`, borderRadius:14, padding:16, marginBottom:10 }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
-                    <div style={{ flex:1 }}>
-                      <div style={{ display:"flex", gap:6, alignItems:"center", marginBottom:4, flexWrap:"wrap" }}>
-                        {isWeekend && <span style={{ fontSize:10, background:"#451a03", color:"#f59e0b", padding:"1px 7px", borderRadius:4, fontWeight:700 }}>UNLOCKED SUNDAY</span>}
-                        <span style={{ fontSize:10, background:"#064e3b", color:"#34d399", padding:"1px 7px", borderRadius:4, fontWeight:700 }}>📊 Weekly Review</span>
-                      </div>
-                      <div style={{ fontSize:14, fontWeight:700, color: isWeekend ? "#e2e8f0" : "#475569" }}>📊 Weekly Review (10 min)</div>
-                      <div style={{ fontSize:12, color:"#64748b", marginTop:2 }}>What did I finish? What slipped? What must happen next week?</div>
-                    </div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:"#f59e0b", flexShrink:0 }}>+50 XP</div>
-                  </div>
-                  {isWeekend ? (
-                    (() => {
-                      const key = `weekly_review_${getWeekKey()}`;
-                      const done = recurringDone[key];
-                      return done ? (
-                        <div style={{ fontSize:12, color:"#34d399", fontWeight:700 }}>✅ Done this week!</div>
-                      ) : (
-                        <button onClick={() => { setRecurringDone(p => ({...p, [key]:true})); setXp(x => x+50); showToast("+50 XP — Weekly review done!", "#f59e0b"); }} style={{
-                          width:"100%", background:"#451a03", border:"1px solid #f59e0b", borderRadius:8,
-                          color:"#f59e0b", fontWeight:700, fontSize:13, padding:"7px", cursor:"pointer", fontFamily:"inherit"
-                        }}>✓ Mark Weekly Review Done</button>
-                      );
-                    })()
-                  ) : (
-                    <div style={{ fontSize:11, color:"#334155" }}>🔒 Unlocks on Sunday</div>
-                  )}
-                </div>
-              );
-            })()}
-
-            {/* Other recurring tasks */}
-            {recurringTasks.map(task => {
-              const key = `${task.id}_${getWeekKey()}`;
-              const done = !!recurringDone[key];
-              const unlocked = isDayUnlocked(task.dayOfWeek);
-              const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-              const cat = CATEGORY_META[task.category] || CATEGORY_META.academic;
-              return (
-                <div key={task.id} style={{ background:"#0f172a", border:`1px solid ${done ? "#34d39944" : unlocked ? "#1e293b" : "#0f172a"}`, borderRadius:14, padding:14, marginBottom:8, opacity: unlocked ? 1 : 0.45 }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
-                    <button onClick={() => !done && unlocked && completeRecurring(task)} disabled={done || !unlocked} style={{
-                      width:28, height:28, borderRadius:8, flexShrink:0, cursor: (done || !unlocked) ? "default" : "pointer",
-                      border: done ? "2px solid #34d399" : `2px solid ${cat.color}`,
-                      background: done ? "#34d399" : "transparent",
-                      fontSize:13, color: done ? "#000" : cat.color, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center"
-                    }}>{done ? "✓" : "○"}</button>
-                    <div style={{ flex:1 }}>
-                      <div style={{ display:"flex", gap:6, marginBottom:3, flexWrap:"wrap" }}>
-                        <span style={{ fontSize:10, background: cat.bg, color: cat.color, padding:"1px 6px", borderRadius:4, fontWeight:700 }}>{cat.label}</span>
-                        <span style={{ fontSize:10, color:"#334155" }}>Unlocks {days[task.dayOfWeek]}</span>
-                      </div>
-                      <div style={{ fontSize:14, fontWeight:700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none" }}>{task.title}</div>
-                      <div style={{ fontSize:12, color:"#64748b", marginTop:1 }}>{task.desc}</div>
-                    </div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color: done ? "#475569" : "#34d399", flexShrink:0 }}>+{task.xp}</div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         )}
 
@@ -1748,6 +1748,28 @@ export default function QuestEngine() {
                   <span>{rule}</span>
                 </div>
               ))}
+            </div>
+
+            {/* ── Achievements (merged from Wins tab) ── */}
+            <div style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:14, padding:16, marginBottom:10 }}>
+              <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#34d399", letterSpacing:2, marginBottom:12 }}>🏆 ACHIEVEMENTS</div>
+              {ACHIEVEMENTS.map(a => {
+                const unlocked = unlockedAchievements.find(u => u.id === a.id);
+                return (
+                  <div key={a.id} style={{
+                    background:"#080c14", border:`1px solid ${unlocked ? "#34d39944" : "#1e293b"}`,
+                    borderRadius:10, padding:"10px 14px", marginBottom:8,
+                    display:"flex", alignItems:"center", gap:12, opacity: unlocked ? 1 : 0.4
+                  }}>
+                    <div style={{ fontSize:24 }}>{unlocked ? a.icon : "🔒"}</div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color: unlocked ? "#e2e8f0" : "#475569", letterSpacing:0.5 }}>{a.title}</div>
+                      <div style={{ fontSize:11, color:"#64748b" }}>{a.desc}</div>
+                    </div>
+                    {unlocked && <div style={{ fontSize:10, background:"#064e3b", color:"#34d399", padding:"2px 8px", borderRadius:6, fontWeight:700, flexShrink:0 }}>UNLOCKED</div>}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
