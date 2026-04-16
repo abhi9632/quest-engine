@@ -228,6 +228,51 @@ const DEADLINES = [
   },
 ];
 
+// LeetCode problem number → title slug for direct URL
+const LC_SLUGS = {
+  1:"two-sum", 2:"add-two-numbers", 3:"longest-substring-without-repeating-characters",
+  11:"container-with-most-water", 15:"3sum", 19:"remove-nth-node-from-end-of-list",
+  20:"valid-parentheses", 21:"merge-two-sorted-lists", 23:"merge-k-sorted-lists",
+  26:"remove-duplicates-from-sorted-array", 33:"search-in-rotated-sorted-array",
+  35:"search-insert-position", 39:"combination-sum", 46:"permutations",
+  49:"group-anagrams", 53:"maximum-subarray", 62:"unique-paths", 63:"unique-paths-ii",
+  63:"unique-paths-ii", 70:"climbing-stairs", 74:"search-a-2d-matrix",
+  78:"subsets", 79:"word-search", 91:"decode-ways", 98:"validate-binary-search-tree",
+  100:"same-tree", 102:"binary-tree-level-order-traversal",
+  103:"binary-tree-zigzag-level-order-traversal", 104:"maximum-depth-of-binary-tree",
+  107:"binary-tree-level-order-traversal-ii", 112:"path-sum",
+  121:"best-time-to-buy-and-sell-stock", 124:"binary-tree-maximum-path-sum",
+  125:"valid-palindrome", 128:"longest-consecutive-sequence",
+  133:"clone-graph", 139:"word-break", 141:"linked-list-cycle",
+  143:"reorder-list", 153:"find-minimum-in-rotated-sorted-array",
+  155:"min-stack", 160:"intersection-of-two-linked-lists",
+  162:"find-peak-element", 167:"two-sum-ii-input-array-is-sorted",
+  189:"rotate-array", 198:"house-robber", 199:"binary-tree-right-side-view",
+  200:"number-of-islands", 206:"reverse-linked-list", 207:"course-schedule",
+  209:"minimum-size-subarray-sum", 210:"course-schedule-ii",
+  215:"kth-largest-element-in-an-array", 217:"contains-duplicate",
+  225:"implement-stack-using-queues", 226:"invert-binary-tree",
+  230:"kth-smallest-element-in-a-bst", 232:"implement-queue-using-stacks",
+  236:"lowest-common-ancestor-of-a-binary-tree", 242:"valid-anagram",
+  257:"binary-tree-paths", 278:"first-bad-version", 283:"move-zeroes",
+  286:"walls-and-gates", 295:"find-median-from-data-stream",
+  300:"longest-increasing-subsequence", 309:"best-time-to-buy-and-sell-stock-with-cooldown",
+  322:"coin-change", 33:"search-in-rotated-sorted-array",
+  33:"search-in-rotated-sorted-array", 339:"nested-list-weight-sum",
+  344:"reverse-string", 346:"moving-average-from-data-stream",
+  347:"top-k-frequent-elements", 374:"guess-number-higher-or-lower",
+  387:"first-unique-character-in-a-string", 416:"partition-equal-subset-sum",
+  417:"pacific-atlantic-water-flow", 424:"longest-repeating-character-replacement",
+  46:"permutations", 485:"max-consecutive-ones", 494:"target-sum",
+  543:"diameter-of-binary-tree", 560:"subarray-sum-equals-k",
+  643:"maximum-average-subarray-i", 695:"max-area-of-island",
+  700:"search-in-a-binary-search-tree", 701:"insert-into-a-binary-search-tree",
+  704:"binary-search", 739:"daily-temperatures", 876:"middle-of-the-linked-list",
+  933:"number-of-recent-calls", 994:"rotting-oranges",
+  1143:"longest-common-subsequence",
+};
+const lcUrl = (num) => LC_SLUGS[num] ? `https://leetcode.com/problems/${LC_SLUGS[num]}/` : `https://leetcode.com/problems/all/?search=${num}`;
+
 // ─── DSA TRACKER ────────────────────────────────────────────────────────────
 
 const DSA_DAYS = [
@@ -386,6 +431,10 @@ export default function QuestEngine() {
         const snap = await getDoc(ref);
         if (snap.exists()) {
           const d = snap.data();
+          // Batch all state updates synchronously so save effect never fires
+          // with partial state. setLoaded(true) is called last, after all setters,
+          // inside a flushSync-style pattern using a local flag checked by the
+          // save effect via the `loaded` state which only flips after this block.
           setXp(d.xp || 0);
           setCompleted(d.completed || {});
           setBossHp(d.bossHp || {});
@@ -396,25 +445,33 @@ export default function QuestEngine() {
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
+      // setLoaded must be LAST — save effect guards on this flag
       setLoaded(true);
     }
     load();
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
-  // Debounced so rapid sequential state updates (e.g. after load) batch into
-  // a single write. merge:true ensures we never overwrite fields we didn't touch.
+  // Uses a 1200ms debounce so the burst of setState calls from load() all
+  // settle before the first write. merge:true means a partial-state save
+  // can never wipe unrelated fields.
   const saveTimerRef = useRef(null);
+  const loadedRef = useRef(false);
+  useEffect(() => { loadedRef.current = loaded; }, [loaded]);
+
   useEffect(() => {
     if (!loaded) return;
     setCompletedCount(Object.keys(completed).length);
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
+      // Double-check via ref in case effect closed over stale loaded=true
+      // while another load() is still running (e.g. hot-reload)
+      if (!loadedRef.current) return;
       try {
         const ref = doc(db, "users", STORAGE_KEY);
         await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress }, { merge: true });
       } catch (e) { console.error("Save error", e); }
-    }, 600);
+    }, 1200);
     return () => clearTimeout(saveTimerRef.current);
   }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, loaded]);
 
@@ -757,14 +814,26 @@ export default function QuestEngine() {
   const filtered = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
 
-  // Auto-detect current/most-relevant week: first week that has any incomplete quest
+  // Derive current week from real calendar date.
+  // Week labels format: "Week N · Mon DD–DD" — extract N and match to today.
+  // Each week is 7 days. Week 1 started Mon 10 Mar 2025 (first quest week).
   const currentWeek = (() => {
+    const WEEK1_START = new Date("2025-03-10"); // Monday of Week 1
+    const today = new Date();
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const weekNum = Math.floor((today - WEEK1_START) / msPerWeek) + 1;
+    // Find the matching week label; fall back to first incomplete week
+    const calWeekLabel = weeks.find(w => {
+      const m = w.match(/Week\s+(\d+)/i);
+      return m && parseInt(m[1]) === weekNum;
+    });
+    if (calWeekLabel) return calWeekLabel;
+    // Fallback: first week with any incomplete quest
     for (const w of weeks) {
       if (QUESTS.filter(q => q.week === w).some(q => !completed[q.id])) return w;
     }
     return weeks[weeks.length - 1];
   })();
-  // Resolve which week is open: expandedWeek state (null means auto)
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
@@ -1301,7 +1370,7 @@ export default function QuestEngine() {
                   {struggled.map(s => (
                     <div key={`${s.day}-${s.prob}`} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, fontSize:12 }}>
                       <span style={{ color:"#64748b", width:52, flexShrink:0 }}>Day {s.day}</span>
-                      <a href={`https://leetcode.com/problems/${s.prob}`} target="_blank" rel="noopener noreferrer"
+                      <a href={lcUrl(s.prob)} target="_blank" rel="noopener noreferrer"
                         style={{ color:"#f97316", fontWeight:700, textDecoration:"none" }}>#{s.prob}</a>
                       <span style={{ color:"#94a3b8", flex:1 }}>{s.topic}</span>
                       {s.note && <span style={{ color:"#475569", fontStyle:"italic", fontSize:11 }}>{s.note}</span>}
@@ -1370,7 +1439,7 @@ export default function QuestEngine() {
                             return (
                               <div key={prob}>
                                 <div style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 0", borderTop:"1px solid #1e293b" }}>
-                                  <a href={`https://leetcode.com/problems/all/?search=${prob}`} target="_blank" rel="noopener noreferrer"
+                                  <a href={lcUrl(prob)} target="_blank" rel="noopener noreferrer"
                                     style={{ color:"#60a5fa", fontSize:12, fontWeight:700, textDecoration:"none", width:40, flexShrink:0 }}>#{prob}</a>
                                   <span style={{ flex:1 }} />
                                   <button onClick={(e) => cycleDsaStatus(dayObj.day, prob, e)} style={{
