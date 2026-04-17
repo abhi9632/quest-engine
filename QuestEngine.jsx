@@ -374,7 +374,8 @@ export default function QuestEngine() {
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
   const [activeTab, setActiveTab]     = useState("quests");
-  const [filter, setFilter]           = useState("all");
+  const [filter, setFilter]           = useState(() => localStorage.getItem("qe_filter") || "all");
+  const setFilterPersist = (f) => { setFilter(f); localStorage.setItem("qe_filter", f); };
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
@@ -535,30 +536,21 @@ export default function QuestEngine() {
     if (!completed[quest.id]) return;
     const newXp = Math.max(0, xp - quest.xp);
 
-    // Find the boss to restore HP to:
-    // Priority 1 — last defeated boss (hp===0), i.e. the most recently killed one
-    // Priority 2 — current active boss (first with hp > 0)
-    const lastDefeated = [...BOSSES].reverse().find(b => (bossHp[b.id] ?? b.hp) === 0);
+    // Restore HP to the currently active boss (first with HP > 0).
+    // If no active boss (all defeated), restore to the last defeated boss
+    // since that is the one this quest most recently damaged.
     const currentActive = getCurrentBoss(bossHp);
-    const bossToRestore = lastDefeated || currentActive;
+    const lastDefeated  = [...BOSSES].reverse().find(b => (bossHp[b.id] ?? b.hp) === 0);
+    const bossToRestore = currentActive || lastDefeated;
 
     setXp(newXp);
     setCompleted(prev => { const next = { ...prev }; delete next[quest.id]; return next; });
     setBossHp(prev => {
       const next = { ...prev };
-      // Restore HP to the target boss
       if (bossToRestore) {
         const prevHp = next[bossToRestore.id] ?? bossToRestore.hp;
         next[bossToRestore.id] = Math.min(bossToRestore.hp, prevHp + quest.bossDmg);
       }
-      // Reset HP of all bosses that are now locked (after this boss is revived)
-      // This prevents stale HP values being used when they become active again
-      const restoredBossIdx = BOSSES.findIndex(b => b.id === bossToRestore?.id);
-      BOSSES.forEach((b, i) => {
-        if (i > restoredBossIdx) {
-          delete next[b.id]; // remove stored HP — will default back to b.hp
-        }
-      });
       return next;
     });
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
@@ -631,11 +623,18 @@ export default function QuestEngine() {
     const allQuests = [...QUESTS, ...customQuests];
     const incomplete = allQuests.filter(q => !completed[q.id]);
     if (!incomplete.length) return null;
-    // Priority: urgent + academic > urgent other > academic deadline > ailearn > project > jobsearch > cca
-    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5 };
+    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5, interview:1 };
+    const sort = (arr) => arr.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9));
+    // 1. Urgent quests in current week
+    const currentWeekUrgent = incomplete.filter(q => q.urgent && q.week === currentWeek);
+    if (currentWeekUrgent.length) return sort(currentWeekUrgent)[0];
+    // 2. Any urgent quest
     const urgent = incomplete.filter(q => q.urgent);
-    if (urgent.length) return urgent.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9))[0];
-    return incomplete.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9))[0];
+    if (urgent.length) return sort(urgent)[0];
+    // 3. Any quest in current week
+    const currentWeekQuests = incomplete.filter(q => q.week === currentWeek);
+    if (currentWeekQuests.length) return sort(currentWeekQuests)[0];
+    return sort(incomplete)[0];
   };
   const dailyFocus = getDailyFocus();
 
@@ -814,25 +813,50 @@ export default function QuestEngine() {
   const filtered = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
 
-  // Derive current week from real calendar date.
-  // Week labels format: "Week N · Mon DD–DD" — extract N and match to today.
-  // Each week is 7 days. Week 1 started Mon 10 Mar 2025 (first quest week).
+  // Derive current week from actual calendar date by parsing the date range in each week label.
+  // Label format: "Week N · Mon DD–DD" e.g. "Week 9 · Apr 14–20"
+  // Strategy: parse start date of each week label; find the label whose window contains today.
   const currentWeek = (() => {
-    const WEEK1_START = new Date("2025-03-10"); // Monday of Week 1
     const today = new Date();
-    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-    const weekNum = Math.floor((today - WEEK1_START) / msPerWeek) + 1;
-    // Find the matching week label; fall back to first incomplete week
-    const calWeekLabel = weeks.find(w => {
-      const m = w.match(/Week\s+(\d+)/i);
-      return m && parseInt(m[1]) === weekNum;
-    });
-    if (calWeekLabel) return calWeekLabel;
-    // Fallback: first week with any incomplete quest
-    for (const w of weeks) {
-      if (QUESTS.filter(q => q.week === w).some(q => !completed[q.id])) return w;
+    const todayMs = today.getTime();
+    const currentYear = today.getFullYear();
+
+    const MONTH_MAP = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
+
+    // Try to parse a week label like "Week 9 · Apr 14–20"
+    const parseWeekRange = (label) => {
+      // Match "Mon DD–DD" or "Mon DD–Mon DD"
+      const m = label.match(/·\s*([A-Za-z]+)\s+(\d+)[–\-](\d+)/);
+      if (!m) return null;
+      const [, mon, startD, endD] = m;
+      const monthIdx = MONTH_MAP[mon];
+      if (monthIdx === undefined) return null;
+      const startDate = new Date(currentYear, monthIdx, parseInt(startD));
+      const endDate   = new Date(currentYear, monthIdx, parseInt(endD), 23, 59, 59);
+      // Handle year wrap (unlikely but safe)
+      return { startMs: startDate.getTime(), endMs: endDate.getTime() };
+    };
+
+    // Check all QUEST weeks (not Interview Prep weeks)
+    const questWeeks = weeks.filter(w => w.startsWith("Week"));
+    for (const w of questWeeks) {
+      const range = parseWeekRange(w);
+      if (range && todayMs >= range.startMs && todayMs <= range.endMs) return w;
     }
-    return weeks[weeks.length - 1];
+
+    // Today is after all quest weeks — show last quest week
+    // Find latest week by parsing start dates
+    let latestWeek = questWeeks[questWeeks.length - 1];
+    let latestStart = 0;
+    for (const w of questWeeks) {
+      const r = parseWeekRange(w);
+      if (r && r.startMs > latestStart) { latestStart = r.startMs; latestWeek = w; }
+    }
+    // If today is before any quest week, show first
+    const firstRange = parseWeekRange(questWeeks[0]);
+    if (firstRange && todayMs < firstRange.startMs) return questWeeks[0];
+
+    return latestWeek;
   })();
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
@@ -1061,7 +1085,7 @@ export default function QuestEngine() {
             {/* Category filters */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
               {[["all","🌐 All"], ...Object.entries(CATEGORY_META).map(([k,v]) => [k, v.label])].map(([k, label]) => (
-                <button key={k} className="tab-btn" onClick={() => setFilter(k)} style={{
+                <button key={k} className="tab-btn" onClick={() => setFilterPersist(k)} style={{
                   padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700,
                   background: filter === k ? level.color : "#1e293b",
                   color: filter === k ? "#000" : "#94a3b8", border: "none", cursor: "pointer", transition: "all 0.15s"
