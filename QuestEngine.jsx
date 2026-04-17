@@ -35,45 +35,45 @@ const QUESTS = [
   { id:"q3",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit iOS Quiz 1",                 desc:"Thu Mar 12 deadline 🔴", xp:50, bossDmg:40, urgent:true },
   { id:"q4",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit Team Charter",               desc:"Fri Mar 13 — ungraded but required by FID", xp:20, bossDmg:15, urgent:false },
   { id:"q5",  week:"Week 4 · Mar 10–16",    category:"jobsearch", title:"Update LinkedIn Headline",          desc:"AI Backend Engineer | Java + Python | UTS Master's IT", link:"https://www.linkedin.com/in/", xp:25, bossDmg:20, urgent:false },
-  { id:"q6",  week:"Week 4 · Mar 10–16",    category:"ailearn",   title:"Watch FastAPI Intro (30 min)",      desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=fastapi", xp:30, bossDmg:25, urgent:false},
+  { id:"q6",  week:"Week 4 · Mar 10–16",    category:"ailearn",   title:"Watch FastAPI Intro (30 min)",      desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=fastapi", xp:30, bossDmg:25, urgent:false },
 
   // ── WEEK 5 · Mar 17–23 ─────────────────────────────────────────────────────
   { id:"q7",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 1",          desc:"2 hrs focused work — follow assignment brief step by step", xp:35, bossDmg:28, urgent:false },
   { id:"q8",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 2",          desc:"2 hrs focused work — core features done by end of session", xp:35, bossDmg:28, urgent:false },
   { id:"q9",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Final Push",     desc:"Submit by Mar 22 🔴 Polish + upload", xp:60, bossDmg:50, urgent:true },
-  { id:"q10", week:"Week 5 · Mar 17–23",    category:"ailearn",   title:"Error Handling + .env in Python",   desc:"Corey Schafer YouTube — then type examples yourself", link:"https://www.youtube.com/@coreyms/search?query=try+except+error+handling", xp:40, bossDmg:35, urgent:false},
+  { id:"q10", week:"Week 5 · Mar 17–23",    category:"ailearn",   title:"Error Handling + .env in Python",   desc:"Corey Schafer YouTube — then type examples yourself", link:"https://www.youtube.com/@coreyms/search?query=try+except+error+handling", xp:40, bossDmg:35, urgent:false },
   { id:"q10b",week:"Week 5 · Mar 17–23",    category:"academic",  title:"⚠️ IP Quiz 1 Revision (2 days out)",desc:"Mar 21 — Revise IP lecture notes for 1.5 hrs. Quiz is Mar 23.", xp:30, bossDmg:25, urgent:true },
   { id:"q11", week:"Week 5 · Mar 17–23",    category:"academic",  title:"Submit IP Quiz 1",                  desc:"Mar 23 deadline 🔴", xp:50, bossDmg:40, urgent:true },
 
   // ── WEEK 6 · Mar 24–31 ─────────────────────────────────────────────────────
-  { id:"q12", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch OpenAI API Tutorial (35 min)",desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=openai+api+python", xp:30, bossDmg:25, urgent:false},
-  { id:"q13", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Build OpenAI API Script",           desc:"System prompt + logging. Type it yourself — no copy-paste.", link:"https://platform.openai.com/docs/quickstart", xp:60, bossDmg:50, urgent:false},
-  { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false},
-  { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false},
+  { id:"q12", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch OpenAI API Tutorial (35 min)",desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=openai+api+python", xp:30, bossDmg:25, urgent:false },
+  { id:"q13", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Build OpenAI API Script",           desc:"System prompt + logging. Type it yourself — no copy-paste.", link:"https://platform.openai.com/docs/quickstart", xp:60, bossDmg:50, urgent:false },
+  { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false },
+  { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false },
   { id:"q16", week:"Week 6 · Mar 24–31",    category:"jobsearch", title:"Push OpenAI Script to GitHub",      desc:"Write a README. Your first AI repo!", link:"https://github.com", xp:40, bossDmg:35, urgent:false },
-  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false},
+  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
 
   // ── WEEK 7 · Apr 1–7 ───────────────────────────────────────────────────────
-  { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false},
-  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false},
+  { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false },
+  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
   { id:"q18", week:"Week 7 · Apr 1–7",      category:"academic",  title:"IP Assignment 1 — Push to finish",  desc:"Due Apr 5. Don't leave for day of.", xp:80, bossDmg:65, urgent:true },
   { id:"q19", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit IP Assignment 1",            desc:"Apr 5 — Very High priority 🔴", xp:100, bossDmg:80, urgent:true },
   { id:"q20", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit FID Persona",                desc:"Apr 5 — alongside IP A1 🔴", xp:70, bossDmg:55, urgent:true },
-  { id:"q21", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Build Basic LangChain Chain",       desc:"Prompt template + LLM + output parser. 30 min. Type yourself.", xp:50, bossDmg:40, urgent:false},
+  { id:"q21", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Build Basic LangChain Chain",       desc:"Prompt template + LLM + output parser. 30 min. Type yourself.", xp:50, bossDmg:40, urgent:false },
 
   // ── WEEK 8 · Apr 7–13 ──────────────────────────────────────────────────────
-  { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false},
-  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false},
-  { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false},
-  { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false},
+  { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false },
+  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
+  { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false },
+  { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false },
   { id:"q25", week:"Week 8 · Apr 7–13",     category:"jobsearch", title:"Add Google AI Cert to LinkedIn",    desc:"Add under Licences & Certifications", link:"https://www.linkedin.com/in/", xp:20, bossDmg:15, urgent:false },
-  { id:"q26", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch Pixegami — Build a RAG App",  desc:"45 min. Your Project 1 blueprint — watch before writing any code.", link:"https://www.youtube.com/watch?v=tcqEUSNCn8I", xp:35, bossDmg:30, urgent:false},
+  { id:"q26", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch Pixegami — Build a RAG App",  desc:"45 min. Your Project 1 blueprint — watch before writing any code.", link:"https://www.youtube.com/watch?v=tcqEUSNCn8I", xp:35, bossDmg:30, urgent:false },
 
   // ── WEEK 9 · Apr 14–20 ─────────────────────────────────────────────────────
   { id:"q27", week:"Week 9 · Apr 14–20",    category:"project",   title:"Set Up Project 1 Repo: AI Doc Q&A", desc:"GitHub repo + README skeleton + empty FastAPI app", xp:30, bossDmg:25, urgent:false },
   { id:"q28", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build PDF Chunking + Embedding Logic",desc:"Load PDF → chunk → embed → store in ChromaDB", xp:70, bossDmg:60, urgent:false },
   { id:"q29", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build /ask Endpoint (RAG pipeline)", desc:"Retrieve chunks → generate answer with citations", xp:80, bossDmg:65, urgent:false },
-  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false},
+  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false },
   { id:"q30", week:"Week 9 · Apr 14–20",    category:"project",   title:"Deploy Project 1 to Render",         desc:"Get a live public URL — this is what employers will see", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q31", week:"Week 9 · Apr 14–20",    category:"project",   title:"Write Project 1 README + Diagram",   desc:"What it does, tech stack, architecture diagram (draw.io)", xp:40, bossDmg:35, urgent:false },
 
@@ -81,13 +81,13 @@ const QUESTS = [
   { id:"q32", week:"Week 10 · Apr 21–27",   category:"academic",  title:"Submit iOS Assignment 2",            desc:"Apr 27 deadline 🔴 Start Day 1 of this week — 15–20 hrs total", xp:90, bossDmg:75, urgent:true },
   { id:"q33", week:"Week 10 · Apr 21–27",   category:"project",   title:"Sketch Project 2 Architecture",      desc:"JD Analyser: JD + resume → match score + skills gap + cover letter bullets", xp:20, bossDmg:15, urgent:false },
   { id:"q34", week:"Week 10 · Apr 21–27",   category:"project",   title:"Build Project 2 /analyse Endpoint",  desc:"Prompt engineering for skill extraction. Return JSON.", xp:80, bossDmg:65, urgent:false },
-  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false},
+  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false },
 
   // ── WEEK 11 · Apr 28–May 3 ─────────────────────────────────────────────────
   { id:"q35", week:"Week 11 · Apr 28–May 3",category:"academic",  title:"Submit FID Practical",               desc:"May 1 deadline 🔴 8–10 hrs needed. Prepare all week.", xp:100, bossDmg:80, urgent:true },
   { id:"q36", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Deploy Project 2 + Write README",    desc:"Same standard as Project 1. Get live URL.", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q37", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Record 90-sec Loom Demo of Project 2",desc:"Paste JD → show analysis output. Add link to README.", link:"https://www.loom.com", xp:50, bossDmg:40, urgent:false },
-  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false},
+  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false },
 
   // ── WEEK 12 · May 5–11 ─────────────────────────────────────────────────────
   { id:"q38", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Update Resume (AI Projects First)",  desc:"Lead with AI projects, Java backend second. 1 page max.", xp:40, bossDmg:35, urgent:false },
@@ -95,17 +95,17 @@ const QUESTS = [
   { id:"q39b",week:"Week 12 · May 5–11",    category:"academic",  title:"⚠️ IP Quiz 2 Revision (3 days out)", desc:"May 8 — Revise IP lecture notes for 1.5 hrs. Quiz is May 11.", xp:30, bossDmg:25, urgent:true },
   { id:"q40", week:"Week 12 · May 5–11",    category:"academic",  title:"Submit IP Quiz 2",                   desc:"May 11 deadline", xp:60, bossDmg:50, urgent:true },
   { id:"q41", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Message Deloitte Manager",           desc:"Ask about internal AI roles AND Claude partner network access", xp:50, bossDmg:45, urgent:false },
-  { id:"q41b",week:"Week 12 · May 5–11",    category:"cca",       title:"CCA Prep: Practice Questions + Anti-Patterns",desc:"Do all 25 practice Qs on claudecertifications.com. Then read the 18 anti-patterns cheatsheet. These are the real exam traps.", link:"https://claudecertifications.com/claude-certified-architect/practice-questionst/blob/main/guide_en.MD", xp:80, bossDmg:70, urgent:false},
+  { id:"q41b",week:"Week 12 · May 5–11",    category:"cca",       title:"CCA Prep: Practice Questions + Anti-Patterns",desc:"Do all 25 practice Qs on claudecertifications.com. Then read the 18 anti-patterns cheatsheet. These are the real exam traps.", link:"https://claudecertifications.com/claude-certified-architect/practice-questionst/blob/main/guide_en.MD", xp:80, bossDmg:70, urgent:false },
 
   // ── WEEKS 13–15 · May 12–24 ────────────────────────────────────────────────
   { id:"q42", week:"Week 13–15 · May 12–24",category:"academic",  title:"IP Assignment 2 (Group) Done",       desc:"May 24 deadline 🔴 Group project — coordinate early, don't let teammates down", xp:120, bossDmg:100, urgent:true },
-  { id:"q42b",week:"Week 13–15 · May 12–24",category:"cca",       title:"CCA Prep: Review Weak Domains",      desc:"Go back to whichever domain pages you struggled with in the practice questions.", link:"https://claudecertifications.com/claude-certified-architect/domains", xp:50, bossDmg:45, urgent:false},
+  { id:"q42b",week:"Week 13–15 · May 12–24",category:"cca",       title:"CCA Prep: Review Weak Domains",      desc:"Go back to whichever domain pages you struggled with in the practice questions.", link:"https://claudecertifications.com/claude-certified-architect/domains", xp:50, bossDmg:45, urgent:false },
   { id:"q43", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 Targeted Applications (Batch 1)",desc:"Not 50 generic — 5 perfect ones. Customise cover letter for each.", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+python&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
   { id:"q44", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Practice 90-Second Verbal Pitch",    desc:"Background + projects + what you want. Time yourself out loud.", xp:30, bossDmg:25, urgent:false },
   { id:"q45", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 More Applications (Batch 2)",desc:"Target: Accenture, REA Group, WiseTech, Canva, Atlassian", link:"https://www.linkedin.com/jobs/search/?keywords=AI+engineer&location=Sydney", xp:100, bossDmg:80, urgent:false },
 
   // ── JUNE · CCA Exam + Apply ─────────────────────────────────────────────────
-  { id:"q46", week:"June · Exam + Apply",   category:"cca",       title:"🏆 SIT CCA Foundations Exam",        desc:"$99 or free via Deloitte partner access. 60 MCQ, 120 min. You're ready.", link:"https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request", xp:200, bossDmg:200, urgent:false},
+  { id:"q46", week:"June · Exam + Apply",   category:"cca",       title:"🏆 SIT CCA Foundations Exam",        desc:"$99 or free via Deloitte partner access. 60 MCQ, 120 min. You're ready.", link:"https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request", xp:200, bossDmg:200, urgent:false },
   { id:"q47", week:"June · Exam + Apply",   category:"jobsearch", title:"Add CCA Cert to LinkedIn + Resume",  desc:"Add under Certifications immediately after passing. Major differentiator.", link:"https://www.linkedin.com/in/", xp:50, bossDmg:40, urgent:false },
   { id:"q48", week:"June · Exam + Apply",   category:"jobsearch", title:"Pin Both Projects + Update GitHub",  desc:"Customise GitHub profile. Pin AI Doc Q&A and JD Analyser.", link:"https://github.com", xp:20, bossDmg:15, urgent:false },
   { id:"q49", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 Enterprise Applications",   desc:"Target: WiseTech Global, Macquarie Tech, CBA Tech, Deloitte AI, Accenture", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+java&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
@@ -312,31 +312,6 @@ const DSA_DAYS = [
 const DSA_PHASE_LABELS = { 1:"Phase 1 — Foundations", 2:"Phase 2 — Trees", 3:"Phase 3 — Graphs + DP" };
 const DSA_PHASE_RANGES = { 1:[1,14], 2:[15,19], 3:[20,28] };
 
-// ─── INTERVIEW BANK (STAR-format behavioural Qs) ────────────────────────────
-const INTERVIEW_BANK = [
-  { id:"iv1",  cat:"Leadership", q:"Tell me about a time you led a team through a difficult challenge.", hint:"HAYA Formula Student procurement team story works here." },
-  { id:"iv2",  cat:"Leadership", q:"Describe a time you had to make a decision without all the information you needed.", hint:"Production incidents at InvestCloud." },
-  { id:"iv3",  cat:"Conflict",   q:"Tell me about a conflict with a colleague. How did you resolve it?", hint:"Stay factual, no blame, focus on resolution." },
-  { id:"iv4",  cat:"Conflict",   q:"How do you handle disagreement with a manager's technical decision?", hint:"Raise concerns respectfully, commit to final call." },
-  { id:"iv5",  cat:"Failure",    q:"Tell me about a time you failed. What did you learn?", hint:"Pick a real failure with clear lessons." },
-  { id:"iv6",  cat:"Failure",    q:"Describe a project that did not go as planned.", hint:"UTS group project retrospectives." },
-  { id:"iv7",  cat:"Impact",     q:"What is the most impactful thing you shipped so far?", hint:"L2 service-bridge fix at InvestCloud. Quantify." },
-  { id:"iv8",  cat:"Impact",     q:"Tell me about a time you improved a process or system.", hint:"100% performance, 2 hikes — what did you change?" },
-  { id:"iv9",  cat:"Learning",   q:"How do you stay current with technology?", hint:"Structured Python, DSA daily, builds in public." },
-  { id:"iv10", cat:"Learning",   q:"Tell me about a time you had to learn a new tech quickly.", hint:"Mech → IT transition. Self-learned Java during COVID." },
-  { id:"iv11", cat:"Ambiguity",  q:"How do you approach a problem when requirements are unclear?", hint:"Ask questions, prototype, clarify in writing." },
-  { id:"iv12", cat:"Why Us",     q:"Why this company? Why this role?", hint:"Research 3 specific things. Tie to Java+AI positioning." },
-  { id:"iv13", cat:"Why You",    q:"Walk me through your resume.", hint:"60–90 sec: Mech → Java → Masters → AI." },
-  { id:"iv14", cat:"Strengths",  q:"Your greatest strength for this role?", hint:"Ownership mindset. Go-to tech person story." },
-  { id:"iv15", cat:"Weaknesses", q:"Your biggest weakness?", hint:"Real one + concrete fix plan." },
-  { id:"iv16", cat:"Teamwork",   q:"Worked with someone very different from you?", hint:"Culture, timezone, skill differences." },
-  { id:"iv17", cat:"Pressure",   q:"Tight deadline or high pressure story?", hint:"Production incidents — ~100 resolved." },
-  { id:"iv18", cat:"Initiative", q:"Went beyond what was asked of you?", hint:"Becoming go-to colleague at InvestCloud." },
-  { id:"iv19", cat:"Goals",      q:"Where do you see yourself in 5 years?", hint:"PR in AU, AI Eng growth, own your arc." },
-  { id:"iv20", cat:"Java+AI",    q:"Why Java + AI, not just Python?", hint:"Enterprise FinTech niche. Low competition, high salary." },
-];
-
-
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
 function getCurrentLevel(xp) {
@@ -398,7 +373,7 @@ export default function QuestEngine() {
   const [bossHp, setBossHp]           = useState({});
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
-  const [activeTab, setActiveTab]     = useState("today");
+  const [activeTab, setActiveTab]     = useState("quests");
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
@@ -468,8 +443,6 @@ export default function QuestEngine() {
           setBrainDump(d.brainDump || []);
           setDsaProgress(d.dsaProgress || {});
           setHiddenCategories(d.hiddenCategories || ["ailearn","cca"]);
-          setQuestNotes(d.questNotes || {});
-          setInterviewAnswers(d.interviewAnswers || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -497,11 +470,11 @@ export default function QuestEngine() {
       if (!loadedRef.current) return;
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, questNotes, interviewAnswers }, { merge: true });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories }, { merge: true });
       } catch (e) { console.error("Save error", e); }
     }, 1200);
     return () => clearTimeout(saveTimerRef.current);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, questNotes, interviewAnswers, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -715,21 +688,21 @@ export default function QuestEngine() {
   }, [xp, loaded]);
 
   const [hiddenCategories, setHiddenCategories] = useState(["ailearn","cca"]);
-  const [questNotes, setQuestNotes] = useState({}); // { questId: "note text" }
-  const [expandedNoteId, setExpandedNoteId] = useState(null); // which quest has notes panel open
-  const [interviewAnswers, setInterviewAnswers] = useState({}); // { qId: { situation, task, action, result } }
-  const [expandedInterviewId, setExpandedInterviewId] = useState(null);
+
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
     const allQuests = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category));
     const incomplete = allQuests.filter(q => !completed[q.id]);
     if (!incomplete.length) return null;
-    const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
-    const sort = (arr) => [...arr].sort((a,b) => (priority[a.category]??9) - (priority[b.category]??9));
+    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5, interview:1 };
+    const sort = (arr) => arr.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9));
+    // 1. Urgent quests in current week
     const currentWeekUrgent = incomplete.filter(q => q.urgent && q.week === currentWeek);
     if (currentWeekUrgent.length) return sort(currentWeekUrgent)[0];
+    // 2. Any urgent quest
     const urgent = incomplete.filter(q => q.urgent);
     if (urgent.length) return sort(urgent)[0];
+    // 3. Any quest in current week
     const currentWeekQuests = incomplete.filter(q => q.week === currentWeek);
     if (currentWeekQuests.length) return sort(currentWeekQuests)[0];
     return sort(incomplete)[0];
@@ -847,47 +820,6 @@ export default function QuestEngine() {
   // ── DSA Tracker handlers ─────────────────────────────────────────────────
   const getDsaKey = (day, prob) => `d${day}-${prob}`;
 
-  // DSA session timer — track active problem + elapsed seconds
-  const [dsaActiveKey, setDsaActiveKey] = useState(null);
-  const [dsaElapsed, setDsaElapsed] = useState(0); // seconds for active problem
-  const dsaTimerRef = useRef(null);
-
-  useEffect(() => {
-    if (dsaActiveKey) {
-      dsaTimerRef.current = setInterval(() => setDsaElapsed(e => e + 1), 1000);
-    } else {
-      clearInterval(dsaTimerRef.current);
-    }
-    return () => clearInterval(dsaTimerRef.current);
-  }, [dsaActiveKey]);
-
-  const startDsaTimer = (day, prob) => {
-    const key = getDsaKey(day, prob);
-    if (dsaActiveKey === key) {
-      // Stop & save elapsed into dsaProgress
-      setDsaProgress(prev => {
-        const existing = prev[key] || { status:"pending", note:"" };
-        const prior = existing.totalSeconds || 0;
-        return { ...prev, [key]: { ...existing, totalSeconds: prior + dsaElapsed } };
-      });
-      setDsaActiveKey(null);
-      setDsaElapsed(0);
-      showToast(`⏱ Session logged: ${Math.floor(dsaElapsed/60)}m ${dsaElapsed%60}s`, "#60a5fa");
-    } else {
-      if (dsaActiveKey) {
-        // save prior before switching
-        setDsaProgress(prev => {
-          const existing = prev[dsaActiveKey] || { status:"pending", note:"" };
-          const prior = existing.totalSeconds || 0;
-          return { ...prev, [dsaActiveKey]: { ...existing, totalSeconds: prior + dsaElapsed } };
-        });
-      }
-      setDsaActiveKey(key);
-      setDsaElapsed(0);
-      showToast(`▶ Timer started`, "#60a5fa");
-    }
-  };
-
   const cycleDsaStatus = (day, prob, e) => {
     const key = getDsaKey(day, prob);
     const current = dsaProgress[key] || { status:"pending", note:"" };
@@ -950,62 +882,44 @@ export default function QuestEngine() {
 
   const filtered = (() => {
     let q = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
-    q = q.filter(q => !hiddenCategories.includes(q.category));
-    return q;
+    return q.filter(q => !hiddenCategories.includes(q.category));
   })();
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
-    <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position:"relative" }}>
-      {/* Ambient background glow */}
-      <div style={{ position:"fixed", top:"-20%", left:"-10%", width:"60%", height:"60%", background:"radial-gradient(circle, rgba(96,165,250,0.08), transparent 70%)", pointerEvents:"none", zIndex:0, animation:"float 8s ease-in-out infinite" }} />
-      <div style={{ position:"fixed", bottom:"-20%", right:"-10%", width:"50%", height:"50%", background:"radial-gradient(circle, rgba(167,139,250,0.06), transparent 70%)", pointerEvents:"none", zIndex:0, animation:"float 10s ease-in-out infinite reverse" }} />
-      <div style={{ position:"relative", zIndex:1 }}>
+    <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background: #080c14 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
-        @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-60px); } }
-        @keyframes levelUp { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.08); opacity:1; } }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
-        @keyframes bossHit { 0%{background:#ef444433} 100%{background:transparent} }
-        @keyframes slideDown { 0%{opacity:0; transform:translateY(-8px);} 100%{opacity:1; transform:translateY(0);} }
-        @keyframes slideIn { 0%{opacity:0; transform:translateY(10px);} 100%{opacity:1; transform:translateY(0);} }
-        @keyframes urgentPulse { 0%,100%{box-shadow:0 0 20px #ef444455;} 50%{box-shadow:0 0 35px #ef4444aa;} }
-        @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
-        @keyframes fadeIn { 0%{opacity:0;} 100%{opacity:1;} }
-        @keyframes glow { 0%,100%{filter:drop-shadow(0 0 4px currentColor);} 50%{filter:drop-shadow(0 0 10px currentColor);} }
-        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
-
-        .quest-btn:hover { transform: translateY(-1px); filter: brightness(1.15); }
-        .quest-btn:active { transform: scale(0.96); }
-        .tab-btn { cursor:pointer; border:none; background:none; font-family:inherit; transition:all 0.2s cubic-bezier(.4,0,.2,1); }
-        .week-header:hover { background: rgba(255,255,255,0.08) !important; cursor:pointer; transform:translateX(2px); }
-        .week-header { transition: all 0.2s cubic-bezier(.4,0,.2,1) !important; }
-        .card-hover:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
-        .card-hover { transition:all 0.25s cubic-bezier(.4,0,.2,1); }
-        .glass { backdrop-filter: blur(12px); background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(15,23,42,0.65)) !important; }
-        .shimmer-text { background:linear-gradient(90deg,#64748b,#e2e8f0,#64748b); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmer 3s linear infinite; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        .slide-in { animation: slideIn 0.35s cubic-bezier(.4,0,.2,1); }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width:6px; height:6px; }
+        @keyframes floatUp    { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
+        @keyframes levelUp    { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08)} }
+        @keyframes pulse      { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes bossHit    { 0%{background:#ef444433} 100%{background:transparent} }
+        @keyframes urgentPulse{ 0%,100%{box-shadow:0 0 16px #ef444455} 50%{box-shadow:0 0 32px #ef4444aa} }
+        @keyframes slideDown  { 0%{opacity:0;transform:translateY(-6px)} 100%{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp    { 0%{opacity:0;transform:translateY(6px)} 100%{opacity:1;transform:translateY(0)} }
+        @keyframes float      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+        @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
+        @keyframes shimmer    { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .quest-btn        { transition: all 0.15s cubic-bezier(.4,0,.2,1) !important; }
+        .quest-btn:hover  { transform: translateY(-1px) scale(1.05); filter: brightness(1.15); }
+        .quest-btn:active { transform: scale(0.95); }
+        .tab-btn          { cursor:pointer; border:none; background:none; font-family:inherit; transition: all 0.2s cubic-bezier(.4,0,.2,1); }
+        .week-header      { transition: all 0.2s cubic-bezier(.4,0,.2,1) !important; }
+        .week-header:hover{ background: rgba(255,255,255,0.07) !important; cursor:pointer; }
+        .card-hover       { transition: all 0.22s cubic-bezier(.4,0,.2,1); }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+        .slide-up         { animation: slideUp 0.3s cubic-bezier(.4,0,.2,1); }
+        .fade-in          { animation: fadeIn 0.35s ease-out; }
+        button            { transition: all 0.15s cubic-bezier(.4,0,.2,1); }
+        button:active     { transform: scale(0.97); }
+        input:focus, textarea:focus, select:focus { outline:none; box-shadow:0 0 0 2px rgba(96,165,250,0.2); border-color:#60a5fa66 !important; }
+        ::-webkit-scrollbar       { width:5px; height:5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#334155,#1e293b); border-radius:99px; transition:all 0.2s; }
-        ::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#475569,#334155); }
-
-        /* Smooth focus ring on inputs/textareas */
-        input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 2px rgba(96,165,250,0.2); }
-
-        /* Button active press */
-        button:active { transform: scale(0.97); }
-        button { transition: all 0.15s cubic-bezier(.4,0,.2,1); }
-
-        /* Link hover */
-        a { transition: all 0.15s; }
-        a:hover { filter: brightness(1.2); text-decoration: underline; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#334155,#1e293b); border-radius:99px; }
+        ::-webkit-scrollbar-thumb:hover { background:#475569; }
       `}</style>
 
       {/* Particles */}
@@ -1015,13 +929,13 @@ export default function QuestEngine() {
 
       {/* Toast */}
       {toast && (
-        <div className="slide-in" style={{
+        <div className="slide-up" style={{
           position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
-          background: "rgba(15,23,42,0.9)", backdropFilter:"blur(12px)",
-          border: `1px solid ${toast.color}88`, borderRadius: 12,
-          padding: "10px 20px", zIndex: 9998, fontFamily: "'Bebas Neue'",
-          fontSize: 16, color: toast.color, letterSpacing: 1, whiteSpace: "nowrap",
-          boxShadow: `0 8px 32px ${toast.color}44, 0 0 0 1px ${toast.color}22 inset`
+          background: "rgba(15,23,42,0.92)", backdropFilter:"blur(16px)",
+          border: `1px solid ${toast.color}77`, borderRadius: 40,
+          padding: "10px 22px", zIndex: 9998, fontFamily: "'Bebas Neue'",
+          fontSize: 16, color: toast.color, letterSpacing: 1.5, whiteSpace: "nowrap",
+          boxShadow: `0 8px 32px ${toast.color}44, 0 1px 0 ${toast.color}33 inset`
         }}>{toast.msg}</div>
       )}
 
@@ -1051,14 +965,12 @@ export default function QuestEngine() {
         <div className="qe-layout">
         <div className="qe-left">
         {/* ── Header ── */}
-        <div className="slide-in" style={{
-          background: `linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%)`,
-          border: `1px solid ${level.color}55`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
-          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "slideIn 0.4s ease-out",
-          boxShadow: `0 8px 32px ${level.color}22, 0 0 0 1px ${level.color}18 inset`,
-          position:"relative", overflow:"hidden"
+        <div style={{
+          background: `linear-gradient(135deg, #0d1426 0%, #1a1535 50%, #0d1426 100%)`,
+          border: `1px solid ${level.color}44`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
+          boxShadow: `0 8px 32px ${level.color}18, 0 1px 0 ${level.color}22 inset`,
+          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none"
         }}>
-          <div style={{ position:"absolute", top:-40, right:-40, width:160, height:160, background:`radial-gradient(circle, ${level.color}22, transparent 70%)`, pointerEvents:"none" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 11, letterSpacing: 2, color: "#475569" }}>ABHISHEK'S QUEST ENGINE v3</div>
@@ -1107,7 +1019,7 @@ export default function QuestEngine() {
         {/* ── Current Boss ── */}
         {/* ── Daily Focus Banner ── */}
         {dailyFocus && !focusDismissed && !completed[dailyFocus.id] && (
-          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `1px solid ${level.color}66`, borderRadius: 14, padding: "12px 16px", marginBottom: 14, boxShadow:`0 4px 20px ${level.color}22`, animation:"slideIn 0.35s ease-out" }}>
+          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `2px solid ${level.color}88`, borderRadius: 14, padding: "12px 16px", marginBottom: 14 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:3 }}>🎯 TODAY'S FOCUS QUEST</div>
@@ -1131,10 +1043,9 @@ export default function QuestEngine() {
 
         {boss ? (
           <div className="card-hover" style={{
-            background: "linear-gradient(135deg, #0f172a, #1a0505)",
-            border: "1px solid #ef444444", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
+            background: "linear-gradient(135deg,#0f172a,#1a0808)", border: "1px solid #ef444433", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
             animation: bossHitAnim ? "bossHit 0.6s ease-out" : "none",
-            boxShadow: "0 4px 16px rgba(239,68,68,0.1)"
+            boxShadow: "0 4px 20px rgba(239,68,68,0.08)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
@@ -1174,30 +1085,30 @@ export default function QuestEngine() {
           const critical = upcoming.filter(d => d.daysLeft <= 2);
           return (
             <>
-            {critical.length > 0 && (
-              <div style={{
-                background:"linear-gradient(135deg,#7f1d1d,#450a0a)", border:"1px solid #ef4444",
-                borderRadius:14, padding:"10px 14px", marginBottom:10,
-                animation:"urgentPulse 1.5s ease-in-out infinite", boxShadow:"0 0 20px #ef444455"
-              }}>
-                <div style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:"#fca5a5", letterSpacing:2, marginBottom:4 }}>⚠️ URGENT — {critical.length} DEADLINE{critical.length>1?"S":""} ≤2D</div>
-                {critical.map(d => (
-                  <div key={d.id} style={{ fontSize:12, color:"#fee2e2", fontWeight:700 }}>{d.icon} {d.label} — {d.daysLeft===0?"TODAY":`${d.daysLeft} day${d.daysLeft>1?"s":""}`}</div>
-                ))}
+              {critical.length > 0 && (
+                <div style={{
+                  background:"linear-gradient(135deg,#450a0a,#7f1d1d)",
+                  border:"1px solid #ef444488", borderRadius:12, padding:"10px 14px", marginBottom:10,
+                  animation:"urgentPulse 1.5s ease-in-out infinite"
+                }}>
+                  <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#fca5a5", letterSpacing:2, marginBottom:4 }}>⚠️ URGENT — {critical.length} DEADLINE{critical.length>1?"S":""} ≤2 DAYS</div>
+                  {critical.map(d => (
+                    <div key={d.id} style={{ fontSize:12, color:"#fee2e2", fontWeight:700 }}>{d.icon} {d.label} — {d.daysLeft===0?"TODAY":`${d.daysLeft}d`}</div>
+                  ))}
+                </div>
+              )}
+              <div style={{ background:"linear-gradient(135deg,#0f172a,#0d1520)", border:"1px solid #1e293b", borderRadius:14, padding:"12px 16px", marginBottom:14 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:8 }}>📅 UPCOMING DEADLINES</div>
+                {upcoming.map(d => {
+                  const col = d.daysLeft<=3?"#ef4444":d.daysLeft<=7?"#f97316":d.daysLeft<=14?"#f59e0b":"#60a5fa";
+                  return (
+                    <div key={d.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom:"1px solid #1e293b" }}>
+                      <div style={{ fontSize:12, color:"#94a3b8", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{d.icon} {d.label}</div>
+                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:col, marginLeft:8, flexShrink:0 }}>{d.daysLeft===0?"TODAY":`${d.daysLeft}D`}</div>
+                    </div>
+                  );
+                })}
               </div>
-            )}
-            <div style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:14, padding:"12px 16px", marginBottom:14 }}>
-              <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:8 }}>📅 UPCOMING DEADLINES</div>
-              {upcoming.map(d => {
-                const col = d.daysLeft<=3?"#ef4444":d.daysLeft<=7?"#f97316":d.daysLeft<=14?"#f59e0b":"#60a5fa";
-                return (
-                  <div key={d.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom:"1px solid #1e293b" }}>
-                    <div style={{ fontSize:12, color:"#94a3b8", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{d.icon} {d.label}</div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:col, marginLeft:8, flexShrink:0 }}>{d.daysLeft===0?"TODAY":`${d.daysLeft}D`}</div>
-                  </div>
-                );
-              })}
-            </div>
             </>
           );
         })()}
@@ -1205,18 +1116,18 @@ export default function QuestEngine() {
         </div>{/* end qe-left */}
         <div className="qe-right">
         {/* ── Tabs ── */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 14, flexWrap:"wrap" }}>
-          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["dsa","🧩 DSA"], ["interview","🎤 Interview"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["stats","📊 Stats"]].map(([tab, label]) => {
+        <div style={{ display: "flex", gap: 4, marginBottom: 14, flexWrap: "wrap" }}>
+          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["dsa","🧩 DSA"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["stats","📊 Stats"]].map(([tab, label]) => {
             const active = activeTab === tab;
             return (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
-              flex: "1 1 90px", padding: "9px 6px", borderRadius: 10, fontSize: 11, fontWeight: 700,
-              background: active ? `linear-gradient(135deg, ${level.color}, ${level.color}cc)` : "rgba(15,23,42,0.6)",
+              flex: "1 1 80px", padding: "9px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+              background: active ? `linear-gradient(135deg,${level.color}ee,${level.color}bb)` : "rgba(15,23,42,0.8)",
               color: active ? "#000" : "#64748b",
               border: `1px solid ${active ? level.color : "#1e293b"}`,
-              letterSpacing: 0.5, backdropFilter:"blur(8px)",
-              boxShadow: active ? `0 4px 14px ${level.color}55, 0 0 0 1px ${level.color}22 inset` : "none",
-              transform: active ? "translateY(-1px)" : "none"
+              letterSpacing: 0.5,
+              boxShadow: active ? `0 4px 16px ${level.color}55` : "none",
+              transform: active ? "translateY(-1px)" : "none",
             }}>{label}</button>
           );})}
         </div>
@@ -1231,18 +1142,16 @@ export default function QuestEngine() {
           const todayList = [...urgent, ...normal];
           const cat = CATEGORY_META;
           return (
-            <div>
+            <div className="fade-in">
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
                 {Object.entries(CATEGORY_META).map(([k,v]) => {
                   const hidden = hiddenCategories.includes(k);
                   return (
-                    <button key={k} onClick={() => setHiddenCategories(prev => {
-                      return hidden ? prev.filter(x=>x!==k) : [...prev,k];
-                    })} style={{
+                    <button key={k} onClick={() => setHiddenCategories(prev => hidden ? prev.filter(x=>x!==k) : [...prev,k])} style={{
                       padding:"3px 8px", borderRadius:20, fontSize:10, fontWeight:700, cursor:"pointer",
                       background: hidden ? "#1e293b" : v.bg, color: hidden ? "#334155" : v.color,
                       border:`1px solid ${hidden ? "#334155" : v.color+"66"}`,
-                      textDecoration: hidden ? "line-through" : "none", transition:"all 0.15s"
+                      textDecoration: hidden ? "line-through" : "none"
                     }}>{v.label}</button>
                   );
                 })}
@@ -1251,31 +1160,23 @@ export default function QuestEngine() {
                 <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#475569", letterSpacing:2 }}>
                   {todayList.length} TASKS · {currentWeek}
                 </div>
-                <div style={{ fontSize:11, color:"#475569" }}>
-                  {allActive.length - todayList.length} more in other weeks
-                </div>
+                <div style={{ fontSize:11, color:"#475569" }}>{allActive.length - todayList.length} more in other weeks</div>
               </div>
-
               {todayList.length === 0 && (
-                <div style={{ textAlign:"center", padding:"40px 0", color:"#334155", fontSize:14 }}>
-                  🎉 All caught up this week!
-                </div>
+                <div style={{ textAlign:"center", padding:"40px 0", color:"#334155", fontSize:14 }}>🎉 All caught up this week!</div>
               )}
-
               {todayList.map((quest) => {
                 const done = !!completed[quest.id];
                 const c = cat[quest.category] || cat.academic;
                 const isActive = pomodoroQuestId === quest.id;
-                const notesOpen = expandedNoteId === quest.id;
                 return (
-                  <div key={quest.id} style={{
-                    background: isActive ? "#1a1400" : "#0f172a",
-                    border: `1px solid ${quest.urgent ? "#ef444466" : isActive ? "#f59e0b66" : "#1e293b"}`,
+                  <div key={quest.id} className="card-hover" style={{
+                    background: isActive ? "#1a1400" : "linear-gradient(135deg,#0f172a,#0d1520)",
+                    border: `1px solid ${quest.urgent ? "#ef444455" : isActive ? "#f59e0b55" : "#1e293b"}`,
                     borderRadius:12, padding:"14px 16px", marginBottom:8,
-                    outline: isActive ? "1px solid #f59e0b44" : "none",
-                    transition:"all 0.25s ease"
+                    display:"flex", alignItems:"center", gap:12,
+                    boxShadow: isActive ? `0 0 0 1px #f59e0b33` : "none"
                   }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                     <button className="quest-btn" onClick={(e) => !done && completeQuest(quest, e)} disabled={done} style={{
                       width:32, height:32, borderRadius:10, flexShrink:0, cursor: done?"default":"pointer",
                       border: done ? "2px solid #34d399" : `2px solid ${c.color}`,
@@ -1294,28 +1195,11 @@ export default function QuestEngine() {
                     </div>
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
                       <div style={{ fontFamily:"'Bebas Neue'", fontSize:18, color:"#34d399" }}>+{quest.xp}</div>
-                      <button onClick={() => startPomodoro(quest.id)} title="25 min focus" style={{
-                        background:"none", border:"none", cursor:"pointer", fontSize:14,
-                        color: isActive ? "#f59e0b" : "#334155", padding:0
-                      }}>⏱</button>
-                      <button onClick={() => setExpandedNoteId(expandedNoteId === quest.id ? null : quest.id)} title="Notes" style={{
-                        background:"none", border:"none", cursor:"pointer", fontSize:13,
-                        color: questNotes[quest.id] ? "#60a5fa" : "#334155", padding:0
-                      }}>📝</button>
+                      <button onClick={() => startPomodoro(quest.id)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, color: isActive ? "#f59e0b" : "#334155", padding:0 }}>⏱</button>
                     </div>
-                    </div>
-                  {expandedNoteId === quest.id && (
-                    <div style={{ marginTop:10, paddingTop:10, borderTop:"1px solid #1e293b", animation:"slideDown 0.2s" }}>
-                      <textarea value={questNotes[quest.id] || ""} placeholder="Notes, thoughts, blockers..."
-                        onChange={e => setQuestNotes(prev => ({ ...prev, [quest.id]: e.target.value }))}
-                        style={{ width:"100%", minHeight:60, background:"#080c14", border:"1px solid #1e293b", borderRadius:6, padding:"6px 10px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none", resize:"vertical" }} />
-                    </div>
-                  )}
                   </div>
                 );
               })}
-
-              {/* Show archived toggle */}
               <div style={{ textAlign:"center", marginTop:16 }}>
                 <button onClick={() => setActiveTab("quests")} style={{
                   background:"none", border:"1px solid #1e293b", borderRadius:8,
@@ -1387,23 +1271,7 @@ export default function QuestEngine() {
               </div>
             )}
 
-            {/* Category visibility toggles */}
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
-              {Object.entries(CATEGORY_META).map(([k,v]) => {
-                const hidden = hiddenCategories.includes(k);
-                return (
-                  <button key={k} onClick={() => setHiddenCategories(prev =>
-                    hidden ? prev.filter(x=>x!==k) : [...prev,k]
-                  )} style={{
-                    padding:"4px 10px", borderRadius:20, fontSize:11, fontWeight:700, cursor:"pointer",
-                    background: hidden ? "#1e293b" : v.bg,
-                    color: hidden ? "#334155" : v.color,
-                    border: `1px solid ${hidden ? "#334155" : v.color+"66"}`,
-                    textDecoration: hidden ? "line-through" : "none", transition:"all 0.15s"
-                  }}>{v.label}</button>
-                );
-              })}
-            </div>
+            {/* Category filters */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
               {[["all","🌐 All"], ...Object.entries(CATEGORY_META).map(([k,v]) => [k, v.label])].map(([k, label]) => (
                 <button key={k} className="tab-btn" onClick={() => setFilter(k)} style={{
@@ -1784,22 +1652,12 @@ export default function QuestEngine() {
                             const prog = dsaProgress[key] || { status:"pending", note:"" };
                             const statusIcon = prog.status === "completed" ? "✅" : prog.status === "struggled" ? "😤" : "⬜";
                             const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
-                            const isTimingThis = dsaActiveKey === key;
-                            const liveSec = isTimingThis ? dsaElapsed : 0;
-                            const totalSec = (prog.totalSeconds || 0) + liveSec;
-                            const timeLbl = totalSec > 0 ? `${Math.floor(totalSec/60)}:${String(totalSec%60).padStart(2,"0")}` : "";
                             return (
                               <div key={prob}>
                                 <div style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 0", borderTop:"1px solid #1e293b" }}>
                                   <a href={lcUrl(prob)} target="_blank" rel="noopener noreferrer"
                                     style={{ color:"#60a5fa", fontSize:12, fontWeight:700, textDecoration:"none", width:40, flexShrink:0 }}>#{prob}</a>
-                                  {timeLbl && <span style={{ fontSize:10, fontFamily:"'Bebas Neue'", color: isTimingThis ? "#f59e0b" : "#475569", letterSpacing:1 }}>{timeLbl}</span>}
                                   <span style={{ flex:1 }} />
-                                  <button onClick={() => startDsaTimer(dayObj.day, prob)} title={isTimingThis ? "Stop timer" : "Start timer"} style={{
-                                    background:"none", border:`1px solid ${isTimingThis ? "#f59e0b" : "#33415544"}`, borderRadius:6,
-                                    padding:"2px 7px", cursor:"pointer", fontSize:12, color: isTimingThis ? "#f59e0b" : "#475569",
-                                    transition:"all 0.15s", animation: isTimingThis ? "pulse 1.5s infinite" : "none"
-                                  }}>{isTimingThis ? "⏸" : "▶"}</button>
                                   <button onClick={(e) => cycleDsaStatus(dayObj.day, prob, e)} style={{
                                     background:"none", border:`1px solid ${statusColor}44`, borderRadius:6,
                                     padding:"2px 8px", cursor:"pointer", fontSize:14, color:statusColor,
@@ -2018,81 +1876,6 @@ export default function QuestEngine() {
           </div>
         )}
 
-        {/* ── INTERVIEW BANK TAB ── */}
-        {activeTab === "interview" && (() => {
-          const cats = [...new Set(INTERVIEW_BANK.map(q => q.cat))];
-          const answered = Object.keys(interviewAnswers).filter(k => {
-            const a = interviewAnswers[k];
-            return a && (a.situation || a.task || a.action || a.result);
-          }).length;
-          return (
-            <div>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-                <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#475569", letterSpacing:2 }}>
-                  {answered}/{INTERVIEW_BANK.length} PREPARED
-                </div>
-                <div style={{ flex:1, marginLeft:14, height:4, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
-                  <div style={{ height:"100%", width:`${(answered/INTERVIEW_BANK.length)*100}%`, background:"linear-gradient(90deg,#f97316,#fbbf24)", borderRadius:99, transition:"width 0.5s" }} />
-                </div>
-              </div>
-
-              <div style={{ fontSize:11, color:"#64748b", marginBottom:14, lineHeight:1.5 }}>
-                Use the <strong style={{color:"#f97316"}}>STAR method</strong>: Situation → Task → Action → Result. Write once, rehearse often.
-              </div>
-
-              {cats.map(c => {
-                const catQs = INTERVIEW_BANK.filter(q => q.cat === c);
-                return (
-                  <div key={c} style={{ marginBottom:18 }}>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#f97316", letterSpacing:2, marginBottom:8 }}>{c}</div>
-                    {catQs.map(q => {
-                      const isOpen = expandedInterviewId === q.id;
-                      const ans = interviewAnswers[q.id] || { situation:"", task:"", action:"", result:"" };
-                      const hasAnswer = ans.situation || ans.task || ans.action || ans.result;
-                      return (
-                        <div key={q.id} className="card-hover" style={{
-                          background: hasAnswer ? "linear-gradient(135deg, #0f172a, #1a0d00)" : "#0f172a",
-                          border: `1px solid ${hasAnswer ? "#f9731644" : "#1e293b"}`,
-                          borderRadius:12, padding:"12px 14px", marginBottom:8, transition:"all 0.25s"
-                        }}>
-                          <div onClick={() => setExpandedInterviewId(isOpen ? null : q.id)} style={{ cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", gap:10 }}>
-                            <div style={{ flex:1 }}>
-                              <div style={{ fontSize:13, color:"#e2e8f0", fontWeight:700, lineHeight:1.3 }}>{q.q}</div>
-                              {!isOpen && hasAnswer && <div style={{ fontSize:11, color:"#34d399", marginTop:3 }}>✓ Answered</div>}
-                            </div>
-                            <span style={{ color:"#475569", fontSize:12, flexShrink:0 }}>{isOpen ? "▲" : "▼"}</span>
-                          </div>
-                          {isOpen && (
-                            <div style={{ marginTop:12, paddingTop:12, borderTop:"1px solid #1e293b", animation:"slideDown 0.25s ease-out" }}>
-                              <div style={{ fontSize:11, color:"#64748b", fontStyle:"italic", marginBottom:10 }}>💡 {q.hint}</div>
-                              {[
-                                ["situation","SITUATION — set the scene"],
-                                ["task","TASK — what needed to be done"],
-                                ["action","ACTION — what you did"],
-                                ["result","RESULT — outcome + metric if possible"],
-                              ].map(([k,lbl]) => (
-                                <div key={k} style={{ marginBottom:8 }}>
-                                  <div style={{ fontSize:10, color:"#475569", letterSpacing:1, marginBottom:3 }}>{lbl}</div>
-                                  <textarea value={ans[k]||""} placeholder="Type your answer..."
-                                    onChange={e => setInterviewAnswers(prev => ({ ...prev, [q.id]: { ...(prev[q.id]||{}), [k]: e.target.value } }))}
-                                    style={{ width:"100%", minHeight:55, background:"#080c14", border:"1px solid #1e293b", borderRadius:6,
-                                      padding:"7px 10px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none", resize:"vertical", transition:"border 0.15s" }}
-                                    onFocus={e => e.target.style.borderColor="#f9731666"}
-                                    onBlur={e => e.target.style.borderColor="#1e293b"} />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })()}
-
         {/* ── BRAIN DUMP TAB ── */}
         {activeTab === "braindump" && (
           <div>
@@ -2283,12 +2066,11 @@ export default function QuestEngine() {
       {/* ── Quick Capture Floating Button ── */}
       <button onClick={() => setShowQuickCapture(v => !v)} style={{
         position:"fixed", bottom:24, right:24, width:56, height:56, borderRadius:"50%",
-        background: `linear-gradient(135deg, ${level.color}, ${level.color}dd)`, border:"none", fontSize:24, cursor:"pointer",
-        boxShadow:`0 8px 24px ${level.color}77, 0 0 0 1px ${level.color}33 inset`, zIndex:9990,
+        background: `linear-gradient(135deg,${level.color},${level.color}cc)`, border:"none", fontSize:22, cursor:"pointer",
+        boxShadow:`0 8px 24px ${level.color}66`, zIndex:9990,
         display:"flex", alignItems:"center", justifyContent:"center", color:"#000",
-        transition:"all 0.2s cubic-bezier(.4,0,.2,1)",
         animation: showQuickCapture ? "none" : "float 3s ease-in-out infinite"
-      }} onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.12) rotate(15deg)";}} onMouseLeave={e=>{e.currentTarget.style.transform="scale(1) rotate(0)";}}>
+      }} onMouseEnter={e=>e.currentTarget.style.transform="scale(1.12)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
         {showQuickCapture ? "✕" : "⚡"}
       </button>
 
@@ -2320,7 +2102,6 @@ export default function QuestEngine() {
           <div style={{ fontSize:10, color:"#334155", marginTop:6, textAlign:"center" }}>Press Enter or click Add · Esc to close</div>
         </div>
       )}
-      </div>
     </div>
   );
 }
