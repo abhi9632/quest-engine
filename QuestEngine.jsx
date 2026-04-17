@@ -374,8 +374,7 @@ export default function QuestEngine() {
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
   const [activeTab, setActiveTab]     = useState("quests");
-  const [filter, setFilter]           = useState(() => { try { return localStorage.getItem("qe_filter") || "all"; } catch { return "all"; } });
-  const setFilterPersist = (f) => { setFilter(f); try { localStorage.setItem("qe_filter", f); } catch {} };
+  const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
@@ -618,6 +617,29 @@ export default function QuestEngine() {
     setShowQuickCapture(false);
   };
 
+  // ── Computed: weeks list + current week (needed by getDailyFocus below) ───
+  const weeks = [...new Set(QUESTS.map(q => q.week))];
+  const currentWeek = (() => {
+    const today = new Date();
+    const todayMs = today.getTime();
+    const yr = today.getFullYear();
+    const MM = { Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11 };
+    const parseRange = (label) => {
+      const m = label.match(/·\s*([A-Za-z]+)\s+(\d+)[–\-](\d+)/);
+      if (!m) return null;
+      const mo = MM[m[1]]; if (mo === undefined) return null;
+      return { s: new Date(yr,mo,+m[2]).getTime(), e: new Date(yr,mo,+m[3],23,59,59).getTime() };
+    };
+    const qw = weeks.filter(w => w.startsWith("Week"));
+    for (const w of qw) { const r=parseRange(w); if(r && todayMs>=r.s && todayMs<=r.e) return w; }
+    // After all weeks: return last; before all: return first
+    const ranges = qw.map(w=>({w,r:parseRange(w)})).filter(x=>x.r);
+    ranges.sort((a,b)=>a.r.s-b.r.s);
+    if (ranges.length && todayMs < ranges[0].r.s) return ranges[0].w;
+    if (ranges.length) return ranges[ranges.length-1].w;
+    return qw[qw.length-1] || weeks[0];
+  })();
+
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
     const allQuests = [...QUESTS, ...customQuests];
@@ -809,55 +831,8 @@ export default function QuestEngine() {
   const xpPct = nextLevel ? Math.round(((xp - level.xpRequired) / (nextLevel.xpRequired - level.xpRequired)) * 100) : 100;
   const defeatedCount = BOSSES.filter(b => (bossHp[b.id] ?? b.hp) === 0).length;
 
-  const weeks = [...new Set(QUESTS.map(q => q.week))];
   const filtered = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
-
-  // Derive current week from actual calendar date by parsing the date range in each week label.
-  // Label format: "Week N · Mon DD–DD" e.g. "Week 9 · Apr 14–20"
-  // Strategy: parse start date of each week label; find the label whose window contains today.
-  const currentWeek = (() => {
-    const today = new Date();
-    const todayMs = today.getTime();
-    const currentYear = today.getFullYear();
-
-    const MONTH_MAP = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
-
-    // Try to parse a week label like "Week 9 · Apr 14–20"
-    const parseWeekRange = (label) => {
-      // Match "Mon DD–DD" or "Mon DD–Mon DD"
-      const m = label.match(/·\s*([A-Za-z]+)\s+(\d+)[–\-](\d+)/);
-      if (!m) return null;
-      const [, mon, startD, endD] = m;
-      const monthIdx = MONTH_MAP[mon];
-      if (monthIdx === undefined) return null;
-      const startDate = new Date(currentYear, monthIdx, parseInt(startD));
-      const endDate   = new Date(currentYear, monthIdx, parseInt(endD), 23, 59, 59);
-      // Handle year wrap (unlikely but safe)
-      return { startMs: startDate.getTime(), endMs: endDate.getTime() };
-    };
-
-    // Check all QUEST weeks (not Interview Prep weeks)
-    const questWeeks = weeks.filter(w => w.startsWith("Week"));
-    for (const w of questWeeks) {
-      const range = parseWeekRange(w);
-      if (range && todayMs >= range.startMs && todayMs <= range.endMs) return w;
-    }
-
-    // Today is after all quest weeks — show last quest week
-    // Find latest week by parsing start dates
-    let latestWeek = questWeeks[questWeeks.length - 1];
-    let latestStart = 0;
-    for (const w of questWeeks) {
-      const r = parseWeekRange(w);
-      if (r && r.startMs > latestStart) { latestStart = r.startMs; latestWeek = w; }
-    }
-    // If today is before any quest week, show first
-    const firstRange = parseWeekRange(questWeeks[0]);
-    if (firstRange && todayMs < firstRange.startMs) return questWeeks[0];
-
-    return latestWeek;
-  })();
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
@@ -1085,7 +1060,7 @@ export default function QuestEngine() {
             {/* Category filters */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
               {[["all","🌐 All"], ...Object.entries(CATEGORY_META).map(([k,v]) => [k, v.label])].map(([k, label]) => (
-                <button key={k} className="tab-btn" onClick={() => setFilterPersist(k)} style={{
+                <button key={k} className="tab-btn" onClick={() => setFilter(k)} style={{
                   padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700,
                   background: filter === k ? level.color : "#1e293b",
                   color: filter === k ? "#000" : "#94a3b8", border: "none", cursor: "pointer", transition: "all 0.15s"
