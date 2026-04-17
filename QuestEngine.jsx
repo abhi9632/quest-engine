@@ -413,13 +413,6 @@ export default function QuestEngine() {
   // ── DSA Tracker ──────────────────────────────────────────────────────────
   const [dsaProgress, setDsaProgress] = useState({}); // { "d1-283": { status:"pending"|"completed"|"struggled", note:"" } }
 
-  // ── Engagement: streak + weekly goal ──────────────────────────────────────
-  const [streak, setStreak]                 = useState(0);
-  const [lastActiveDate, setLastActiveDate] = useState(""); // "YYYY-MM-DD"
-  const [weeklyGoal, setWeeklyGoal]         = useState(200); // XP target per ISO week
-  const [weekStartXp, setWeekStartXp]       = useState(0);   // XP total at start of current week
-  const [currentWeekKey, setCurrentWeekKey] = useState("");  // "YYYY-Www"
-
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
 
@@ -449,11 +442,6 @@ export default function QuestEngine() {
           setCustomQuests(d.customQuests || []);
           setBrainDump(d.brainDump || []);
           setDsaProgress(d.dsaProgress || {});
-          setStreak(d.streak || 0);
-          setLastActiveDate(d.lastActiveDate || "");
-          setWeeklyGoal(d.weeklyGoal || 200);
-          setWeekStartXp(d.weekStartXp || 0);
-          setCurrentWeekKey(d.currentWeekKey || "");
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -567,50 +555,6 @@ export default function QuestEngine() {
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
 
-  // ── Save streak/goal separately — isolated so it never touches core game data ──
-  const streakSaveRef = useRef(null);
-  useEffect(() => {
-    if (!loaded || !lastActiveDate) return;
-    clearTimeout(streakSaveRef.current);
-    streakSaveRef.current = setTimeout(async () => {
-      try {
-        const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey }, { merge: true });
-      } catch (e) { console.error("Streak save error", e); }
-    }, 2000);
-    return () => clearTimeout(streakSaveRef.current);
-  }, [streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey, loaded]);
-
-  // ── Streak + weekly goal rollover — runs once on load ────────────────────
-  useEffect(() => {
-    if (!loaded) return;
-    try {
-      const today = new Date();
-      const todayStr = today.toISOString().slice(0,10);
-      const d = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-      const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-      const weekKey = `${d.getUTCFullYear()}-W${String(weekNum).padStart(2,"0")}`;
-
-      setCurrentWeekKey(prev => {
-        if (prev !== weekKey) {
-          setWeekStartXp(xp);
-          return weekKey;
-        }
-        return prev;
-      });
-
-      setLastActiveDate(prev => {
-        if (prev === todayStr) return prev;
-        const y = new Date(today); y.setDate(y.getDate() - 1);
-        const yStr = y.toISOString().slice(0,10);
-        setStreak(s => prev === yStr ? s + 1 : 1);
-        return todayStr;
-      });
-    } catch (e) { console.error("Streak effect error", e); }
-  }, [loaded]);
-
   // ── Pomodoro timer ────────────────────────────────────────────────────────
   useEffect(() => {
     if (pomodoroRunning) {
@@ -620,12 +564,7 @@ export default function QuestEngine() {
             clearInterval(pomodoroRef.current);
             setPomodoroRunning(false);
             showToast("⏱ POMODORO DONE! Mark your quest complete?", "#f59e0b");
-            // Browser notification (works even if tab is backgrounded)
-            try {
-              if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-                new Notification("⏱ Pomodoro complete!", { body: "25 minutes done. Mark your quest ✓", icon: "/favicon.ico" });
-              }
-            } catch {}
+            try { if (typeof Notification !== "undefined" && Notification.permission === "granted") new Notification("⏱ Pomodoro done!", { body: "25 min complete. Mark quest ✓" }); } catch {}
             return 0;
           }
           return s - 1;
@@ -641,12 +580,7 @@ export default function QuestEngine() {
     setPomodoroQuestId(questId);
     setPomodoroSeconds(25 * 60);
     setPomodoroRunning(true);
-    // Request notification permission on first start
-    try {
-      if (typeof Notification !== "undefined" && Notification.permission === "default") {
-        Notification.requestPermission();
-      }
-    } catch {}
+    try { if (typeof Notification !== "undefined" && Notification.permission === "default") Notification.requestPermission(); } catch {}
   };
   const stopPomodoro = () => { setPomodoroRunning(false); setPomodoroQuestId(null); };
   const fmtTime = (s) => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
@@ -707,6 +641,50 @@ export default function QuestEngine() {
     if (ranges.length) return ranges[ranges.length-1].w;
     return qw[qw.length-1] || weeks[0];
   })();
+
+  // ── Streak + Weekly Goal (local session only — no Firebase) ───────────────
+  const [streak, setStreak]       = useState(0);
+  const [weekXpGained, setWeekXpGained] = useState(0);
+  const weeklyGoal = 200;
+
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      const todayStr = new Date().toISOString().slice(0,10);
+      const stored = JSON.parse(sessionStorage.getItem("qe_session") || "{}");
+      // Streak
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+      const yStr = yesterday.toISOString().slice(0,10);
+      if (stored.lastDate === todayStr) {
+        setStreak(stored.streak || 1);
+        setWeekXpGained(stored.weekXp || 0);
+      } else {
+        const newStreak = stored.lastDate === yStr ? (stored.streak || 0) + 1 : 1;
+        setStreak(newStreak);
+        setWeekXpGained(0);
+        sessionStorage.setItem("qe_session", JSON.stringify({ lastDate: todayStr, streak: newStreak, weekXp: 0 }));
+      }
+    } catch {}
+  }, [loaded]);
+
+  // track weekly XP gain this session
+  const prevXpRef = useRef(null);
+  useEffect(() => {
+    if (!loaded) return;
+    if (prevXpRef.current === null) { prevXpRef.current = xp; return; }
+    const gained = xp - prevXpRef.current;
+    if (gained > 0) {
+      setWeekXpGained(w => {
+        const next = w + gained;
+        try {
+          const stored = JSON.parse(sessionStorage.getItem("qe_session") || "{}");
+          sessionStorage.setItem("qe_session", JSON.stringify({ ...stored, weekXp: next }));
+        } catch {}
+        return next;
+      });
+    }
+    prevXpRef.current = xp;
+  }, [xp, loaded]);
 
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
@@ -971,32 +949,6 @@ export default function QuestEngine() {
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 11, letterSpacing: 2, color: "#475569" }}>ABHISHEK'S QUEST ENGINE v3</div>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 26, color: level.color, letterSpacing: 1, lineHeight: 1.1 }}>{level.title}</div>
               <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Level {level.level} · {xp} XP total</div>
-              <div style={{ display:"flex", gap:10, marginTop:8 }}>
-                <div style={{ background:"#1e293b", borderRadius:8, padding:"3px 10px", display:"flex", alignItems:"center", gap:5 }}>
-                  <span style={{ fontSize:14 }}>🔥</span>
-                  <span style={{ fontFamily:"'Bebas Neue'", fontSize:15, color: streak>=3 ? "#f97316" : "#94a3b8" }}>{streak} DAY{streak!==1?"S":""}</span>
-                </div>
-                {/* Weekly XP ring */}
-                {(() => {
-                  const pct = Math.min(1, weeklyXpEarned / weeklyXpGoal);
-                  const r=16, circ=2*Math.PI*r;
-                  const done = pct >= 1;
-                  return (
-                    <div style={{ display:"flex", alignItems:"center", gap:6, background:"#1e293b", borderRadius:8, padding:"3px 10px" }}>
-                      <svg width="36" height="36" style={{ transform:"rotate(-90deg)" }}>
-                        <circle cx="18" cy="18" r={r} fill="none" stroke="#334155" strokeWidth="3"/>
-                        <circle cx="18" cy="18" r={r} fill="none" stroke={done?"#34d399":level.color} strokeWidth="3"
-                          strokeDasharray={circ} strokeDashoffset={circ*(1-pct)} strokeLinecap="round"
-                          style={{ transition:"stroke-dashoffset 0.4s ease" }}/>
-                      </svg>
-                      <div>
-                        <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color: done?"#34d399":level.color, lineHeight:1 }}>{weeklyXpEarned}/{weeklyXpGoal}</div>
-                        <div style={{ fontSize:9, color:"#475569" }}>WEEKLY XP</div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
             </div>
             <div style={{ textAlign: "right" }}>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: level.color }}>{completedCount}</div>
@@ -1017,40 +969,24 @@ export default function QuestEngine() {
               </div>
             </div>
           )}
-
-          {/* Streak + Weekly Goal Ring */}
-          {(() => {
-            const safeGoal = weeklyGoal > 0 ? weeklyGoal : 200;
-            const weekXp = Math.max(0, xp - weekStartXp);
-            const goalPct = Math.min(100, Math.round((weekXp / safeGoal) * 100));
-            const circ = 2 * Math.PI * 18;
-            const offset = circ - (goalPct / 100) * circ;
-            const goalColor = goalPct >= 100 ? "#34d399" : goalPct >= 50 ? "#f59e0b" : "#60a5fa";
-            return (
-              <div style={{ marginTop: 12, display:"flex", gap:10, alignItems:"center" }}>
-                <div style={{ flex:1, background:"#080c14", border:"1px solid #1e293b", borderRadius:10, padding:"8px 12px", display:"flex", alignItems:"center", gap:10 }}>
-                  <div style={{ fontSize:22 }}>🔥</div>
-                  <div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:18, color: streak >= 3 ? "#f97316" : "#e2e8f0", lineHeight:1 }}>{streak}</div>
-                    <div style={{ fontSize:9, color:"#475569", letterSpacing:1 }}>DAY STREAK</div>
-                  </div>
-                </div>
-                <div style={{ flex:1, background:"#080c14", border:"1px solid #1e293b", borderRadius:10, padding:"8px 12px", display:"flex", alignItems:"center", gap:10 }}>
-                  <svg width="44" height="44" viewBox="0 0 44 44">
-                    <circle cx="22" cy="22" r="18" fill="none" stroke="#1e293b" strokeWidth="4" />
-                    <circle cx="22" cy="22" r="18" fill="none" stroke={goalColor} strokeWidth="4"
-                      strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
-                      transform="rotate(-90 22 22)" style={{ transition:"stroke-dashoffset 0.5s" }} />
-                    <text x="22" y="26" textAnchor="middle" fontSize="11" fontWeight="700" fill={goalColor}>{goalPct}%</text>
-                  </svg>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#e2e8f0", lineHeight:1 }}>{weekXp}/{safeGoal} XP</div>
-                    <div style={{ fontSize:9, color:"#475569", letterSpacing:1, marginTop:2 }}>WEEKLY GOAL</div>
-                  </div>
-                </div>
+          {/* Streak + Weekly Goal */}
+          <div style={{ marginTop:10, display:"flex", gap:8 }}>
+            <div style={{ flex:1, background:"#080c14", border:"1px solid #1e293b", borderRadius:8, padding:"6px 10px", display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ fontSize:18 }}>🔥</span>
+              <div>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color: streak>=3?"#f97316":"#e2e8f0", lineHeight:1 }}>{streak}</div>
+                <div style={{ fontSize:9, color:"#475569", letterSpacing:1 }}>DAY STREAK</div>
               </div>
-            );
-          })()}
+            </div>
+            <div style={{ flex:1, background:"#080c14", border:"1px solid #1e293b", borderRadius:8, padding:"6px 10px" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#64748b", marginBottom:3 }}>
+                <span>Weekly Goal</span><span style={{ color: weekXpGained>=weeklyGoal?"#34d399":"#64748b" }}>{weekXpGained}/{weeklyGoal} XP</span>
+              </div>
+              <div style={{ height:4, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${Math.min(100,(weekXpGained/weeklyGoal)*100)}%`, background: weekXpGained>=weeklyGoal?"#34d399":"#60a5fa", borderRadius:99, transition:"width 0.4s" }} />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Current Boss ── */}
@@ -1122,13 +1058,11 @@ export default function QuestEngine() {
             <div style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:14, padding:"12px 16px", marginBottom:14 }}>
               <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:8 }}>📅 UPCOMING DEADLINES</div>
               {upcoming.map(d => {
-                const c = d.daysLeft<=3?"#ef4444":d.daysLeft<=7?"#f97316":d.daysLeft<=14?"#f59e0b":"#60a5fa";
+                const col = d.daysLeft<=3?"#ef4444":d.daysLeft<=7?"#f97316":d.daysLeft<=14?"#f59e0b":"#60a5fa";
                 return (
                   <div key={d.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom:"1px solid #1e293b" }}>
                     <div style={{ fontSize:12, color:"#94a3b8", flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{d.icon} {d.label}</div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:c, marginLeft:8, flexShrink:0 }}>
-                      {d.daysLeft===0?"TODAY":`${d.daysLeft}D`}
-                    </div>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:16, color:col, marginLeft:8, flexShrink:0 }}>{d.daysLeft===0?"TODAY":`${d.daysLeft}D`}</div>
                   </div>
                 );
               })}
@@ -1346,8 +1280,6 @@ export default function QuestEngine() {
               const weekDone = weekQuests.filter(q => completed[q.id]).length;
               const isFullyDone = weekDone === weekQuests.length;
               const isCurrent = week === currentWeek;
-              // Auto-collapse: done weeks stay collapsed unless explicitly clicked;
-              // current week opens by default; past/future non-current weeks collapsed.
               const isOpen = expandedWeek === week ? true
                            : expandedWeek === null && isCurrent && !isFullyDone ? true
                            : false;
