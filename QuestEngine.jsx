@@ -35,45 +35,45 @@ const QUESTS = [
   { id:"q3",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit iOS Quiz 1",                 desc:"Thu Mar 12 deadline 🔴", xp:50, bossDmg:40, urgent:true },
   { id:"q4",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit Team Charter",               desc:"Fri Mar 13 — ungraded but required by FID", xp:20, bossDmg:15, urgent:false },
   { id:"q5",  week:"Week 4 · Mar 10–16",    category:"jobsearch", title:"Update LinkedIn Headline",          desc:"AI Backend Engineer | Java + Python | UTS Master's IT", link:"https://www.linkedin.com/in/", xp:25, bossDmg:20, urgent:false },
-  { id:"q6",  week:"Week 4 · Mar 10–16",    category:"ailearn",   title:"Watch FastAPI Intro (30 min)",      desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=fastapi", xp:30, bossDmg:25, urgent:false },
+  { id:"q6",  week:"Week 4 · Mar 10–16",    category:"ailearn",   title:"Watch FastAPI Intro (30 min)",      desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=fastapi", xp:30, bossDmg:25, urgent:false , archived:true},
 
   // ── WEEK 5 · Mar 17–23 ─────────────────────────────────────────────────────
   { id:"q7",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 1",          desc:"2 hrs focused work — follow assignment brief step by step", xp:35, bossDmg:28, urgent:false },
   { id:"q8",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 2",          desc:"2 hrs focused work — core features done by end of session", xp:35, bossDmg:28, urgent:false },
   { id:"q9",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Final Push",     desc:"Submit by Mar 22 🔴 Polish + upload", xp:60, bossDmg:50, urgent:true },
-  { id:"q10", week:"Week 5 · Mar 17–23",    category:"ailearn",   title:"Error Handling + .env in Python",   desc:"Corey Schafer YouTube — then type examples yourself", link:"https://www.youtube.com/@coreyms/search?query=try+except+error+handling", xp:40, bossDmg:35, urgent:false },
+  { id:"q10", week:"Week 5 · Mar 17–23",    category:"ailearn",   title:"Error Handling + .env in Python",   desc:"Corey Schafer YouTube — then type examples yourself", link:"https://www.youtube.com/@coreyms/search?query=try+except+error+handling", xp:40, bossDmg:35, urgent:false , archived:true},
   { id:"q10b",week:"Week 5 · Mar 17–23",    category:"academic",  title:"⚠️ IP Quiz 1 Revision (2 days out)",desc:"Mar 21 — Revise IP lecture notes for 1.5 hrs. Quiz is Mar 23.", xp:30, bossDmg:25, urgent:true },
   { id:"q11", week:"Week 5 · Mar 17–23",    category:"academic",  title:"Submit IP Quiz 1",                  desc:"Mar 23 deadline 🔴", xp:50, bossDmg:40, urgent:true },
 
   // ── WEEK 6 · Mar 24–31 ─────────────────────────────────────────────────────
-  { id:"q12", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch OpenAI API Tutorial (35 min)",desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=openai+api+python", xp:30, bossDmg:25, urgent:false },
-  { id:"q13", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Build OpenAI API Script",           desc:"System prompt + logging. Type it yourself — no copy-paste.", link:"https://platform.openai.com/docs/quickstart", xp:60, bossDmg:50, urgent:false },
-  { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false },
-  { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false },
+  { id:"q12", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch OpenAI API Tutorial (35 min)",desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=openai+api+python", xp:30, bossDmg:25, urgent:false , archived:true},
+  { id:"q13", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Build OpenAI API Script",           desc:"System prompt + logging. Type it yourself — no copy-paste.", link:"https://platform.openai.com/docs/quickstart", xp:60, bossDmg:50, urgent:false , archived:true},
+  { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false , archived:true},
+  { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false , archived:true},
   { id:"q16", week:"Week 6 · Mar 24–31",    category:"jobsearch", title:"Push OpenAI Script to GitHub",      desc:"Write a README. Your first AI repo!", link:"https://github.com", xp:40, bossDmg:35, urgent:false },
-  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
+  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false , archived:true},
 
   // ── WEEK 7 · Apr 1–7 ───────────────────────────────────────────────────────
-  { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false },
-  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
+  { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false , archived:true},
+  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false , archived:true},
   { id:"q18", week:"Week 7 · Apr 1–7",      category:"academic",  title:"IP Assignment 1 — Push to finish",  desc:"Due Apr 5. Don't leave for day of.", xp:80, bossDmg:65, urgent:true },
   { id:"q19", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit IP Assignment 1",            desc:"Apr 5 — Very High priority 🔴", xp:100, bossDmg:80, urgent:true },
   { id:"q20", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit FID Persona",                desc:"Apr 5 — alongside IP A1 🔴", xp:70, bossDmg:55, urgent:true },
-  { id:"q21", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Build Basic LangChain Chain",       desc:"Prompt template + LLM + output parser. 30 min. Type yourself.", xp:50, bossDmg:40, urgent:false },
+  { id:"q21", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Build Basic LangChain Chain",       desc:"Prompt template + LLM + output parser. 30 min. Type yourself.", xp:50, bossDmg:40, urgent:false , archived:true},
 
   // ── WEEK 8 · Apr 7–13 ──────────────────────────────────────────────────────
-  { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false },
-  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
-  { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false },
-  { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false },
+  { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false , archived:true},
+  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false , archived:true},
+  { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false , archived:true},
+  { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false , archived:true},
   { id:"q25", week:"Week 8 · Apr 7–13",     category:"jobsearch", title:"Add Google AI Cert to LinkedIn",    desc:"Add under Licences & Certifications", link:"https://www.linkedin.com/in/", xp:20, bossDmg:15, urgent:false },
-  { id:"q26", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch Pixegami — Build a RAG App",  desc:"45 min. Your Project 1 blueprint — watch before writing any code.", link:"https://www.youtube.com/watch?v=tcqEUSNCn8I", xp:35, bossDmg:30, urgent:false },
+  { id:"q26", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch Pixegami — Build a RAG App",  desc:"45 min. Your Project 1 blueprint — watch before writing any code.", link:"https://www.youtube.com/watch?v=tcqEUSNCn8I", xp:35, bossDmg:30, urgent:false , archived:true},
 
   // ── WEEK 9 · Apr 14–20 ─────────────────────────────────────────────────────
   { id:"q27", week:"Week 9 · Apr 14–20",    category:"project",   title:"Set Up Project 1 Repo: AI Doc Q&A", desc:"GitHub repo + README skeleton + empty FastAPI app", xp:30, bossDmg:25, urgent:false },
   { id:"q28", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build PDF Chunking + Embedding Logic",desc:"Load PDF → chunk → embed → store in ChromaDB", xp:70, bossDmg:60, urgent:false },
   { id:"q29", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build /ask Endpoint (RAG pipeline)", desc:"Retrieve chunks → generate answer with citations", xp:80, bossDmg:65, urgent:false },
-  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false },
+  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false , archived:true},
   { id:"q30", week:"Week 9 · Apr 14–20",    category:"project",   title:"Deploy Project 1 to Render",         desc:"Get a live public URL — this is what employers will see", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q31", week:"Week 9 · Apr 14–20",    category:"project",   title:"Write Project 1 README + Diagram",   desc:"What it does, tech stack, architecture diagram (draw.io)", xp:40, bossDmg:35, urgent:false },
 
@@ -81,13 +81,13 @@ const QUESTS = [
   { id:"q32", week:"Week 10 · Apr 21–27",   category:"academic",  title:"Submit iOS Assignment 2",            desc:"Apr 27 deadline 🔴 Start Day 1 of this week — 15–20 hrs total", xp:90, bossDmg:75, urgent:true },
   { id:"q33", week:"Week 10 · Apr 21–27",   category:"project",   title:"Sketch Project 2 Architecture",      desc:"JD Analyser: JD + resume → match score + skills gap + cover letter bullets", xp:20, bossDmg:15, urgent:false },
   { id:"q34", week:"Week 10 · Apr 21–27",   category:"project",   title:"Build Project 2 /analyse Endpoint",  desc:"Prompt engineering for skill extraction. Return JSON.", xp:80, bossDmg:65, urgent:false },
-  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false },
+  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false , archived:true},
 
   // ── WEEK 11 · Apr 28–May 3 ─────────────────────────────────────────────────
   { id:"q35", week:"Week 11 · Apr 28–May 3",category:"academic",  title:"Submit FID Practical",               desc:"May 1 deadline 🔴 8–10 hrs needed. Prepare all week.", xp:100, bossDmg:80, urgent:true },
   { id:"q36", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Deploy Project 2 + Write README",    desc:"Same standard as Project 1. Get live URL.", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
   { id:"q37", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Record 90-sec Loom Demo of Project 2",desc:"Paste JD → show analysis output. Add link to README.", link:"https://www.loom.com", xp:50, bossDmg:40, urgent:false },
-  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false },
+  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false , archived:true},
 
   // ── WEEK 12 · May 5–11 ─────────────────────────────────────────────────────
   { id:"q38", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Update Resume (AI Projects First)",  desc:"Lead with AI projects, Java backend second. 1 page max.", xp:40, bossDmg:35, urgent:false },
@@ -95,17 +95,17 @@ const QUESTS = [
   { id:"q39b",week:"Week 12 · May 5–11",    category:"academic",  title:"⚠️ IP Quiz 2 Revision (3 days out)", desc:"May 8 — Revise IP lecture notes for 1.5 hrs. Quiz is May 11.", xp:30, bossDmg:25, urgent:true },
   { id:"q40", week:"Week 12 · May 5–11",    category:"academic",  title:"Submit IP Quiz 2",                   desc:"May 11 deadline", xp:60, bossDmg:50, urgent:true },
   { id:"q41", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Message Deloitte Manager",           desc:"Ask about internal AI roles AND Claude partner network access", xp:50, bossDmg:45, urgent:false },
-  { id:"q41b",week:"Week 12 · May 5–11",    category:"cca",       title:"CCA Prep: Practice Questions + Anti-Patterns",desc:"Do all 25 practice Qs on claudecertifications.com. Then read the 18 anti-patterns cheatsheet. These are the real exam traps.", link:"https://claudecertifications.com/claude-certified-architect/practice-questionst/blob/main/guide_en.MD", xp:80, bossDmg:70, urgent:false },
+  { id:"q41b",week:"Week 12 · May 5–11",    category:"cca",       title:"CCA Prep: Practice Questions + Anti-Patterns",desc:"Do all 25 practice Qs on claudecertifications.com. Then read the 18 anti-patterns cheatsheet. These are the real exam traps.", link:"https://claudecertifications.com/claude-certified-architect/practice-questionst/blob/main/guide_en.MD", xp:80, bossDmg:70, urgent:false , archived:true},
 
   // ── WEEKS 13–15 · May 12–24 ────────────────────────────────────────────────
   { id:"q42", week:"Week 13–15 · May 12–24",category:"academic",  title:"IP Assignment 2 (Group) Done",       desc:"May 24 deadline 🔴 Group project — coordinate early, don't let teammates down", xp:120, bossDmg:100, urgent:true },
-  { id:"q42b",week:"Week 13–15 · May 12–24",category:"cca",       title:"CCA Prep: Review Weak Domains",      desc:"Go back to whichever domain pages you struggled with in the practice questions.", link:"https://claudecertifications.com/claude-certified-architect/domains", xp:50, bossDmg:45, urgent:false },
+  { id:"q42b",week:"Week 13–15 · May 12–24",category:"cca",       title:"CCA Prep: Review Weak Domains",      desc:"Go back to whichever domain pages you struggled with in the practice questions.", link:"https://claudecertifications.com/claude-certified-architect/domains", xp:50, bossDmg:45, urgent:false , archived:true},
   { id:"q43", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 Targeted Applications (Batch 1)",desc:"Not 50 generic — 5 perfect ones. Customise cover letter for each.", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+python&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
   { id:"q44", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Practice 90-Second Verbal Pitch",    desc:"Background + projects + what you want. Time yourself out loud.", xp:30, bossDmg:25, urgent:false },
   { id:"q45", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 More Applications (Batch 2)",desc:"Target: Accenture, REA Group, WiseTech, Canva, Atlassian", link:"https://www.linkedin.com/jobs/search/?keywords=AI+engineer&location=Sydney", xp:100, bossDmg:80, urgent:false },
 
   // ── JUNE · CCA Exam + Apply ─────────────────────────────────────────────────
-  { id:"q46", week:"June · Exam + Apply",   category:"cca",       title:"🏆 SIT CCA Foundations Exam",        desc:"$99 or free via Deloitte partner access. 60 MCQ, 120 min. You're ready.", link:"https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request", xp:200, bossDmg:200, urgent:false },
+  { id:"q46", week:"June · Exam + Apply",   category:"cca",       title:"🏆 SIT CCA Foundations Exam",        desc:"$99 or free via Deloitte partner access. 60 MCQ, 120 min. You're ready.", link:"https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request", xp:200, bossDmg:200, urgent:false , archived:true},
   { id:"q47", week:"June · Exam + Apply",   category:"jobsearch", title:"Add CCA Cert to LinkedIn + Resume",  desc:"Add under Certifications immediately after passing. Major differentiator.", link:"https://www.linkedin.com/in/", xp:50, bossDmg:40, urgent:false },
   { id:"q48", week:"June · Exam + Apply",   category:"jobsearch", title:"Pin Both Projects + Update GitHub",  desc:"Customise GitHub profile. Pin AI Doc Q&A and JD Analyser.", link:"https://github.com", xp:20, bossDmg:15, urgent:false },
   { id:"q49", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 Enterprise Applications",   desc:"Target: WiseTech Global, Macquarie Tech, CBA Tech, Deloitte AI, Accenture", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+java&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
@@ -373,7 +373,7 @@ export default function QuestEngine() {
   const [bossHp, setBossHp]           = useState({});
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
-  const [activeTab, setActiveTab]     = useState("quests");
+  const [activeTab, setActiveTab]     = useState("today");
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
@@ -686,20 +686,18 @@ export default function QuestEngine() {
     prevXpRef.current = xp;
   }, [xp, loaded]);
 
+  const [showArchived, setShowArchived] = useState(false);
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
-    const allQuests = [...QUESTS, ...customQuests];
+    const allQuests = [...QUESTS, ...customQuests].filter(q => !q.archived);
     const incomplete = allQuests.filter(q => !completed[q.id]);
     if (!incomplete.length) return null;
-    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5, interview:1 };
-    const sort = (arr) => arr.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9));
-    // 1. Urgent quests in current week
+    const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
+    const sort = (arr) => [...arr].sort((a,b) => (priority[a.category]??9) - (priority[b.category]??9));
     const currentWeekUrgent = incomplete.filter(q => q.urgent && q.week === currentWeek);
     if (currentWeekUrgent.length) return sort(currentWeekUrgent)[0];
-    // 2. Any urgent quest
     const urgent = incomplete.filter(q => q.urgent);
     if (urgent.length) return sort(urgent)[0];
-    // 3. Any quest in current week
     const currentWeekQuests = incomplete.filter(q => q.week === currentWeek);
     if (currentWeekQuests.length) return sort(currentWeekQuests)[0];
     return sort(incomplete)[0];
@@ -877,7 +875,11 @@ export default function QuestEngine() {
   const xpPct = nextLevel ? Math.round(((xp - level.xpRequired) / (nextLevel.xpRequired - level.xpRequired)) * 100) : 100;
   const defeatedCount = BOSSES.filter(b => (bossHp[b.id] ?? b.hp) === 0).length;
 
-  const filtered = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
+  const filtered = (() => {
+    let q = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
+    if (!showArchived) q = q.filter(q => !q.archived);
+    return q;
+  })();
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
@@ -1074,7 +1076,7 @@ export default function QuestEngine() {
         <div className="qe-right">
         {/* ── Tabs ── */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["dsa","🧩 DSA"], ["stats","📊 Stats"]].map(([tab, label]) => (
+          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["dsa","🧩 DSA"], ["stats","📊 Stats"]].map(([tab, label]) => (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
               background: activeTab === tab ? level.color : "#0f172a",
@@ -1084,6 +1086,82 @@ export default function QuestEngine() {
             }}>{label}</button>
           ))}
         </div>
+
+        {/* ── TODAY TAB ── */}
+        {activeTab === "today" && (() => {
+          const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
+          const allActive = [...QUESTS, ...customQuests].filter(q => !q.archived && !completed[q.id]);
+          const thisWeek = allActive.filter(q => q.week === currentWeek || q.week === "Custom" || q.week?.startsWith("Interview Prep"));
+          const urgent = [...thisWeek].filter(q => q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
+          const normal = [...thisWeek].filter(q => !q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
+          const todayList = [...urgent, ...normal];
+          const cat = CATEGORY_META;
+          return (
+            <div>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#475569", letterSpacing:2 }}>
+                  {todayList.length} TASKS · {currentWeek}
+                </div>
+                <div style={{ fontSize:11, color:"#475569" }}>
+                  {allActive.length - todayList.length} more in other weeks
+                </div>
+              </div>
+
+              {todayList.length === 0 && (
+                <div style={{ textAlign:"center", padding:"40px 0", color:"#334155", fontSize:14 }}>
+                  🎉 All caught up this week!
+                </div>
+              )}
+
+              {todayList.map((quest) => {
+                const done = !!completed[quest.id];
+                const c = cat[quest.category] || cat.academic;
+                const isActive = pomodoroQuestId === quest.id;
+                return (
+                  <div key={quest.id} style={{
+                    background: isActive ? "#1a1400" : "#0f172a",
+                    border: `1px solid ${quest.urgent ? "#ef444466" : isActive ? "#f59e0b66" : "#1e293b"}`,
+                    borderRadius:12, padding:"14px 16px", marginBottom:8,
+                    display:"flex", alignItems:"center", gap:12,
+                    outline: isActive ? "1px solid #f59e0b44" : "none"
+                  }}>
+                    <button className="quest-btn" onClick={(e) => !done && completeQuest(quest, e)} disabled={done} style={{
+                      width:32, height:32, borderRadius:10, flexShrink:0, cursor: done?"default":"pointer",
+                      border: done ? "2px solid #34d399" : `2px solid ${c.color}`,
+                      background: done ? "#34d399" : "transparent",
+                      fontSize:15, color: done?"#000":c.color, fontWeight:900,
+                      display:"flex", alignItems:"center", justifyContent:"center"
+                    }}>{done ? "✓" : "○"}</button>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:3 }}>
+                        {quest.urgent && <span style={{ fontSize:10, background:"#7f1d1d", color:"#fca5a5", padding:"1px 6px", borderRadius:4, fontWeight:700 }}>URGENT</span>}
+                        <span style={{ fontSize:10, background:c.bg, color:c.color, padding:"1px 6px", borderRadius:4, fontWeight:700 }}>{c.label}</span>
+                        {quest.link && <a href={quest.link} target="_blank" rel="noopener noreferrer" style={{ fontSize:10, background:"#1e293b", color:"#60a5fa", padding:"1px 7px", borderRadius:4, fontWeight:700, textDecoration:"none" }}>🔗</a>}
+                      </div>
+                      <div style={{ fontSize:14, fontWeight:700, color:"#e2e8f0", lineHeight:1.3 }}>{quest.title}</div>
+                      {quest.desc && <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>{quest.desc}</div>}
+                    </div>
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
+                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:18, color:"#34d399" }}>+{quest.xp}</div>
+                      <button onClick={() => startPomodoro(quest.id)} title="25 min focus" style={{
+                        background:"none", border:"none", cursor:"pointer", fontSize:14,
+                        color: isActive ? "#f59e0b" : "#334155", padding:0
+                      }}>⏱</button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Show archived toggle */}
+              <div style={{ textAlign:"center", marginTop:16 }}>
+                <button onClick={() => setActiveTab("quests")} style={{
+                  background:"none", border:"1px solid #1e293b", borderRadius:8,
+                  color:"#475569", fontSize:12, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit"
+                }}>View All Weeks →</button>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── QUESTS TAB ── */}
         {activeTab === "quests" && (
@@ -1147,6 +1225,13 @@ export default function QuestEngine() {
             )}
 
             {/* Category filters */}
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
+              <button onClick={() => setShowArchived(v => !v)} style={{
+                background:"none", border:"1px solid #1e293b", borderRadius:6,
+                color: showArchived ? "#f59e0b" : "#475569", fontSize:11, padding:"3px 10px",
+                cursor:"pointer", fontFamily:"inherit"
+              }}>{showArchived ? "🗄 Hide Archived" : "🗄 Show Archived"}</button>
+            </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
               {[["all","🌐 All"], ...Object.entries(CATEGORY_META).map(([k,v]) => [k, v.label])].map(([k, label]) => (
                 <button key={k} className="tab-btn" onClick={() => setFilter(k)} style={{
