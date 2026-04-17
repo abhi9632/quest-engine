@@ -481,11 +481,11 @@ export default function QuestEngine() {
       if (!loadedRef.current) return;
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey }, { merge: true });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress }, { merge: true });
       } catch (e) { console.error("Save error", e); }
     }, 1200);
     return () => clearTimeout(saveTimerRef.current);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -566,6 +566,20 @@ export default function QuestEngine() {
     });
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
+
+  // ── Save streak/goal separately — isolated so it never touches core game data ──
+  const streakSaveRef = useRef(null);
+  useEffect(() => {
+    if (!loaded || !lastActiveDate) return;
+    clearTimeout(streakSaveRef.current);
+    streakSaveRef.current = setTimeout(async () => {
+      try {
+        const ref = doc(db, "users", STORAGE_KEY);
+        await setDoc(ref, { streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey }, { merge: true });
+      } catch (e) { console.error("Streak save error", e); }
+    }, 2000);
+    return () => clearTimeout(streakSaveRef.current);
+  }, [streak, lastActiveDate, weeklyGoal, weekStartXp, currentWeekKey, loaded]);
 
   // ── Streak + weekly goal rollover — runs once on load ────────────────────
   useEffect(() => {
