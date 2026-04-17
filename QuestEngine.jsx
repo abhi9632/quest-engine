@@ -374,8 +374,8 @@ export default function QuestEngine() {
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
   const [activeTab, setActiveTab]     = useState("quests");
-  const [filter, setFilter]           = useState(() => localStorage.getItem("qe_filter") || "all");
-  const setFilterPersist = (f) => { setFilter(f); localStorage.setItem("qe_filter", f); };
+  const [filter, setFilter]           = useState(() => { try { return localStorage.getItem("qe_filter") || "all"; } catch { return "all"; } });
+  const setFilterPersist = (f) => { setFilter(f); try { localStorage.setItem("qe_filter", f); } catch {} };
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]           = useState(false);
   const [levelUpAnim, setLevelUpAnim] = useState(false);
