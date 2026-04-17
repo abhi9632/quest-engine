@@ -567,33 +567,34 @@ export default function QuestEngine() {
     showToast(`↩ Undone — ${quest.xp} XP removed`, "#94a3b8");
   };
 
-  // ── Streak + weekly goal rollover — runs on load and daily thereafter ────
+  // ── Streak + weekly goal rollover — runs once on load ────────────────────
   useEffect(() => {
     if (!loaded) return;
-    const today = new Date();
-    const todayStr = today.toISOString().slice(0,10); // YYYY-MM-DD
-    // ISO week key
-    const d = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-    const weekKey = `${d.getUTCFullYear()}-W${String(weekNum).padStart(2,"0")}`;
+    try {
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0,10);
+      const d = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+      const weekKey = `${d.getUTCFullYear()}-W${String(weekNum).padStart(2,"0")}`;
 
-    // Weekly rollover — reset weekStartXp when new week detected
-    if (currentWeekKey !== weekKey) {
-      setWeekStartXp(xp);
-      setCurrentWeekKey(weekKey);
-    }
+      setCurrentWeekKey(prev => {
+        if (prev !== weekKey) {
+          setWeekStartXp(xp);
+          return weekKey;
+        }
+        return prev;
+      });
 
-    // Streak — only update once per day
-    if (lastActiveDate !== todayStr) {
-      const y = new Date(today); y.setDate(y.getDate() - 1);
-      const yStr = y.toISOString().slice(0,10);
-      if (lastActiveDate === yStr) setStreak(s => s + 1);
-      else if (lastActiveDate === "") setStreak(1);
-      else setStreak(1); // broken streak, restart
-      setLastActiveDate(todayStr);
-    }
+      setLastActiveDate(prev => {
+        if (prev === todayStr) return prev;
+        const y = new Date(today); y.setDate(y.getDate() - 1);
+        const yStr = y.toISOString().slice(0,10);
+        setStreak(s => prev === yStr ? s + 1 : 1);
+        return todayStr;
+      });
+    } catch (e) { console.error("Streak effect error", e); }
   }, [loaded]);
 
   // ── Pomodoro timer ────────────────────────────────────────────────────────
@@ -1005,8 +1006,9 @@ export default function QuestEngine() {
 
           {/* Streak + Weekly Goal Ring */}
           {(() => {
+            const safeGoal = weeklyGoal > 0 ? weeklyGoal : 200;
             const weekXp = Math.max(0, xp - weekStartXp);
-            const goalPct = Math.min(100, Math.round((weekXp / weeklyGoal) * 100));
+            const goalPct = Math.min(100, Math.round((weekXp / safeGoal) * 100));
             const circ = 2 * Math.PI * 18;
             const offset = circ - (goalPct / 100) * circ;
             const goalColor = goalPct >= 100 ? "#34d399" : goalPct >= 50 ? "#f59e0b" : "#60a5fa";
@@ -1027,8 +1029,8 @@ export default function QuestEngine() {
                       transform="rotate(-90 22 22)" style={{ transition:"stroke-dashoffset 0.5s" }} />
                     <text x="22" y="26" textAnchor="middle" fontSize="11" fontWeight="700" fill={goalColor}>{goalPct}%</text>
                   </svg>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#e2e8f0", lineHeight:1 }}>{weekXp}/{weeklyGoal} XP</div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#e2e8f0", lineHeight:1 }}>{weekXp}/{safeGoal} XP</div>
                     <div style={{ fontSize:9, color:"#475569", letterSpacing:1, marginTop:2 }}>WEEKLY GOAL</div>
                   </div>
                 </div>
