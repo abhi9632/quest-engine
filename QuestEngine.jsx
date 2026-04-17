@@ -312,6 +312,31 @@ const DSA_DAYS = [
 const DSA_PHASE_LABELS = { 1:"Phase 1 — Foundations", 2:"Phase 2 — Trees", 3:"Phase 3 — Graphs + DP" };
 const DSA_PHASE_RANGES = { 1:[1,14], 2:[15,19], 3:[20,28] };
 
+// ─── INTERVIEW BANK (STAR-format behavioural Qs) ────────────────────────────
+const INTERVIEW_BANK = [
+  { id:"iv1",  cat:"Leadership", q:"Tell me about a time you led a team through a difficult challenge.", hint:"HAYA Formula Student procurement team story works here." },
+  { id:"iv2",  cat:"Leadership", q:"Describe a time you had to make a decision without all the information you needed.", hint:"Production incidents at InvestCloud." },
+  { id:"iv3",  cat:"Conflict",   q:"Tell me about a conflict with a colleague. How did you resolve it?", hint:"Stay factual, no blame, focus on resolution." },
+  { id:"iv4",  cat:"Conflict",   q:"How do you handle disagreement with a manager's technical decision?", hint:"Raise concerns respectfully, commit to final call." },
+  { id:"iv5",  cat:"Failure",    q:"Tell me about a time you failed. What did you learn?", hint:"Pick a real failure with clear lessons." },
+  { id:"iv6",  cat:"Failure",    q:"Describe a project that did not go as planned.", hint:"UTS group project retrospectives." },
+  { id:"iv7",  cat:"Impact",     q:"What is the most impactful thing you shipped so far?", hint:"L2 service-bridge fix at InvestCloud. Quantify." },
+  { id:"iv8",  cat:"Impact",     q:"Tell me about a time you improved a process or system.", hint:"100% performance, 2 hikes — what did you change?" },
+  { id:"iv9",  cat:"Learning",   q:"How do you stay current with technology?", hint:"Structured Python, DSA daily, builds in public." },
+  { id:"iv10", cat:"Learning",   q:"Tell me about a time you had to learn a new tech quickly.", hint:"Mech → IT transition. Self-learned Java during COVID." },
+  { id:"iv11", cat:"Ambiguity",  q:"How do you approach a problem when requirements are unclear?", hint:"Ask questions, prototype, clarify in writing." },
+  { id:"iv12", cat:"Why Us",     q:"Why this company? Why this role?", hint:"Research 3 specific things. Tie to Java+AI positioning." },
+  { id:"iv13", cat:"Why You",    q:"Walk me through your resume.", hint:"60–90 sec: Mech → Java → Masters → AI." },
+  { id:"iv14", cat:"Strengths",  q:"Your greatest strength for this role?", hint:"Ownership mindset. Go-to tech person story." },
+  { id:"iv15", cat:"Weaknesses", q:"Your biggest weakness?", hint:"Real one + concrete fix plan." },
+  { id:"iv16", cat:"Teamwork",   q:"Worked with someone very different from you?", hint:"Culture, timezone, skill differences." },
+  { id:"iv17", cat:"Pressure",   q:"Tight deadline or high pressure story?", hint:"Production incidents — ~100 resolved." },
+  { id:"iv18", cat:"Initiative", q:"Went beyond what was asked of you?", hint:"Becoming go-to colleague at InvestCloud." },
+  { id:"iv19", cat:"Goals",      q:"Where do you see yourself in 5 years?", hint:"PR in AU, AI Eng growth, own your arc." },
+  { id:"iv20", cat:"Java+AI",    q:"Why Java + AI, not just Python?", hint:"Enterprise FinTech niche. Low competition, high salary." },
+];
+
+
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
 function getCurrentLevel(xp) {
@@ -442,7 +467,9 @@ export default function QuestEngine() {
           setCustomQuests(d.customQuests || []);
           setBrainDump(d.brainDump || []);
           setDsaProgress(d.dsaProgress || {});
-          setHiddenCategories(new Set(d.hiddenCategories || ["ailearn","cca"]));
+          setHiddenCategories(d.hiddenCategories || ["ailearn","cca"]);
+          setQuestNotes(d.questNotes || {});
+          setInterviewAnswers(d.interviewAnswers || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -470,11 +497,11 @@ export default function QuestEngine() {
       if (!loadedRef.current) return;
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories: [...hiddenCategories] }, { merge: true });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, questNotes, interviewAnswers }, { merge: true });
       } catch (e) { console.error("Save error", e); }
     }, 1200);
     return () => clearTimeout(saveTimerRef.current);
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, questNotes, interviewAnswers, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -687,10 +714,14 @@ export default function QuestEngine() {
     prevXpRef.current = xp;
   }, [xp, loaded]);
 
-  const [hiddenCategories, setHiddenCategories] = useState(new Set(["ailearn","cca"]));
+  const [hiddenCategories, setHiddenCategories] = useState(["ailearn","cca"]);
+  const [questNotes, setQuestNotes] = useState({}); // { questId: "note text" }
+  const [expandedNoteId, setExpandedNoteId] = useState(null); // which quest has notes panel open
+  const [interviewAnswers, setInterviewAnswers] = useState({}); // { qId: { situation, task, action, result } }
+  const [expandedInterviewId, setExpandedInterviewId] = useState(null);
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
-    const allQuests = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.has(q.category));
+    const allQuests = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category));
     const incomplete = allQuests.filter(q => !completed[q.id]);
     if (!incomplete.length) return null;
     const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
@@ -816,6 +847,47 @@ export default function QuestEngine() {
   // ── DSA Tracker handlers ─────────────────────────────────────────────────
   const getDsaKey = (day, prob) => `d${day}-${prob}`;
 
+  // DSA session timer — track active problem + elapsed seconds
+  const [dsaActiveKey, setDsaActiveKey] = useState(null);
+  const [dsaElapsed, setDsaElapsed] = useState(0); // seconds for active problem
+  const dsaTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (dsaActiveKey) {
+      dsaTimerRef.current = setInterval(() => setDsaElapsed(e => e + 1), 1000);
+    } else {
+      clearInterval(dsaTimerRef.current);
+    }
+    return () => clearInterval(dsaTimerRef.current);
+  }, [dsaActiveKey]);
+
+  const startDsaTimer = (day, prob) => {
+    const key = getDsaKey(day, prob);
+    if (dsaActiveKey === key) {
+      // Stop & save elapsed into dsaProgress
+      setDsaProgress(prev => {
+        const existing = prev[key] || { status:"pending", note:"" };
+        const prior = existing.totalSeconds || 0;
+        return { ...prev, [key]: { ...existing, totalSeconds: prior + dsaElapsed } };
+      });
+      setDsaActiveKey(null);
+      setDsaElapsed(0);
+      showToast(`⏱ Session logged: ${Math.floor(dsaElapsed/60)}m ${dsaElapsed%60}s`, "#60a5fa");
+    } else {
+      if (dsaActiveKey) {
+        // save prior before switching
+        setDsaProgress(prev => {
+          const existing = prev[dsaActiveKey] || { status:"pending", note:"" };
+          const prior = existing.totalSeconds || 0;
+          return { ...prev, [dsaActiveKey]: { ...existing, totalSeconds: prior + dsaElapsed } };
+        });
+      }
+      setDsaActiveKey(key);
+      setDsaElapsed(0);
+      showToast(`▶ Timer started`, "#60a5fa");
+    }
+  };
+
   const cycleDsaStatus = (day, prob, e) => {
     const key = getDsaKey(day, prob);
     const current = dsaProgress[key] || { status:"pending", note:"" };
@@ -878,14 +950,18 @@ export default function QuestEngine() {
 
   const filtered = (() => {
     let q = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
-    q = q.filter(q => !hiddenCategories.has(q.category));
+    q = q.filter(q => !hiddenCategories.includes(q.category));
     return q;
   })();
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
-    <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position:"relative" }}>
+      {/* Ambient background glow */}
+      <div style={{ position:"fixed", top:"-20%", left:"-10%", width:"60%", height:"60%", background:"radial-gradient(circle, rgba(96,165,250,0.08), transparent 70%)", pointerEvents:"none", zIndex:0, animation:"float 8s ease-in-out infinite" }} />
+      <div style={{ position:"fixed", bottom:"-20%", right:"-10%", width:"50%", height:"50%", background:"radial-gradient(circle, rgba(167,139,250,0.06), transparent 70%)", pointerEvents:"none", zIndex:0, animation:"float 10s ease-in-out infinite reverse" }} />
+      <div style={{ position:"relative", zIndex:1 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -894,11 +970,42 @@ export default function QuestEngine() {
         @keyframes levelUp { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.08); opacity:1; } }
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
         @keyframes bossHit { 0%{background:#ef444433} 100%{background:transparent} }
-        .quest-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
-        .quest-btn:active { transform: scale(0.97); }
-        .tab-btn { cursor:pointer; border:none; background:none; font-family:inherit; }
-        .week-header:hover { background: rgba(255,255,255,0.06) !important; cursor:pointer; }
-        ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-thumb { background:#334155; border-radius:2px; }
+        @keyframes slideDown { 0%{opacity:0; transform:translateY(-8px);} 100%{opacity:1; transform:translateY(0);} }
+        @keyframes slideIn { 0%{opacity:0; transform:translateY(10px);} 100%{opacity:1; transform:translateY(0);} }
+        @keyframes urgentPulse { 0%,100%{box-shadow:0 0 20px #ef444455;} 50%{box-shadow:0 0 35px #ef4444aa;} }
+        @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+        @keyframes fadeIn { 0%{opacity:0;} 100%{opacity:1;} }
+        @keyframes glow { 0%,100%{filter:drop-shadow(0 0 4px currentColor);} 50%{filter:drop-shadow(0 0 10px currentColor);} }
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+
+        .quest-btn:hover { transform: translateY(-1px); filter: brightness(1.15); }
+        .quest-btn:active { transform: scale(0.96); }
+        .tab-btn { cursor:pointer; border:none; background:none; font-family:inherit; transition:all 0.2s cubic-bezier(.4,0,.2,1); }
+        .week-header:hover { background: rgba(255,255,255,0.08) !important; cursor:pointer; transform:translateX(2px); }
+        .week-header { transition: all 0.2s cubic-bezier(.4,0,.2,1) !important; }
+        .card-hover:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+        .card-hover { transition:all 0.25s cubic-bezier(.4,0,.2,1); }
+        .glass { backdrop-filter: blur(12px); background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(15,23,42,0.65)) !important; }
+        .shimmer-text { background:linear-gradient(90deg,#64748b,#e2e8f0,#64748b); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shimmer 3s linear infinite; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        .slide-in { animation: slideIn 0.35s cubic-bezier(.4,0,.2,1); }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width:6px; height:6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#334155,#1e293b); border-radius:99px; transition:all 0.2s; }
+        ::-webkit-scrollbar-thumb:hover { background:linear-gradient(180deg,#475569,#334155); }
+
+        /* Smooth focus ring on inputs/textareas */
+        input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 2px rgba(96,165,250,0.2); }
+
+        /* Button active press */
+        button:active { transform: scale(0.97); }
+        button { transition: all 0.15s cubic-bezier(.4,0,.2,1); }
+
+        /* Link hover */
+        a { transition: all 0.15s; }
+        a:hover { filter: brightness(1.2); text-decoration: underline; }
       `}</style>
 
       {/* Particles */}
@@ -908,11 +1015,13 @@ export default function QuestEngine() {
 
       {/* Toast */}
       {toast && (
-        <div style={{
+        <div className="slide-in" style={{
           position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
-          background: "#0f172a", border: `2px solid ${toast.color}`, borderRadius: 12,
+          background: "rgba(15,23,42,0.9)", backdropFilter:"blur(12px)",
+          border: `1px solid ${toast.color}88`, borderRadius: 12,
           padding: "10px 20px", zIndex: 9998, fontFamily: "'Bebas Neue'",
-          fontSize: 16, color: toast.color, letterSpacing: 1, whiteSpace: "nowrap", boxShadow: `0 0 20px ${toast.color}44`
+          fontSize: 16, color: toast.color, letterSpacing: 1, whiteSpace: "nowrap",
+          boxShadow: `0 8px 32px ${toast.color}44, 0 0 0 1px ${toast.color}22 inset`
         }}>{toast.msg}</div>
       )}
 
@@ -942,11 +1051,14 @@ export default function QuestEngine() {
         <div className="qe-layout">
         <div className="qe-left">
         {/* ── Header ── */}
-        <div style={{
-          background: `linear-gradient(135deg, #0f172a, #1e1b4b)`,
-          border: `2px solid ${level.color}44`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
-          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none"
+        <div className="slide-in" style={{
+          background: `linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #0f172a 100%)`,
+          border: `1px solid ${level.color}55`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
+          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "slideIn 0.4s ease-out",
+          boxShadow: `0 8px 32px ${level.color}22, 0 0 0 1px ${level.color}18 inset`,
+          position:"relative", overflow:"hidden"
         }}>
+          <div style={{ position:"absolute", top:-40, right:-40, width:160, height:160, background:`radial-gradient(circle, ${level.color}22, transparent 70%)`, pointerEvents:"none" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 11, letterSpacing: 2, color: "#475569" }}>ABHISHEK'S QUEST ENGINE v3</div>
@@ -995,7 +1107,7 @@ export default function QuestEngine() {
         {/* ── Current Boss ── */}
         {/* ── Daily Focus Banner ── */}
         {dailyFocus && !focusDismissed && !completed[dailyFocus.id] && (
-          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `2px solid ${level.color}88`, borderRadius: 14, padding: "12px 16px", marginBottom: 14 }}>
+          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `1px solid ${level.color}66`, borderRadius: 14, padding: "12px 16px", marginBottom: 14, boxShadow:`0 4px 20px ${level.color}22`, animation:"slideIn 0.35s ease-out" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:3 }}>🎯 TODAY'S FOCUS QUEST</div>
@@ -1018,9 +1130,11 @@ export default function QuestEngine() {
         )}
 
         {boss ? (
-          <div style={{
-            background: "#0f172a", border: "1px solid #450a0a", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
+          <div className="card-hover" style={{
+            background: "linear-gradient(135deg, #0f172a, #1a0505)",
+            border: "1px solid #ef444444", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
             animation: bossHitAnim ? "bossHit 0.6s ease-out" : "none",
+            boxShadow: "0 4px 16px rgba(239,68,68,0.1)"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
@@ -1057,7 +1171,21 @@ export default function QuestEngine() {
             .sort((a,b) => a.daysLeft - b.daysLeft)
             .slice(0, 3);
           if (!upcoming.length) return null;
+          const critical = upcoming.filter(d => d.daysLeft <= 2);
           return (
+            <>
+            {critical.length > 0 && (
+              <div style={{
+                background:"linear-gradient(135deg,#7f1d1d,#450a0a)", border:"1px solid #ef4444",
+                borderRadius:14, padding:"10px 14px", marginBottom:10,
+                animation:"urgentPulse 1.5s ease-in-out infinite", boxShadow:"0 0 20px #ef444455"
+              }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:"#fca5a5", letterSpacing:2, marginBottom:4 }}>⚠️ URGENT — {critical.length} DEADLINE{critical.length>1?"S":""} ≤2D</div>
+                {critical.map(d => (
+                  <div key={d.id} style={{ fontSize:12, color:"#fee2e2", fontWeight:700 }}>{d.icon} {d.label} — {d.daysLeft===0?"TODAY":`${d.daysLeft} day${d.daysLeft>1?"s":""}`}</div>
+                ))}
+              </div>
+            )}
             <div style={{ background:"#0f172a", border:"1px solid #1e293b", borderRadius:14, padding:"12px 16px", marginBottom:14 }}>
               <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:8 }}>📅 UPCOMING DEADLINES</div>
               {upcoming.map(d => {
@@ -1070,28 +1198,33 @@ export default function QuestEngine() {
                 );
               })}
             </div>
+            </>
           );
         })()}
 
         </div>{/* end qe-left */}
         <div className="qe-right">
         {/* ── Tabs ── */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["dsa","🧩 DSA"], ["stats","📊 Stats"]].map(([tab, label]) => (
+        <div style={{ display: "flex", gap: 4, marginBottom: 14, flexWrap:"wrap" }}>
+          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["dsa","🧩 DSA"], ["interview","🎤 Interview"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["stats","📊 Stats"]].map(([tab, label]) => {
+            const active = activeTab === tab;
+            return (
             <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
-              flex: 1, padding: "8px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
-              background: activeTab === tab ? level.color : "#0f172a",
-              color: activeTab === tab ? "#000" : "#64748b",
-              border: `1px solid ${activeTab === tab ? level.color : "#1e293b"}`,
-              transition: "all 0.15s", letterSpacing: 0.5
+              flex: "1 1 90px", padding: "9px 6px", borderRadius: 10, fontSize: 11, fontWeight: 700,
+              background: active ? `linear-gradient(135deg, ${level.color}, ${level.color}cc)` : "rgba(15,23,42,0.6)",
+              color: active ? "#000" : "#64748b",
+              border: `1px solid ${active ? level.color : "#1e293b"}`,
+              letterSpacing: 0.5, backdropFilter:"blur(8px)",
+              boxShadow: active ? `0 4px 14px ${level.color}55, 0 0 0 1px ${level.color}22 inset` : "none",
+              transform: active ? "translateY(-1px)" : "none"
             }}>{label}</button>
-          ))}
+          );})}
         </div>
 
         {/* ── TODAY TAB ── */}
         {activeTab === "today" && (() => {
           const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
-          const allActive = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.has(q.category) && !completed[q.id]);
+          const allActive = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category) && !completed[q.id]);
           const thisWeek = allActive.filter(q => q.week === currentWeek || q.week === "Custom" || q.week?.startsWith("Interview Prep"));
           const urgent = [...thisWeek].filter(q => q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
           const normal = [...thisWeek].filter(q => !q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
@@ -1101,10 +1234,10 @@ export default function QuestEngine() {
             <div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
                 {Object.entries(CATEGORY_META).map(([k,v]) => {
-                  const hidden = hiddenCategories.has(k);
+                  const hidden = hiddenCategories.includes(k);
                   return (
                     <button key={k} onClick={() => setHiddenCategories(prev => {
-                      const next = new Set(prev); hidden ? next.delete(k) : next.add(k); return next;
+                      return hidden ? prev.filter(x=>x!==k) : [...prev,k];
                     })} style={{
                       padding:"3px 8px", borderRadius:20, fontSize:10, fontWeight:700, cursor:"pointer",
                       background: hidden ? "#1e293b" : v.bg, color: hidden ? "#334155" : v.color,
@@ -1133,14 +1266,16 @@ export default function QuestEngine() {
                 const done = !!completed[quest.id];
                 const c = cat[quest.category] || cat.academic;
                 const isActive = pomodoroQuestId === quest.id;
+                const notesOpen = expandedNoteId === quest.id;
                 return (
                   <div key={quest.id} style={{
                     background: isActive ? "#1a1400" : "#0f172a",
                     border: `1px solid ${quest.urgent ? "#ef444466" : isActive ? "#f59e0b66" : "#1e293b"}`,
                     borderRadius:12, padding:"14px 16px", marginBottom:8,
-                    display:"flex", alignItems:"center", gap:12,
-                    outline: isActive ? "1px solid #f59e0b44" : "none"
+                    outline: isActive ? "1px solid #f59e0b44" : "none",
+                    transition:"all 0.25s ease"
                   }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                     <button className="quest-btn" onClick={(e) => !done && completeQuest(quest, e)} disabled={done} style={{
                       width:32, height:32, borderRadius:10, flexShrink:0, cursor: done?"default":"pointer",
                       border: done ? "2px solid #34d399" : `2px solid ${c.color}`,
@@ -1163,7 +1298,19 @@ export default function QuestEngine() {
                         background:"none", border:"none", cursor:"pointer", fontSize:14,
                         color: isActive ? "#f59e0b" : "#334155", padding:0
                       }}>⏱</button>
+                      <button onClick={() => setExpandedNoteId(expandedNoteId === quest.id ? null : quest.id)} title="Notes" style={{
+                        background:"none", border:"none", cursor:"pointer", fontSize:13,
+                        color: questNotes[quest.id] ? "#60a5fa" : "#334155", padding:0
+                      }}>📝</button>
                     </div>
+                    </div>
+                  {expandedNoteId === quest.id && (
+                    <div style={{ marginTop:10, paddingTop:10, borderTop:"1px solid #1e293b", animation:"slideDown 0.2s" }}>
+                      <textarea value={questNotes[quest.id] || ""} placeholder="Notes, thoughts, blockers..."
+                        onChange={e => setQuestNotes(prev => ({ ...prev, [quest.id]: e.target.value }))}
+                        style={{ width:"100%", minHeight:60, background:"#080c14", border:"1px solid #1e293b", borderRadius:6, padding:"6px 10px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none", resize:"vertical" }} />
+                    </div>
+                  )}
                   </div>
                 );
               })}
@@ -1243,13 +1390,11 @@ export default function QuestEngine() {
             {/* Category visibility toggles */}
             <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
               {Object.entries(CATEGORY_META).map(([k,v]) => {
-                const hidden = hiddenCategories.has(k);
+                const hidden = hiddenCategories.includes(k);
                 return (
-                  <button key={k} onClick={() => setHiddenCategories(prev => {
-                    const next = new Set(prev);
-                    hidden ? next.delete(k) : next.add(k);
-                    return next;
-                  })} style={{
+                  <button key={k} onClick={() => setHiddenCategories(prev =>
+                    hidden ? prev.filter(x=>x!==k) : [...prev,k]
+                  )} style={{
                     padding:"4px 10px", borderRadius:20, fontSize:11, fontWeight:700, cursor:"pointer",
                     background: hidden ? "#1e293b" : v.bg,
                     color: hidden ? "#334155" : v.color,
@@ -1639,12 +1784,22 @@ export default function QuestEngine() {
                             const prog = dsaProgress[key] || { status:"pending", note:"" };
                             const statusIcon = prog.status === "completed" ? "✅" : prog.status === "struggled" ? "😤" : "⬜";
                             const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
+                            const isTimingThis = dsaActiveKey === key;
+                            const liveSec = isTimingThis ? dsaElapsed : 0;
+                            const totalSec = (prog.totalSeconds || 0) + liveSec;
+                            const timeLbl = totalSec > 0 ? `${Math.floor(totalSec/60)}:${String(totalSec%60).padStart(2,"0")}` : "";
                             return (
                               <div key={prob}>
                                 <div style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 0", borderTop:"1px solid #1e293b" }}>
                                   <a href={lcUrl(prob)} target="_blank" rel="noopener noreferrer"
                                     style={{ color:"#60a5fa", fontSize:12, fontWeight:700, textDecoration:"none", width:40, flexShrink:0 }}>#{prob}</a>
+                                  {timeLbl && <span style={{ fontSize:10, fontFamily:"'Bebas Neue'", color: isTimingThis ? "#f59e0b" : "#475569", letterSpacing:1 }}>{timeLbl}</span>}
                                   <span style={{ flex:1 }} />
+                                  <button onClick={() => startDsaTimer(dayObj.day, prob)} title={isTimingThis ? "Stop timer" : "Start timer"} style={{
+                                    background:"none", border:`1px solid ${isTimingThis ? "#f59e0b" : "#33415544"}`, borderRadius:6,
+                                    padding:"2px 7px", cursor:"pointer", fontSize:12, color: isTimingThis ? "#f59e0b" : "#475569",
+                                    transition:"all 0.15s", animation: isTimingThis ? "pulse 1.5s infinite" : "none"
+                                  }}>{isTimingThis ? "⏸" : "▶"}</button>
                                   <button onClick={(e) => cycleDsaStatus(dayObj.day, prob, e)} style={{
                                     background:"none", border:`1px solid ${statusColor}44`, borderRadius:6,
                                     padding:"2px 8px", cursor:"pointer", fontSize:14, color:statusColor,
@@ -1863,6 +2018,81 @@ export default function QuestEngine() {
           </div>
         )}
 
+        {/* ── INTERVIEW BANK TAB ── */}
+        {activeTab === "interview" && (() => {
+          const cats = [...new Set(INTERVIEW_BANK.map(q => q.cat))];
+          const answered = Object.keys(interviewAnswers).filter(k => {
+            const a = interviewAnswers[k];
+            return a && (a.situation || a.task || a.action || a.result);
+          }).length;
+          return (
+            <div>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#475569", letterSpacing:2 }}>
+                  {answered}/{INTERVIEW_BANK.length} PREPARED
+                </div>
+                <div style={{ flex:1, marginLeft:14, height:4, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${(answered/INTERVIEW_BANK.length)*100}%`, background:"linear-gradient(90deg,#f97316,#fbbf24)", borderRadius:99, transition:"width 0.5s" }} />
+                </div>
+              </div>
+
+              <div style={{ fontSize:11, color:"#64748b", marginBottom:14, lineHeight:1.5 }}>
+                Use the <strong style={{color:"#f97316"}}>STAR method</strong>: Situation → Task → Action → Result. Write once, rehearse often.
+              </div>
+
+              {cats.map(c => {
+                const catQs = INTERVIEW_BANK.filter(q => q.cat === c);
+                return (
+                  <div key={c} style={{ marginBottom:18 }}>
+                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#f97316", letterSpacing:2, marginBottom:8 }}>{c}</div>
+                    {catQs.map(q => {
+                      const isOpen = expandedInterviewId === q.id;
+                      const ans = interviewAnswers[q.id] || { situation:"", task:"", action:"", result:"" };
+                      const hasAnswer = ans.situation || ans.task || ans.action || ans.result;
+                      return (
+                        <div key={q.id} className="card-hover" style={{
+                          background: hasAnswer ? "linear-gradient(135deg, #0f172a, #1a0d00)" : "#0f172a",
+                          border: `1px solid ${hasAnswer ? "#f9731644" : "#1e293b"}`,
+                          borderRadius:12, padding:"12px 14px", marginBottom:8, transition:"all 0.25s"
+                        }}>
+                          <div onClick={() => setExpandedInterviewId(isOpen ? null : q.id)} style={{ cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", gap:10 }}>
+                            <div style={{ flex:1 }}>
+                              <div style={{ fontSize:13, color:"#e2e8f0", fontWeight:700, lineHeight:1.3 }}>{q.q}</div>
+                              {!isOpen && hasAnswer && <div style={{ fontSize:11, color:"#34d399", marginTop:3 }}>✓ Answered</div>}
+                            </div>
+                            <span style={{ color:"#475569", fontSize:12, flexShrink:0 }}>{isOpen ? "▲" : "▼"}</span>
+                          </div>
+                          {isOpen && (
+                            <div style={{ marginTop:12, paddingTop:12, borderTop:"1px solid #1e293b", animation:"slideDown 0.25s ease-out" }}>
+                              <div style={{ fontSize:11, color:"#64748b", fontStyle:"italic", marginBottom:10 }}>💡 {q.hint}</div>
+                              {[
+                                ["situation","SITUATION — set the scene"],
+                                ["task","TASK — what needed to be done"],
+                                ["action","ACTION — what you did"],
+                                ["result","RESULT — outcome + metric if possible"],
+                              ].map(([k,lbl]) => (
+                                <div key={k} style={{ marginBottom:8 }}>
+                                  <div style={{ fontSize:10, color:"#475569", letterSpacing:1, marginBottom:3 }}>{lbl}</div>
+                                  <textarea value={ans[k]||""} placeholder="Type your answer..."
+                                    onChange={e => setInterviewAnswers(prev => ({ ...prev, [q.id]: { ...(prev[q.id]||{}), [k]: e.target.value } }))}
+                                    style={{ width:"100%", minHeight:55, background:"#080c14", border:"1px solid #1e293b", borderRadius:6,
+                                      padding:"7px 10px", color:"#e2e8f0", fontSize:12, fontFamily:"inherit", outline:"none", resize:"vertical", transition:"border 0.15s" }}
+                                    onFocus={e => e.target.style.borderColor="#f9731666"}
+                                    onBlur={e => e.target.style.borderColor="#1e293b"} />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
         {/* ── BRAIN DUMP TAB ── */}
         {activeTab === "braindump" && (
           <div>
@@ -2052,12 +2282,13 @@ export default function QuestEngine() {
 
       {/* ── Quick Capture Floating Button ── */}
       <button onClick={() => setShowQuickCapture(v => !v)} style={{
-        position:"fixed", bottom:24, right:24, width:52, height:52, borderRadius:"50%",
-        background: level.color, border:"none", fontSize:22, cursor:"pointer",
-        boxShadow:`0 4px 20px ${level.color}66`, zIndex:9990,
-        display:"flex", alignItems:"center", justifyContent:"center",
-        transition:"transform 0.15s"
-      }} onMouseEnter={e=>e.currentTarget.style.transform="scale(1.1)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+        position:"fixed", bottom:24, right:24, width:56, height:56, borderRadius:"50%",
+        background: `linear-gradient(135deg, ${level.color}, ${level.color}dd)`, border:"none", fontSize:24, cursor:"pointer",
+        boxShadow:`0 8px 24px ${level.color}77, 0 0 0 1px ${level.color}33 inset`, zIndex:9990,
+        display:"flex", alignItems:"center", justifyContent:"center", color:"#000",
+        transition:"all 0.2s cubic-bezier(.4,0,.2,1)",
+        animation: showQuickCapture ? "none" : "float 3s ease-in-out infinite"
+      }} onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.12) rotate(15deg)";}} onMouseLeave={e=>{e.currentTarget.style.transform="scale(1) rotate(0)";}}>
         {showQuickCapture ? "✕" : "⚡"}
       </button>
 
@@ -2089,6 +2320,7 @@ export default function QuestEngine() {
           <div style={{ fontSize:10, color:"#334155", marginTop:6, textAlign:"center" }}>Press Enter or click Add · Esc to close</div>
         </div>
       )}
+      </div>
     </div>
   );
 }
