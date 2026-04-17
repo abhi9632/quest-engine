@@ -413,6 +413,8 @@ export default function QuestEngine() {
   // ── DSA Tracker ──────────────────────────────────────────────────────────
   const [dsaProgress, setDsaProgress] = useState({}); // { "d1-283": { status:"pending"|"completed"|"struggled", note:"" } }
 
+  const [hiddenCategories, setHiddenCategories] = useState(["ailearn","cca"]);
+
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
 
@@ -687,8 +689,6 @@ export default function QuestEngine() {
     prevXpRef.current = xp;
   }, [xp, loaded]);
 
-  const [hiddenCategories, setHiddenCategories] = useState(["ailearn","cca"]);
-
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
     const allQuests = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category));
@@ -881,7 +881,7 @@ export default function QuestEngine() {
   const defeatedCount = BOSSES.filter(b => (bossHp[b.id] ?? b.hp) === 0).length;
 
   const filtered = (() => {
-    let q = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
+    const q = filter === "all" ? QUESTS : QUESTS.filter(q => q.category === filter);
     return q.filter(q => !hiddenCategories.includes(q.category));
   })();
   const unlockedAchievements = ACHIEVEMENTS.filter(a => completedCount >= a.xpThreshold || xp >= a.xpThreshold);
@@ -898,27 +898,24 @@ export default function QuestEngine() {
         @keyframes pulse      { 0%,100%{opacity:1} 50%{opacity:0.5} }
         @keyframes bossHit    { 0%{background:#ef444433} 100%{background:transparent} }
         @keyframes urgentPulse{ 0%,100%{box-shadow:0 0 16px #ef444455} 50%{box-shadow:0 0 32px #ef4444aa} }
-        @keyframes slideDown  { 0%{opacity:0;transform:translateY(-6px)} 100%{opacity:1;transform:translateY(0)} }
         @keyframes slideUp    { 0%{opacity:0;transform:translateY(6px)} 100%{opacity:1;transform:translateY(0)} }
         @keyframes float      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
-        @keyframes shimmer    { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-        .quest-btn        { transition: all 0.15s cubic-bezier(.4,0,.2,1) !important; }
-        .quest-btn:hover  { transform: translateY(-1px) scale(1.05); filter: brightness(1.15); }
-        .quest-btn:active { transform: scale(0.95); }
-        .tab-btn          { cursor:pointer; border:none; background:none; font-family:inherit; transition: all 0.2s cubic-bezier(.4,0,.2,1); }
-        .week-header      { transition: all 0.2s cubic-bezier(.4,0,.2,1) !important; }
-        .week-header:hover{ background: rgba(255,255,255,0.07) !important; cursor:pointer; }
-        .card-hover       { transition: all 0.22s cubic-bezier(.4,0,.2,1); }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
-        .slide-up         { animation: slideUp 0.3s cubic-bezier(.4,0,.2,1); }
-        .fade-in          { animation: fadeIn 0.35s ease-out; }
-        button            { transition: all 0.15s cubic-bezier(.4,0,.2,1); }
-        button:active     { transform: scale(0.97); }
-        input:focus, textarea:focus, select:focus { outline:none; box-shadow:0 0 0 2px rgba(96,165,250,0.2); border-color:#60a5fa66 !important; }
+        .quest-btn        { transition:all 0.15s cubic-bezier(.4,0,.2,1) !important; }
+        .quest-btn:hover  { transform:translateY(-1px) scale(1.05); filter:brightness(1.15); }
+        .quest-btn:active { transform:scale(0.95); }
+        .tab-btn          { cursor:pointer; border:none; background:none; font-family:inherit; transition:all 0.2s cubic-bezier(.4,0,.2,1); }
+        .week-header      { transition:all 0.2s cubic-bezier(.4,0,.2,1) !important; }
+        .week-header:hover{ background:rgba(255,255,255,0.07) !important; cursor:pointer; }
+        .card-hover       { transition:all 0.22s cubic-bezier(.4,0,.2,1); }
+        .card-hover:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.45); }
+        .fade-in          { animation:fadeIn 0.35s ease-out; }
+        button            { transition:all 0.15s cubic-bezier(.4,0,.2,1); }
+        button:active     { transform:scale(0.97); }
+        input:focus, textarea:focus, select:focus { outline:none; box-shadow:0 0 0 2px rgba(96,165,250,0.2); }
         ::-webkit-scrollbar       { width:5px; height:5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#334155,#1e293b); border-radius:99px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#334155,#1e293b); border-radius:99px; }
         ::-webkit-scrollbar-thumb:hover { background:#475569; }
       `}</style>
 
@@ -929,13 +926,13 @@ export default function QuestEngine() {
 
       {/* Toast */}
       {toast && (
-        <div className="slide-up" style={{
+        <div style={{
           position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
           background: "rgba(15,23,42,0.92)", backdropFilter:"blur(16px)",
           border: `1px solid ${toast.color}77`, borderRadius: 40,
           padding: "10px 22px", zIndex: 9998, fontFamily: "'Bebas Neue'",
           fontSize: 16, color: toast.color, letterSpacing: 1.5, whiteSpace: "nowrap",
-          boxShadow: `0 8px 32px ${toast.color}44, 0 1px 0 ${toast.color}33 inset`
+          boxShadow: `0 8px 32px ${toast.color}44`
         }}>{toast.msg}</div>
       )}
 
@@ -968,8 +965,8 @@ export default function QuestEngine() {
         <div style={{
           background: `linear-gradient(135deg, #0d1426 0%, #1a1535 50%, #0d1426 100%)`,
           border: `1px solid ${level.color}44`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
-          boxShadow: `0 8px 32px ${level.color}18, 0 1px 0 ${level.color}22 inset`,
-          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none"
+          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none",
+          boxShadow: `0 8px 32px ${level.color}18`
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
@@ -1042,10 +1039,9 @@ export default function QuestEngine() {
         )}
 
         {boss ? (
-          <div className="card-hover" style={{
-            background: "linear-gradient(135deg,#0f172a,#1a0808)", border: "1px solid #ef444433", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
+          <div style={{
+            background: "#0f172a", border: "1px solid #450a0a", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
             animation: bossHitAnim ? "bossHit 0.6s ease-out" : "none",
-            boxShadow: "0 4px 20px rgba(239,68,68,0.08)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
@@ -1086,15 +1082,9 @@ export default function QuestEngine() {
           return (
             <>
               {critical.length > 0 && (
-                <div style={{
-                  background:"linear-gradient(135deg,#450a0a,#7f1d1d)",
-                  border:"1px solid #ef444488", borderRadius:12, padding:"10px 14px", marginBottom:10,
-                  animation:"urgentPulse 1.5s ease-in-out infinite"
-                }}>
+                <div style={{ background:"linear-gradient(135deg,#450a0a,#7f1d1d)", border:"1px solid #ef444488", borderRadius:12, padding:"10px 14px", marginBottom:10, animation:"urgentPulse 1.5s ease-in-out infinite" }}>
                   <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#fca5a5", letterSpacing:2, marginBottom:4 }}>⚠️ URGENT — {critical.length} DEADLINE{critical.length>1?"S":""} ≤2 DAYS</div>
-                  {critical.map(d => (
-                    <div key={d.id} style={{ fontSize:12, color:"#fee2e2", fontWeight:700 }}>{d.icon} {d.label} — {d.daysLeft===0?"TODAY":`${d.daysLeft}d`}</div>
-                  ))}
+                  {critical.map(d => (<div key={d.id} style={{ fontSize:12, color:"#fee2e2", fontWeight:700 }}>{d.icon} {d.label} — {d.daysLeft===0?"TODAY":`${d.daysLeft}d`}</div>))}
                 </div>
               )}
               <div style={{ background:"linear-gradient(135deg,#0f172a,#0d1520)", border:"1px solid #1e293b", borderRadius:14, padding:"12px 16px", marginBottom:14 }}>
@@ -1116,34 +1106,33 @@ export default function QuestEngine() {
         </div>{/* end qe-left */}
         <div className="qe-right">
         {/* ── Tabs ── */}
-        <div style={{ display: "flex", gap: 4, marginBottom: 14, flexWrap: "wrap" }}>
-          {[["today","🎯 Today"], ["quests","⚔️ Quests"], ["dsa","🧩 DSA"], ["bosses","👹 Bosses"], ["deadlines","📅 Deadlines"], ["braindump","📓 Dump"], ["stats","📊 Stats"]].map(([tab, label]) => {
-            const active = activeTab === tab;
-            return (
-            <button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
-              flex: "1 1 80px", padding: "9px 4px", borderRadius: 10, fontSize: 11, fontWeight: 700,
-              background: active ? `linear-gradient(135deg,${level.color}ee,${level.color}bb)` : "rgba(15,23,42,0.8)",
-              color: active ? "#000" : "#64748b",
-              border: `1px solid ${active ? level.color : "#1e293b"}`,
-              letterSpacing: 0.5,
-              boxShadow: active ? `0 4px 16px ${level.color}55` : "none",
-              transform: active ? "translateY(-1px)" : "none",
-            }}>{label}</button>
-          );})}
+        <div style={{ display:"flex", gap:4, marginBottom:14, flexWrap:"wrap" }}>
+          {[["today","🎯 Today"],["quests","⚔️ Quests"],["dsa","🧩 DSA"],["bosses","👹 Bosses"],["deadlines","📅 Deadlines"],["braindump","📓 Dump"],["stats","📊 Stats"]].map(([tab,label]) => {
+            const a = activeTab === tab;
+            return (<button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
+              flex:"1 1 75px", padding:"9px 4px", borderRadius:10, fontSize:11, fontWeight:700,
+              background: a ? `linear-gradient(135deg,${level.color}ee,${level.color}99)` : "rgba(15,23,42,0.9)",
+              color: a ? "#000" : "#64748b",
+              border: `1px solid ${a ? level.color : "#1e293b"}`,
+              letterSpacing:0.5,
+              boxShadow: a ? `0 4px 14px ${level.color}55` : "none",
+              transform: a ? "translateY(-1px)" : "none"
+            }}>{label}</button>);
+          })}
         </div>
 
         {/* ── TODAY TAB ── */}
         {activeTab === "today" && (() => {
           const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
           const allActive = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category) && !completed[q.id]);
-          const thisWeek = allActive.filter(q => q.week === currentWeek || q.week === "Custom" || q.week?.startsWith("Interview Prep"));
-          const urgent = [...thisWeek].filter(q => q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
-          const normal = [...thisWeek].filter(q => !q.urgent).sort((a,b) => (priority[a.category]??9)-(priority[b.category]??9));
+          const thisWeek = allActive.filter(q => q.week === currentWeek || q.week === "Custom" || (q.week && q.week.startsWith("Interview Prep")));
+          const urgent = [...thisWeek].filter(q => q.urgent).sort((a,b) => (priority[a.category]||9)-(priority[b.category]||9));
+          const normal = [...thisWeek].filter(q => !q.urgent).sort((a,b) => (priority[a.category]||9)-(priority[b.category]||9));
           const todayList = [...urgent, ...normal];
-          const cat = CATEGORY_META;
+          const catMeta = CATEGORY_META;
           return (
             <div className="fade-in">
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
+              <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:10 }}>
                 {Object.entries(CATEGORY_META).map(([k,v]) => {
                   const hidden = hiddenCategories.includes(k);
                   return (
@@ -1157,9 +1146,7 @@ export default function QuestEngine() {
                 })}
               </div>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#475569", letterSpacing:2 }}>
-                  {todayList.length} TASKS · {currentWeek}
-                </div>
+                <div style={{ fontFamily:"'Bebas Neue'", fontSize:13, color:"#475569", letterSpacing:2 }}>{todayList.length} TASKS · {currentWeek}</div>
                 <div style={{ fontSize:11, color:"#475569" }}>{allActive.length - todayList.length} more in other weeks</div>
               </div>
               {todayList.length === 0 && (
@@ -1167,15 +1154,14 @@ export default function QuestEngine() {
               )}
               {todayList.map((quest) => {
                 const done = !!completed[quest.id];
-                const c = cat[quest.category] || cat.academic;
+                const c = catMeta[quest.category] || catMeta.academic;
                 const isActive = pomodoroQuestId === quest.id;
                 return (
                   <div key={quest.id} className="card-hover" style={{
                     background: isActive ? "#1a1400" : "linear-gradient(135deg,#0f172a,#0d1520)",
                     border: `1px solid ${quest.urgent ? "#ef444455" : isActive ? "#f59e0b55" : "#1e293b"}`,
                     borderRadius:12, padding:"14px 16px", marginBottom:8,
-                    display:"flex", alignItems:"center", gap:12,
-                    boxShadow: isActive ? `0 0 0 1px #f59e0b33` : "none"
+                    display:"flex", alignItems:"center", gap:12
                   }}>
                     <button className="quest-btn" onClick={(e) => !done && completeQuest(quest, e)} disabled={done} style={{
                       width:32, height:32, borderRadius:10, flexShrink:0, cursor: done?"default":"pointer",
@@ -1195,16 +1181,13 @@ export default function QuestEngine() {
                     </div>
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4, flexShrink:0 }}>
                       <div style={{ fontFamily:"'Bebas Neue'", fontSize:18, color:"#34d399" }}>+{quest.xp}</div>
-                      <button onClick={() => startPomodoro(quest.id)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, color: isActive ? "#f59e0b" : "#334155", padding:0 }}>⏱</button>
+                      <button onClick={() => startPomodoro(quest.id)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, color:isActive?"#f59e0b":"#334155", padding:0 }}>⏱</button>
                     </div>
                   </div>
                 );
               })}
               <div style={{ textAlign:"center", marginTop:16 }}>
-                <button onClick={() => setActiveTab("quests")} style={{
-                  background:"none", border:"1px solid #1e293b", borderRadius:8,
-                  color:"#475569", fontSize:12, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit"
-                }}>View All Weeks →</button>
+                <button onClick={() => setActiveTab("quests")} style={{ background:"none", border:"1px solid #1e293b", borderRadius:8, color:"#475569", fontSize:12, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit" }}>View All Weeks →</button>
               </div>
             </div>
           );
