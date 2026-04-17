@@ -888,11 +888,38 @@ export default function QuestEngine() {
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
-    <div style={{ fontFamily: "'Rajdhani', 'Segoe UI', sans-serif", background: "#080c14", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Rajdhani', sans-serif", background: "#020408", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position: "relative" }}>
+      {/* Ambient orbs */}
+      <div style={{ position:"fixed", top:"10%", left:"5%", width:400, height:400, background:"radial-gradient(circle, rgba(0,255,200,0.04) 0%, transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+      <div style={{ position:"fixed", bottom:"10%", right:"5%", width:500, height:500, background:"radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+      <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:800, height:800, background:"radial-gradient(circle, rgba(0,100,60,0.03) 0%, transparent 60%)", pointerEvents:"none", zIndex:0 }} />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Bebas+Neue&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { background: #080c14 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+        html, body {
+          background: #020408 !important;
+          margin: 0 !important; padding: 0 !important; border: none !important;
+        }
+
+        /* ── ANIMATED GRID BACKGROUND ── */
+        body::before {
+          content: '';
+          position: fixed; inset: 0; z-index: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(0,255,200,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,255,200,0.03) 1px, transparent 1px);
+          background-size: 40px 40px;
+          mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+          animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove { 0%{background-position:0 0} 100%{background-position:40px 40px} }
+
+        /* ── SCANLINES ── */
+        body::after {
+          content: '';
+          position: fixed; inset: 0; z-index: 0; pointer-events: none;
+          background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+        }
         @keyframes floatUp    { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
         @keyframes levelUp    { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08)} }
         @keyframes pulse      { 0%,100%{opacity:1} 50%{opacity:0.5} }
@@ -917,6 +944,110 @@ export default function QuestEngine() {
         ::-webkit-scrollbar-track { background:transparent; }
         ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#334155,#1e293b); border-radius:99px; }
         ::-webkit-scrollbar-thumb:hover { background:#475569; }
+
+        /* ── NEW KEYFRAMES ── */
+        @keyframes floatUp    { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
+        @keyframes levelUp    { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+        @keyframes pulse      { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes bossHit    { 0%{filter:brightness(2) saturate(2)} 100%{filter:brightness(1) saturate(1)} }
+        @keyframes urgentPulse{ 0%,100%{box-shadow:0 0 16px #ef444455,0 0 32px #ef444422} 50%{box-shadow:0 0 24px #ef4444aa,0 0 48px #ef444455} }
+        @keyframes slideUp    { 0%{opacity:0;transform:translateY(8px)} 100%{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn     { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes float      { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-5px) rotate(2deg)} }
+        @keyframes neonFlicker{ 0%,95%,100%{opacity:1} 96%,98%{opacity:0.8} 97%,99%{opacity:0.95} }
+        @keyframes borderGlow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes dataStream { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+        @keyframes xpShimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+        /* ── TYPOGRAPHY ── */
+        .font-orb { font-family: 'Orbitron', monospace !important; }
+        .font-mono { font-family: 'Share Tech Mono', monospace !important; }
+        .neon-text { animation: neonFlicker 4s infinite; }
+
+        /* ── GLOWING CARD ── */
+        .glass-card {
+          background: linear-gradient(135deg, rgba(10,20,40,0.95), rgba(5,12,25,0.98)) !important;
+          backdrop-filter: blur(20px);
+          position: relative;
+          overflow: hidden;
+        }
+        .glass-card::before {
+          content: '';
+          position: absolute; inset: 0; border-radius: inherit;
+          padding: 1px;
+          background: linear-gradient(135deg, rgba(0,255,200,0.3), rgba(100,100,255,0.1), rgba(0,255,200,0.3));
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          background-size: 300% 300%;
+          animation: borderGlow 4s ease infinite;
+          pointer-events: none;
+        }
+
+        /* ── QUEST CARD ── */
+        .quest-card {
+          position: relative; overflow: hidden;
+          transition: all 0.25s cubic-bezier(.4,0,.2,1);
+          background: linear-gradient(135deg, rgba(10,20,35,0.9), rgba(5,10,20,0.95));
+          border: 1px solid rgba(255,255,255,0.06);
+        }
+        .quest-card:hover {
+          transform: translateY(-2px) translateX(2px);
+          border-color: rgba(0,255,200,0.25);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,255,200,0.1) inset, -4px 0 12px rgba(0,255,200,0.08);
+        }
+        .quest-card::before {
+          content: '';
+          position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+          background: var(--accent, #00ffc8);
+          opacity: 0;
+          transition: opacity 0.2s;
+          box-shadow: 0 0 8px var(--accent, #00ffc8);
+        }
+        .quest-card:hover::before { opacity: 1; }
+
+        /* ── QUEST BTN ── */
+        .quest-btn {
+          transition: all 0.15s cubic-bezier(.4,0,.2,1) !important;
+          position: relative;
+        }
+        .quest-btn:hover { transform: scale(1.12); filter: brightness(1.2) drop-shadow(0 0 6px currentColor); }
+        .quest-btn:active { transform: scale(0.94); }
+
+        /* ── TAB BTN ── */
+        .tab-btn { cursor:pointer; border:none; background:none; font-family:inherit; transition:all 0.2s cubic-bezier(.4,0,.2,1); }
+
+        /* ── WEEK HEADER ── */
+        .week-header { transition:all 0.2s cubic-bezier(.4,0,.2,1) !important; }
+        .week-header:hover { background:rgba(0,255,200,0.04) !important; cursor:pointer; border-color:rgba(0,255,200,0.15) !important; }
+
+        /* ── XP BAR SHIMMER ── */
+        .xp-bar-fill {
+          background: linear-gradient(90deg, var(--c1), var(--c2), rgba(255,255,255,0.6), var(--c2), var(--c1));
+          background-size: 200% 100%;
+          animation: xpShimmer 2s linear infinite;
+        }
+
+        /* ── BOSS HP BAR ── */
+        .boss-hp { position: relative; overflow: hidden; }
+        .boss-hp::after {
+          content: '';
+          position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+          animation: xpShimmer 1.5s linear infinite;
+        }
+
+        .card-hover { transition:all 0.22s cubic-bezier(.4,0,.2,1); }
+        .card-hover:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+        .fade-in { animation:fadeIn 0.35s ease-out; }
+
+        button { transition:all 0.15s cubic-bezier(.4,0,.2,1); }
+        button:active { transform:scale(0.97); }
+        input:focus, textarea:focus, select:focus { outline:none; box-shadow:0 0 0 1px rgba(0,255,200,0.3); border-color:rgba(0,255,200,0.3) !important; }
+
+        ::-webkit-scrollbar { width:4px; height:4px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#00ffc844,#00ffc822); border-radius:99px; }
       `}</style>
 
       {/* Particles */}
@@ -928,11 +1059,11 @@ export default function QuestEngine() {
       {toast && (
         <div style={{
           position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
-          background: "rgba(15,23,42,0.92)", backdropFilter:"blur(16px)",
-          border: `1px solid ${toast.color}77`, borderRadius: 40,
-          padding: "10px 22px", zIndex: 9998, fontFamily: "'Bebas Neue'",
-          fontSize: 16, color: toast.color, letterSpacing: 1.5, whiteSpace: "nowrap",
-          boxShadow: `0 8px 32px ${toast.color}44`
+          background: "rgba(2,4,8,0.95)", backdropFilter:"blur(20px)",
+          border: `1px solid ${toast.color}55`, borderRadius: 8,
+          padding: "10px 22px", zIndex: 9998, fontFamily: "'Share Tech Mono', monospace",
+          fontSize: 13, color: toast.color, letterSpacing: 2, whiteSpace: "nowrap",
+          boxShadow: `0 0 32px ${toast.color}44, 0 8px 32px rgba(0,0,0,0.8)`
         }}>{toast.msg}</div>
       )}
 
@@ -941,7 +1072,7 @@ export default function QuestEngine() {
         <div style={{
           position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
           background: "#00000080", zIndex: 9997, animation: "levelUp 2s ease-in-out",
-          fontFamily: "'Bebas Neue'", fontSize: 48, color: level.color, letterSpacing: 4, textAlign: "center",
+          fontFamily: "'Orbitron', monospace", fontSize: 36, color: level.color, letterSpacing: 6, textAlign: "center", textShadow: `0 0 40px ${level.color}, 0 0 80px ${level.color}88`,
           pointerEvents: "none"
         }}>⚡ LEVEL UP ⚡<br />{level.title}</div>
       )}
@@ -963,21 +1094,22 @@ export default function QuestEngine() {
         <div className="qe-left">
         {/* ── Header ── */}
         <div style={{
-          background: `linear-gradient(135deg, #0d1426 0%, #1a1535 50%, #0d1426 100%)`,
-          border: `1px solid ${level.color}44`, borderRadius: 16, padding: "18px 20px", marginBottom: 14,
+          background: "linear-gradient(135deg, rgba(5,15,30,0.98) 0%, rgba(10,20,45,0.95) 100%)",
+          border: `1px solid ${level.color}33`, borderRadius: 16, padding: "20px 22px", marginBottom: 14,
           animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none",
-          boxShadow: `0 8px 32px ${level.color}18`
+          boxShadow: `0 0 0 1px ${level.color}22 inset, 0 16px 48px rgba(0,0,0,0.7), 0 0 80px ${level.color}08`,
+          position: "relative", overflow: "hidden"
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 11, letterSpacing: 2, color: "#475569" }}>ABHISHEK'S QUEST ENGINE v3</div>
-              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 26, color: level.color, letterSpacing: 1, lineHeight: 1.1 }}>{level.title}</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Level {level.level} · {xp} XP total</div>
+              <div style={{ fontFamily:"'Share Tech Mono'", fontSize: 10, letterSpacing: 3, color: "#334155", textTransform:"uppercase" }}>// QUEST_ENGINE v3 · SYD_AI_SAGA</div>
+              <div className="font-orb neon-text" style={{ fontSize: 22, color: level.color, letterSpacing: 2, lineHeight: 1.2, marginTop:4, textShadow:`0 0 20px ${level.color}88, 0 0 40px ${level.color}44` }}>{level.title}</div>
+              <div style={{ fontFamily:"'Share Tech Mono'", fontSize: 11, color: "#475569", marginTop: 3 }}>LVL_{level.level} · {xp}_XP</div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 32, color: level.color }}>{completedCount}</div>
-              <div style={{ fontSize: 10, color: "#475569", letterSpacing: 1 }}>/{QUESTS.length + customQuests.length} QUESTS</div>
-              <div style={{ fontSize: 10, color: "#475569", marginTop: 2 }}>{defeatedCount}/{BOSSES.length} BOSSES 💀</div>
+              <div className="font-orb" style={{ fontSize: 28, color: level.color, textShadow:`0 0 16px ${level.color}88` }}>{completedCount}</div>
+              <div style={{ fontFamily:"'Share Tech Mono'", fontSize: 9, color: "#334155", letterSpacing: 1 }}>/{QUESTS.length + customQuests.length}_QUESTS</div>
+              <div style={{ fontFamily:"'Share Tech Mono'", fontSize: 9, color: "#334155", marginTop: 2 }}>{defeatedCount}/{BOSSES.length}_BOSSES 💀</div>
             </div>
           </div>
 
@@ -988,8 +1120,8 @@ export default function QuestEngine() {
                 <span>XP to {nextLevel.title}</span>
                 <span>{nextLevel.xpRequired - xp} XP remaining</span>
               </div>
-              <div style={{ height: 6, background: "#1e293b", borderRadius: 99, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${xpPct}%`, background: `linear-gradient(90deg, ${level.color}, ${nextLevel.color})`, borderRadius: 99, transition: "width 0.4s ease" }} />
+              <div style={{ height: 6, background: "rgba(255,255,255,0.04)", borderRadius: 99, overflow: "hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
+                <div className="xp-bar-fill" style={{ "--c1": level.color, "--c2": nextLevel?.color || level.color, height: "100%", width: `${xpPct}%`, borderRadius: 99, transition: "width 0.5s ease", boxShadow:`0 0 10px ${level.color}88` }} />
               </div>
             </div>
           )}
@@ -1045,19 +1177,20 @@ export default function QuestEngine() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
-                <div style={{ fontFamily: "'Bebas Neue'", fontSize: 11, color: "#64748b", letterSpacing: 2 }}>CURRENT BOSS</div>
-                <div style={{ fontFamily: "'Bebas Neue'", fontSize: 18, color: "#f87171", letterSpacing: 0.5 }}>{boss.emoji} {boss.name}</div>
+                <div style={{ fontFamily: "'Share Tech Mono'", fontSize: 9, color: "#334155", letterSpacing: 3 }}>// CURRENT_BOSS</div>
+                <div className="font-orb" style={{ fontSize: 15, color: "#ff6b6b", letterSpacing: 1, marginTop:2, textShadow:"0 0 16px #ef444488" }}>{boss.emoji} {boss.name}</div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontFamily: "'Bebas Neue'", fontSize: 22, color: bossPct > 50 ? "#ef4444" : bossPct > 20 ? "#f59e0b" : "#34d399" }}>{bossCurrentHp} HP</div>
+                <div className="font-mono" style={{ fontSize: 20, color: bossPct > 50 ? "#ff4444" : bossPct > 20 ? "#f59e0b" : "#00ffc8", textShadow: bossPct > 50 ? "0 0 12px #ff444488" : "0 0 12px #00ffc844" }}>{bossCurrentHp} HP</div>
                 <div style={{ fontSize: 10, color: "#475569" }}>of {boss.hp} HP</div>
               </div>
             </div>
-            <div style={{ height: 8, background: "#1e293b", borderRadius: 99, overflow: "hidden" }}>
+            <div className="boss-hp" style={{ height: 10, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
               <div style={{
                 height: "100%", width: `${bossPct}%`,
-                background: bossPct > 50 ? "#ef4444" : bossPct > 20 ? "#f59e0b" : "#34d399",
-                borderRadius: 99, transition: "width 0.4s ease"
+                background: bossPct > 50 ? "linear-gradient(90deg,#ef4444,#ff6b6b)" : bossPct > 20 ? "linear-gradient(90deg,#d97706,#f59e0b)" : "linear-gradient(90deg,#00b377,#00ffc8)",
+                borderRadius: 4, transition: "width 0.5s cubic-bezier(.4,0,.2,1)",
+                boxShadow: bossPct > 50 ? "0 0 12px #ef444488" : bossPct > 20 ? "0 0 12px #f59e0b88" : "0 0 12px #00ffc888"
               }} />
             </div>
             <div style={{ fontSize: 11, color: "#475569", marginTop: 6 }}>Defeat for: {boss.reward}</div>
@@ -1111,12 +1244,15 @@ export default function QuestEngine() {
             const a = activeTab === tab;
             return (<button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
               flex:"1 1 75px", padding:"9px 4px", borderRadius:10, fontSize:11, fontWeight:700,
-              background: a ? `linear-gradient(135deg,${level.color}ee,${level.color}99)` : "rgba(15,23,42,0.9)",
-              color: a ? "#000" : "#64748b",
-              border: `1px solid ${a ? level.color : "#1e293b"}`,
-              letterSpacing:0.5,
-              boxShadow: a ? `0 4px 14px ${level.color}55` : "none",
-              transform: a ? "translateY(-1px)" : "none"
+              background: a ? level.color : "rgba(5,12,25,0.8)",
+              color: a ? "#000" : "#334155",
+              border: `1px solid ${a ? level.color : "rgba(255,255,255,0.06)"}`,
+              fontFamily: a ? "'Orbitron', monospace" : "'Share Tech Mono', monospace",
+              letterSpacing: a ? 1 : 0.5,
+              fontSize: 10,
+              boxShadow: a ? `0 0 20px ${level.color}66, 0 4px 12px ${level.color}44` : "none",
+              transform: a ? "translateY(-1px)" : "none",
+              textTransform: "uppercase"
             }}>{label}</button>);
           })}
         </div>
@@ -1157,11 +1293,12 @@ export default function QuestEngine() {
                 const c = catMeta[quest.category] || catMeta.academic;
                 const isActive = pomodoroQuestId === quest.id;
                 return (
-                  <div key={quest.id} className="card-hover" style={{
-                    background: isActive ? "#1a1400" : "linear-gradient(135deg,#0f172a,#0d1520)",
-                    border: `1px solid ${quest.urgent ? "#ef444455" : isActive ? "#f59e0b55" : "#1e293b"}`,
+                  <div key={quest.id} className="quest-card" style={{
+                    background: isActive ? "rgba(40,25,0,0.8)" : undefined,
+                    border: `1px solid ${quest.urgent ? "#ef444433" : isActive ? "#f59e0b33" : "rgba(255,255,255,0.05)"}`,
                     borderRadius:12, padding:"14px 16px", marginBottom:8,
-                    display:"flex", alignItems:"center", gap:12
+                    display:"flex", alignItems:"center", gap:12,
+                    "--accent": CATEGORY_META[quest.category]?.color || "#00ffc8"
                   }}>
                     <button className="quest-btn" onClick={(e) => !done && completeQuest(quest, e)} disabled={done} style={{
                       width:32, height:32, borderRadius:10, flexShrink:0, cursor: done?"default":"pointer",
@@ -1281,11 +1418,11 @@ export default function QuestEngine() {
 
             {/* ── Active Pomodoro Banner ── */}
             {pomodoroQuestId && (
-              <div style={{ background:"#0f172a", border:`2px solid ${pomodoroSeconds < 60 ? "#ef4444" : "#f59e0b"}`, borderRadius:12, padding:"12px 16px", marginBottom:12 }}>
+              <div style={{ background:"rgba(5,12,25,0.95)", backdropFilter:"blur(12px)", border:`1px solid ${pomodoroSeconds < 60 ? "#ef444466" : "#f59e0b66"}`, borderRadius:12, padding:"12px 16px", marginBottom:12 }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                   <div>
                     <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2 }}>⏱ POMODORO ACTIVE</div>
-                    <div style={{ fontFamily:"'Bebas Neue'", fontSize:28, color: pomodoroSeconds < 60 ? "#ef4444" : "#f59e0b", lineHeight:1 }}>{fmtTime(pomodoroSeconds)}</div>
+                    <div style={{ fontFamily:"'Orbitron',monospace", fontSize:24, color: pomodoroSeconds < 60 ? "#ff4444" : "#f59e0b", lineHeight:1, textShadow: pomodoroSeconds < 60 ? "0 0 16px #ef444488":"0 0 16px #f59e0b88" }}>{fmtTime(pomodoroSeconds)}</div>
                     <div style={{ fontSize:11, color:"#64748b", marginTop:2 }}>
                       {[...QUESTS, ...customQuests].find(q => q.id === pomodoroQuestId)?.title || ""}
                     </div>
@@ -1395,13 +1532,15 @@ export default function QuestEngine() {
                 <div key={week} style={{ marginBottom: 10 }}>
                   <div className="week-header" onClick={() => setExpandedWeek(isOpen ? null : week)} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    padding: "11px 16px", background: isCurrent ? "#0f1f1a" : "#0f172a",
+                    padding: "12px 16px",
+                    background: isCurrent ? "linear-gradient(135deg,rgba(0,180,100,0.1),rgba(0,255,200,0.04))" : "rgba(5,12,25,0.8)",
                     borderRadius: isOpen ? "10px 10px 0 0" : 10,
-                    border: `1px solid ${isCurrent ? "#34d39966" : "#1e293b"}`, transition: "all 0.15s"
+                    border: `1px solid ${isCurrent ? "rgba(0,255,200,0.25)" : "rgba(255,255,255,0.06)"}`,
+                    backdropFilter: "blur(8px)"
                   }}>
                     <div>
-                      <span style={{ fontFamily: "'Bebas Neue'", fontSize: 16, letterSpacing: 1, color: weekDone === weekQuests.length ? "#34d399" : isCurrent ? "#34d399" : "#e2e8f0" }}>
-                        {weekDone === weekQuests.length ? "✅ " : ""}{week}
+                      <span className="font-mono" style={{ fontSize: 13, letterSpacing: 1, color: weekDone === weekQuests.length ? "#00ffc8" : isCurrent ? "#00ffc8" : "#64748b", textShadow: isCurrent ? "0 0 12px #00ffc844" : "none" }}>
+                        {weekDone === weekQuests.length ? "✓ " : "// "}{week}
                       </span>
                       {isCurrent && weekDone < weekQuests.length && (
                         <span style={{ marginLeft: 8, fontSize: 10, background: "#064e3b", color: "#34d399", padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>THIS WEEK</span>
@@ -1417,7 +1556,7 @@ export default function QuestEngine() {
                   </div>
 
                   {isOpen && (
-                    <div style={{ border: "1px solid #1e293b", borderTop: "none", borderRadius: "0 0 10px 10px", overflow: "hidden" }}>
+                    <div className="quest-card" style={{ border: "1px solid rgba(255,255,255,0.05)", borderTop: "none", borderRadius: "0 0 10px 10px", overflow: "hidden" }}>
                       {weekQuests.map((quest, i) => {
                         const done = !!completed[quest.id];
                         const cat = CATEGORY_META[quest.category];
@@ -2059,7 +2198,7 @@ export default function QuestEngine() {
 
       {/* ── Quick Capture Modal ── */}
       {showQuickCapture && (
-        <div style={{ position:"fixed", bottom:88, right:24, width:300, background:"#0f172a", border:`2px solid ${level.color}44`, borderRadius:16, padding:16, zIndex:9989, boxShadow:"0 8px 32px #00000088" }}>
+        <div style={{ position:"fixed", bottom:90, right:24, width:300, background:"rgba(5,12,25,0.97)", backdropFilter:"blur(20px)", border:`1px solid ${level.color}44`, borderRadius:16, padding:16, zIndex:9989, boxShadow:`0 24px 64px rgba(0,0,0,0.8), 0 0 32px ${level.color}22` }}>
           <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color: level.color, letterSpacing:1, marginBottom:10 }}>⚡ QUICK CAPTURE</div>
           <div style={{ display:"flex", gap:6, marginBottom:10 }}>
             {[["quest","⚔️ Quest"],["deadline","📅 Deadline"]].map(([t,l]) => (
