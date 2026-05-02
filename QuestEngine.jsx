@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import { db } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -396,11 +398,14 @@ export default function QuestEngine() {
   const [activeTab, setActiveTab]     = useState("quests");
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
-  const [loaded, setLoaded]           = useState(false);
-  const [levelUpAnim, setLevelUpAnim] = useState(false);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [bossHitAnim, setBossHitAnim] = useState(false);
+  const [loaded, setLoaded]                   = useState(false);
+  const [levelUpInfo, setLevelUpInfo]         = useState(null);
+  const [bossDefeatedInfo, setBossDefeatedInfo] = useState(null);
+  const [completedCount, setCompletedCount]   = useState(0);
+  const [bossHitAnim, setBossHitAnim]         = useState(false);
+  const [statsCounters, setStatsCounters]     = useState({ completed: 0, xp: 0 });
   const particleId = useRef(0);
+  const statsRafRef = useRef(null);
 
   // ── Custom user-added deadlines & quests (persisted in Firebase) ─────────
   const [customDeadlines, setCustomDeadlines] = useState([]);
@@ -529,22 +534,27 @@ export default function QuestEngine() {
       setBossHitAnim(true);
       setTimeout(() => setBossHitAnim(false), 600);
       if (newHp === 0 && prevHp > 0) {
-        // Find next boss to announce
         const bossIdx = BOSSES.findIndex(b => b.id === boss.id);
         const nextBoss = BOSSES[bossIdx + 1];
         setTimeout(() => {
-          showToast(`💥 BOSS DEFEATED! ${boss.reward}`, "#ef4444");
-          if (nextBoss) {
-            setTimeout(() => showToast(`⚔️ NEW BOSS: ${nextBoss.emoji} ${nextBoss.name}`, "#f97316"), 1500);
-          }
-        }, 400);
+          // Screen flash white 100ms
+          document.documentElement.style.filter = "brightness(4)";
+          setTimeout(() => { document.documentElement.style.filter = ""; }, 100);
+          // Confetti in boss accent
+          confetti({ particleCount: 220, spread: 100, origin: { y: 0.5 }, colors: ["#ef4444", "#ff6b6b", "#fbbf24", "#ffffff"] });
+          setBossDefeatedInfo({ boss, reward: boss.reward, nextBoss });
+          setTimeout(() => setBossDefeatedInfo(null), 3800);
+        }, 300);
       }
     }
 
     if (newLevel.level > prevLevel.level) {
-      setLevelUpAnim(true);
-      setTimeout(() => setLevelUpAnim(false), 2000);
-      showToast(`🎉 LEVEL UP! You are now: ${newLevel.title}`, newLevel.color);
+      setLevelUpInfo({ title: newLevel.title, color: newLevel.color });
+      setTimeout(() => {
+        confetti({ particleCount: 260, spread: 130, origin: { y: 0.55 }, colors: [newLevel.color, "#ffffff", "#00ffc8", "#7c3aed"] });
+      }, 250);
+      setTimeout(() => setLevelUpInfo(null), 3500);
+      showToast(`⚡ LEVEL UP — ${newLevel.title}`, newLevel.color);
     } else {
       showToast(`+${quest.xp} XP`, "#34d399");
     }
@@ -708,6 +718,23 @@ export default function QuestEngine() {
     }
     prevXpRef.current = xp;
   }, [xp, loaded]);
+
+  // ── Stats count-up animation ──────────────────────────────────────────────
+  useEffect(() => {
+    if (activeTab !== "stats") return;
+    cancelAnimationFrame(statsRafRef.current);
+    const start = Date.now();
+    const duration = 1300;
+    const targets = { completed: completedCount, xp };
+    const tick = () => {
+      const t = Math.min((Date.now() - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      setStatsCounters({ completed: Math.round(targets.completed * ease), xp: Math.round(targets.xp * ease) });
+      if (t < 1) statsRafRef.current = requestAnimationFrame(tick);
+    };
+    statsRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(statsRafRef.current);
+  }, [activeTab]);
 
   // ── Daily Focus Quest ─────────────────────────────────────────────────────
   const getDailyFocus = () => {
@@ -909,10 +936,15 @@ export default function QuestEngine() {
 
   return (
     <div style={{ fontFamily: "'Rajdhani', sans-serif", background: "#020408", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position: "relative" }}>
-      {/* Ambient orbs */}
-      <div style={{ position:"fixed", top:"10%", left:"5%", width:400, height:400, background:"radial-gradient(circle, rgba(0,255,200,0.04) 0%, transparent 70%)", pointerEvents:"none", zIndex:0 }} />
-      <div style={{ position:"fixed", bottom:"10%", right:"5%", width:500, height:500, background:"radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)", pointerEvents:"none", zIndex:0 }} />
-      <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:800, height:800, background:"radial-gradient(circle, rgba(0,100,60,0.03) 0%, transparent 60%)", pointerEvents:"none", zIndex:0 }} />
+      {/* Drifting ambient orbs */}
+      <div style={{ position:"fixed", top:"10%", left:"5%", width:450, height:450, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,255,200,0.07) 0%, transparent 70%)", pointerEvents:"none", zIndex:0, animation:"orbDrift1 18s ease-in-out infinite" }} />
+      <div style={{ position:"fixed", bottom:"8%", right:"6%", width:550, height:550, borderRadius:"50%", background:"radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)", pointerEvents:"none", zIndex:0, animation:"orbDrift2 24s ease-in-out infinite" }} />
+      <div style={{ position:"fixed", top:"50%", left:"50%", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,100,60,0.05) 0%, transparent 60%)", pointerEvents:"none", zIndex:0, animation:"orbDrift3 30s ease-in-out infinite" }} />
+      {/* CSS grain overlay via SVG feTurbulence */}
+      <svg style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", opacity:0.035, width:"100%", height:"100%" }} aria-hidden="true">
+        <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch" /></filter>
+        <rect width="100%" height="100%" filter="url(#grain)" />
+      </svg>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -941,13 +973,18 @@ export default function QuestEngine() {
           background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
         }
         @keyframes floatUp    { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-60px)} }
-        @keyframes levelUp    { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08)} }
         @keyframes pulse      { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        @keyframes bossHit    { 0%{background:#ef444433} 100%{background:transparent} }
         @keyframes urgentPulse{ 0%,100%{box-shadow:0 0 16px #ef444455} 50%{box-shadow:0 0 32px #ef4444aa} }
         @keyframes slideUp    { 0%{opacity:0;transform:translateY(6px)} 100%{opacity:1;transform:translateY(0)} }
         @keyframes float      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
+        @keyframes bossEmojiFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-10px) scale(1.05)} }
+        @keyframes bossRedPulse   { 0%,100%{box-shadow:0 0 20px #ef444444,inset 0 0 60px #ef44440a} 50%{box-shadow:0 0 50px #ef4444bb,inset 0 0 80px #ef44441a} }
+        @keyframes bossHpFlash    { 0%{background:rgba(255,255,255,0.7)} 100%{background:transparent} }
+        @keyframes orbDrift1  { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,-30px)} 66%{transform:translate(-25px,40px)} }
+        @keyframes orbDrift2  { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-50px,25px)} 66%{transform:translate(30px,-40px)} }
+        @keyframes orbDrift3  { 0%,100%{transform:translate(-50%,-50%)} 33%{transform:translate(calc(-50% + 35px),calc(-50% + 40px))} 66%{transform:translate(calc(-50% - 40px),calc(-50% - 30px))} }
+        @keyframes hueRotate  { to{--grad-hue:360deg} }
         .quest-btn        { transition:all 0.15s cubic-bezier(.4,0,.2,1) !important; }
         .quest-btn:hover  { transform:translateY(-1px) scale(1.05); filter:brightness(1.15); }
         .quest-btn:active { transform:scale(0.95); }
@@ -1068,6 +1105,33 @@ export default function QuestEngine() {
         ::-webkit-scrollbar { width:4px; height:4px; }
         ::-webkit-scrollbar-track { background:transparent; }
         ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#00ffc844,#00ffc822); border-radius:99px; }
+
+        /* ── @PROPERTY gradient hue rotation ── */
+        @property --grad-hue { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+        .focus-quest-border {
+          --grad-hue: 0deg;
+          animation: hueRotate 4s linear infinite;
+          background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03));
+          backdrop-filter: blur(20px);
+          border: 1px solid transparent;
+          background-clip: padding-box;
+          position: relative;
+        }
+        .focus-quest-border::before {
+          content: '';
+          position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+          background: linear-gradient(var(--grad-hue), #00ffc888, #7c3aed88, #00ffc888);
+          animation: hueRotate 4s linear infinite;
+        }
+        /* ── BOSS CARD CRITICAL ── */
+        .boss-critical { animation: bossRedPulse 1.2s ease-in-out infinite; }
+        .boss-emoji-float { animation: bossEmojiFloat 3s ease-in-out infinite; }
+        .boss-hp-flash::after {
+          content: ''; position:absolute; top:0; left:0; width:100%; height:100%;
+          animation: bossHpFlash 0.4s ease-out forwards;
+          border-radius: inherit;
+          pointer-events: none;
+        }
       `}</style>
 
       {/* Particles */}
@@ -1087,15 +1151,71 @@ export default function QuestEngine() {
         }}>{toast.msg}</div>
       )}
 
-      {/* Level Up Anim */}
-      {levelUpAnim && (
-        <div style={{
-          position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-          background: "#00000080", zIndex: 9997, animation: "levelUp 2s ease-in-out",
-          fontFamily: "'Orbitron', monospace", fontSize: 36, color: level.color, letterSpacing: 6, textAlign: "center", textShadow: `0 0 40px ${level.color}, 0 0 80px ${level.color}88`,
-          pointerEvents: "none"
-        }}>⚡ LEVEL UP ⚡<br />{level.title}</div>
-      )}
+      {/* ── Level-Up Cinematic ── */}
+      <AnimatePresence>
+        {levelUpInfo && (
+          <motion.div key="levelup-overlay"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position:"fixed", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
+              background:"rgba(0,0,0,0.85)", zIndex:9997, flexDirection:"column", gap:20, pointerEvents:"none" }}
+          >
+            <motion.div
+              initial={{ y: 90, opacity: 0, scale: 0.6 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              transition={{ type:"spring", stiffness:280, damping:18, delay:0.05 }}
+              style={{ fontFamily:"'Orbitron',monospace", fontSize:52, color:levelUpInfo.color,
+                letterSpacing:6, textAlign:"center", lineHeight:1.15,
+                textShadow:`0 0 60px ${levelUpInfo.color}, 0 0 120px ${levelUpInfo.color}55` }}
+            >⚡ LEVEL UP ⚡</motion.div>
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type:"spring", stiffness:200, damping:20, delay:0.2 }}
+              style={{ fontFamily:"'Orbitron',monospace", fontSize:26, color:"#ffffff",
+                letterSpacing:4, textAlign:"center", textShadow:`0 0 30px ${levelUpInfo.color}99` }}
+            >{levelUpInfo.title}</motion.div>
+            {/* Ring pulse */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0.8 }}
+              animate={{ scale: 3.5, opacity: 0 }}
+              transition={{ duration: 1.8, delay: 0.15, ease:"easeOut" }}
+              style={{ position:"absolute", width:200, height:200, borderRadius:"50%",
+                border:`2px solid ${levelUpInfo.color}`,
+                boxShadow:`0 0 60px ${levelUpInfo.color}66, inset 0 0 60px ${levelUpInfo.color}22`,
+                pointerEvents:"none" }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Boss Defeat Banner ── */}
+      <AnimatePresence>
+        {bossDefeatedInfo && (
+          <motion.div key="boss-defeated-banner"
+            initial={{ y: -140, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -140, opacity: 0 }}
+            transition={{ type:"spring", stiffness:320, damping:26 }}
+            style={{ position:"fixed", top:24, left:"50%", transform:"translateX(-50%)",
+              background:"linear-gradient(135deg,#3b0505,#7f1d1d,#3b0505)",
+              border:"2px solid #ef4444", borderRadius:18, padding:"18px 44px",
+              zIndex:9998, textAlign:"center", minWidth:320, pointerEvents:"none",
+              boxShadow:"0 0 80px #ef444488, 0 24px 60px rgba(0,0,0,0.85)" }}
+          >
+            <div style={{ fontFamily:"'Orbitron',monospace", fontSize:26, color:"#ff6b6b",
+              letterSpacing:5, textShadow:"0 0 24px #ef4444" }}>BOSS DEFEATED</div>
+            <div style={{ fontSize:40, margin:"6px 0", lineHeight:1 }}>{bossDefeatedInfo.boss.emoji}</div>
+            <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:13, color:"#fca5a5", letterSpacing:1 }}>
+              {bossDefeatedInfo.reward}
+            </div>
+            {bossDefeatedInfo.nextBoss && (
+              <div style={{ marginTop:8, fontFamily:"'Share Tech Mono',monospace", fontSize:12, color:"#f97316" }}>
+                ⚔️ NEXT: {bossDefeatedInfo.nextBoss.emoji} {bossDefeatedInfo.nextBoss.name}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "16px 16px" }}>
         <style>{`
@@ -1116,7 +1236,7 @@ export default function QuestEngine() {
         <div style={{
           background: "linear-gradient(135deg, rgba(5,15,30,0.98) 0%, rgba(10,20,45,0.95) 100%)",
           border: `1px solid ${level.color}33`, borderRadius: 16, padding: "20px 22px", marginBottom: 14,
-          animation: levelUpAnim ? "levelUp 2s ease-in-out" : "none",
+          animation: levelUpInfo ? "pulse 0.6s ease-in-out" : "none",
           boxShadow: `0 0 0 1px ${level.color}22 inset, 0 16px 48px rgba(0,0,0,0.7), 0 0 80px ${level.color}08`,
           position: "relative", overflow: "hidden"
         }}>
@@ -1141,7 +1261,7 @@ export default function QuestEngine() {
                 <span>{nextLevel.xpRequired - xp} XP remaining</span>
               </div>
               <div style={{ height: 6, background: "rgba(255,255,255,0.04)", borderRadius: 99, overflow: "hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
-                <div className="xp-bar-fill" style={{ "--c1": level.color, "--c2": nextLevel?.color || level.color, height: "100%", width: `${xpPct}%`, borderRadius: 99, transition: "width 0.5s ease", boxShadow:`0 0 10px ${level.color}88` }} />
+                <div className="xp-bar-fill" style={{ "--c1": level.color, "--c2": nextLevel?.color || level.color, height: "100%", width: `${xpPct}%`, borderRadius: 99, transition: "width 0.6s cubic-bezier(0.34,1.56,0.64,1)", boxShadow:`0 0 10px ${level.color}88` }} />
               </div>
             </div>
           )}
@@ -1168,7 +1288,7 @@ export default function QuestEngine() {
         {/* ── Current Boss ── */}
         {/* ── Daily Focus Banner ── */}
         {dailyFocus && !focusDismissed && !completed[dailyFocus.id] && (
-          <div style={{ background: "linear-gradient(135deg, #1e1b4b, #0f172a)", border: `2px solid ${level.color}88`, borderRadius: 14, padding: "12px 16px", marginBottom: 14 }}>
+          <div className="focus-quest-border" style={{ borderRadius: 14, padding: "12px 16px", marginBottom: 14 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:"#475569", letterSpacing:2, marginBottom:3 }}>🎯 TODAY'S FOCUS QUEST</div>
@@ -1191,34 +1311,71 @@ export default function QuestEngine() {
         )}
 
         {boss ? (
-          <div style={{
-            background: "#0f172a", border: "1px solid #450a0a", borderRadius: 14, padding: "14px 16px", marginBottom: 14,
-            animation: bossHitAnim ? "bossHit 0.6s ease-out" : "none",
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <div>
-                <div style={{ fontFamily: "'Share Tech Mono'", fontSize: 9, color: "#334155", letterSpacing: 3 }}>// CURRENT_BOSS</div>
-                <div className="font-orb" style={{ fontSize: 15, color: "#ff6b6b", letterSpacing: 1, marginTop:2, textShadow:"0 0 16px #ef444488" }}>{boss.emoji} {boss.name}</div>
+          <div className={bossPct <= 30 ? "boss-critical" : ""}
+            style={{
+              background: "linear-gradient(160deg,#12010a,#0f0518,#0a0112)",
+              border: `1px solid ${bossPct <= 30 ? "#ef444499" : "#450a0a"}`,
+              borderRadius: 18, padding: "18px 20px", marginBottom: 14,
+              transition: "all 0.4s ease", position: "relative", overflow: "hidden",
+              filter: bossHitAnim ? "brightness(2.5) saturate(2)" : "none",
+            }}>
+            {/* Scanline stripe overlay */}
+            <div style={{ position:"absolute", inset:0, borderRadius:18, pointerEvents:"none",
+              background:"repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(239,68,68,0.015) 3px,rgba(239,68,68,0.015) 4px)",
+              zIndex:0 }} />
+            <div style={{ position:"relative", zIndex:1 }}>
+              <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:9, color:"#4b2020", letterSpacing:3, marginBottom:8 }}>// CURRENT_BOSS · THREAT_LEVEL_{bossPct <= 30 ? "CRITICAL" : bossPct <= 60 ? "HIGH" : "EXTREME"}</div>
+              <div style={{ display:"flex", alignItems:"center", gap:16, marginBottom:14 }}>
+                {/* Giant floating emoji */}
+                <div className="boss-emoji-float" style={{ fontSize:56, lineHeight:1, flexShrink:0,
+                  filter:`drop-shadow(0 0 16px #ef444499) drop-shadow(0 0 32px #ef444444)` }}>
+                  {boss.emoji}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div className="font-orb" style={{ fontSize:22, color:"#ff6b6b", letterSpacing:1, lineHeight:1.2,
+                    textShadow:"0 0 24px #ef444499, 0 0 48px #ef444433",
+                    wordBreak:"break-word" }}>{boss.name}</div>
+                  <div style={{ display:"flex", alignItems:"baseline", gap:8, marginTop:6 }}>
+                    <span className="font-mono" style={{ fontSize:28, lineHeight:1,
+                      color: bossPct > 50 ? "#ff4444" : bossPct > 20 ? "#f59e0b" : "#00ffc8",
+                      textShadow: bossPct > 50 ? "0 0 20px #ff444499" : bossPct > 20 ? "0 0 20px #f59e0b99" : "0 0 20px #00ffc899" }}>
+                      {bossCurrentHp}
+                    </span>
+                    <span style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:11, color:"#4b2020" }}>/ {boss.hp} HP</span>
+                  </div>
+                </div>
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div className="font-mono" style={{ fontSize: 20, color: bossPct > 50 ? "#ff4444" : bossPct > 20 ? "#f59e0b" : "#00ffc8", textShadow: bossPct > 50 ? "0 0 12px #ff444488" : "0 0 12px #00ffc844" }}>{bossCurrentHp} HP</div>
-                <div style={{ fontSize: 10, color: "#475569" }}>of {boss.hp} HP</div>
+              {/* Liquid HP bar */}
+              <div style={{ position:"relative", height:12, background:"rgba(0,0,0,0.5)", borderRadius:6,
+                overflow:"hidden", border:"1px solid rgba(239,68,68,0.2)", marginBottom:8 }}>
+                <div style={{
+                  height:"100%", width:`${bossPct}%`,
+                  background: bossPct > 50
+                    ? "linear-gradient(90deg,#b91c1c,#ef4444,#ff6b6b)"
+                    : bossPct > 20
+                    ? "linear-gradient(90deg,#92400e,#d97706,#f59e0b)"
+                    : "linear-gradient(90deg,#065f46,#00b377,#00ffc8)",
+                  borderRadius:5, transition:"width 0.6s cubic-bezier(0.34,1.1,0.64,1)",
+                  boxShadow: bossPct > 50 ? "0 0 16px #ef444499,0 0 32px #ef444444"
+                    : bossPct > 20 ? "0 0 16px #f59e0b99"
+                    : "0 0 16px #00ffc899",
+                  position:"relative"
+                }}>
+                  {/* trailing white flash shimmer */}
+                  <div style={{ position:"absolute", right:0, top:0, bottom:0, width:8,
+                    background:"linear-gradient(90deg,transparent,rgba(255,255,255,0.7))",
+                    borderRadius:"0 5px 5px 0" }} />
+                </div>
+              </div>
+              <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:10, color:"#4b2020", letterSpacing:1 }}>
+                REWARD: {boss.reward}
               </div>
             </div>
-            <div className="boss-hp" style={{ height: 10, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden", border:"1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{
-                height: "100%", width: `${bossPct}%`,
-                background: bossPct > 50 ? "linear-gradient(90deg,#ef4444,#ff6b6b)" : bossPct > 20 ? "linear-gradient(90deg,#d97706,#f59e0b)" : "linear-gradient(90deg,#00b377,#00ffc8)",
-                borderRadius: 4, transition: "width 0.5s cubic-bezier(.4,0,.2,1)",
-                boxShadow: bossPct > 50 ? "0 0 12px #ef444488" : bossPct > 20 ? "0 0 12px #f59e0b88" : "0 0 12px #00ffc888"
-              }} />
-            </div>
-            <div style={{ fontSize: 11, color: "#475569", marginTop: 6 }}>Defeat for: {boss.reward}</div>
           </div>
         ) : (
-          <div style={{ background: "#0f172a", border: "1px solid #34d39944", borderRadius: 14, padding: "14px 16px", marginBottom: 14, textAlign: "center" }}>
-            <div style={{ fontFamily: "'Bebas Neue'", fontSize: 20, color: "#34d399" }}>🏆 ALL BOSSES DEFEATED!</div>
-            <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>You are the Sydney AI Engineer. Go get that job. 🚀</div>
+          <div style={{ background: "linear-gradient(135deg,#012210,#022817)", border: "1px solid #34d39966", borderRadius: 18, padding: "18px 20px", marginBottom: 14, textAlign: "center" }}>
+            <div className="font-orb" style={{ fontSize: 22, color: "#34d399", letterSpacing:3, textShadow:"0 0 30px #34d39988" }}>🏆 ALL BOSSES DEFEATED</div>
+            <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize: 12, color: "#064e3b", marginTop: 6, letterSpacing:1 }}>// SYDNEY_AI_ENGINEER · STATUS: UNLOCKED 🚀</div>
           </div>
         )}
 
@@ -1277,6 +1434,14 @@ export default function QuestEngine() {
           })}
         </div>
 
+        <AnimatePresence mode="wait">
+        <motion.div key={activeTab}
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -28 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+        >
+
         {/* ── TODAY TAB ── */}
         {activeTab === "today" && (() => {
           const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
@@ -1306,14 +1471,21 @@ export default function QuestEngine() {
                 <div style={{ fontSize:11, color:"#475569" }}>{allActive.length - todayList.length} more in other weeks</div>
               </div>
               {todayList.length === 0 && (
-                <div style={{ textAlign:"center", padding:"40px 0", color:"#334155", fontSize:14 }}>🎉 All caught up this week!</div>
+                <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}
+                  style={{ textAlign:"center", padding:"40px 0", color:"#334155", fontSize:14 }}>🎉 All caught up this week!</motion.div>
               )}
-              {todayList.map((quest) => {
+              <AnimatePresence>
+              {todayList.map((quest, qi) => {
                 const done = !!completed[quest.id];
                 const c = catMeta[quest.category] || catMeta.academic;
                 const isActive = pomodoroQuestId === quest.id;
                 return (
-                  <div key={quest.id} className="quest-card" style={{
+                  <motion.div key={quest.id}
+                    initial={{ opacity:0, y:14 }}
+                    animate={{ opacity:1, y:0 }}
+                    exit={{ opacity:0, scale:0.88, transition:{ duration:0.2 } }}
+                    transition={{ delay: qi * 0.04, duration:0.22, ease:"easeOut" }}
+                    className="quest-card" style={{
                     background: isActive ? "rgba(40,25,0,0.8)" : undefined,
                     border: `1px solid ${quest.urgent ? "#ef444433" : isActive ? "#f59e0b33" : "rgba(255,255,255,0.05)"}`,
                     borderRadius:12, padding:"14px 16px", marginBottom:8,
@@ -1340,9 +1512,10 @@ export default function QuestEngine() {
                       <div style={{ fontFamily:"'Bebas Neue'", fontSize:18, color:"#34d399" }}>+{quest.xp}</div>
                       <button onClick={() => startPomodoro(quest.id)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, color:isActive?"#f59e0b":"#334155", padding:0 }}>⏱</button>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
+              </AnimatePresence>
               <div style={{ textAlign:"center", marginTop:16 }}>
                 <button onClick={() => setActiveTab("quests")} style={{ background:"none", border:"1px solid #1e293b", borderRadius:8, color:"#475569", fontSize:12, padding:"6px 14px", cursor:"pointer", fontFamily:"inherit" }}>View All Weeks →</button>
               </div>
@@ -1425,9 +1598,9 @@ export default function QuestEngine() {
             {/* Progress summary */}
             <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
               {[
-                { label: "Done", value: completedCount, color: "#34d399" },
-                { label: "Remaining", value: QUESTS.length + customQuests.length - completedCount, color: "#f59e0b" },
-                { label: "Total XP", value: xp, color: level.color },
+                { label: "Done", value: statsCounters.completed, color: "#34d399" },
+                { label: "Remaining", value: QUESTS.length + customQuests.length - statsCounters.completed, color: "#f59e0b" },
+                { label: "Total XP", value: statsCounters.xp, color: level.color },
               ].map(s => (
                 <div key={s.label} style={{ flex: 1, background: "#0f172a", border: "1px solid #1e293b", borderRadius: 10, padding: "10px 14px", textAlign: "center" }}>
                   <div style={{ fontFamily: "'Bebas Neue'", fontSize: 22, color: s.color }}>{s.value}</div>
@@ -2098,19 +2271,28 @@ export default function QuestEngine() {
           <div>
             <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 14, padding: 16, marginBottom: 10 }}>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 14, color: "#475569", letterSpacing: 2, marginBottom: 12 }}>PROGRESS BY CATEGORY</div>
-              {Object.entries(CATEGORY_META).map(([cat, meta]) => {
+              {Object.entries(CATEGORY_META).map(([cat, meta], ci) => {
                 const total = QUESTS.filter(q => q.category === cat).length;
                 const done = QUESTS.filter(q => q.category === cat && completed[q.id]).length;
+                const pct = total ? (done / total) * 100 : 0;
                 return (
-                  <div key={cat} style={{ marginBottom: 10 }}>
+                  <motion.div key={cat}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: ci * 0.07, duration: 0.3, ease: "easeOut" }}
+                    style={{ marginBottom: 10 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
                       <span style={{ color: meta.color, fontWeight: 700 }}>{meta.label}</span>
                       <span style={{ color: "#64748b" }}>{done}/{total}</span>
                     </div>
                     <div style={{ height: 6, background: "#1e293b", borderRadius: 99, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${total ? (done/total)*100 : 0}%`, background: meta.color, borderRadius: 99 }} />
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ delay: ci * 0.07 + 0.2, duration: 0.8, ease: "easeOut" }}
+                        style={{ height: "100%", background: meta.color, borderRadius: 99 }} />
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -2200,6 +2382,9 @@ export default function QuestEngine() {
             </div>
           </div>
         )}
+
+        </motion.div>
+        </AnimatePresence>
 
         </div>{/* end qe-right */}
         </div>{/* end qe-layout */}
