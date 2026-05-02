@@ -35,39 +35,27 @@ const QUESTS = [
   { id:"q3",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit iOS Quiz 1",                 desc:"Thu Mar 12 deadline 🔴", xp:50, bossDmg:40, urgent:true },
   { id:"q4",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit Team Charter",               desc:"Fri Mar 13 — ungraded but required by FID", xp:20, bossDmg:15, urgent:false },
   { id:"q5",  week:"Week 4 · Mar 10–16",    category:"jobsearch", title:"Update LinkedIn Headline",          desc:"AI Backend Engineer | Java + Python | UTS Master's IT", link:"https://www.linkedin.com/in/", xp:25, bossDmg:20, urgent:false },
-  { id:"q6",  week:"Week 4 · Mar 10–16",    category:"ailearn",   title:"Watch FastAPI Intro (30 min)",      desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=fastapi", xp:30, bossDmg:25, urgent:false },
 
   // ── WEEK 5 · Mar 17–23 ─────────────────────────────────────────────────────
   { id:"q7",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 1",          desc:"2 hrs focused work — follow assignment brief step by step", xp:35, bossDmg:28, urgent:false },
   { id:"q8",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 2",          desc:"2 hrs focused work — core features done by end of session", xp:35, bossDmg:28, urgent:false },
   { id:"q9",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Final Push",     desc:"Submit by Mar 22 🔴 Polish + upload", xp:60, bossDmg:50, urgent:true },
-  { id:"q10", week:"Week 5 · Mar 17–23",    category:"ailearn",   title:"Error Handling + .env in Python",   desc:"Corey Schafer YouTube — then type examples yourself", link:"https://www.youtube.com/@coreyms/search?query=try+except+error+handling", xp:40, bossDmg:35, urgent:false },
   { id:"q10b",week:"Week 5 · Mar 17–23",    category:"academic",  title:"⚠️ IP Quiz 1 Revision (2 days out)",desc:"Mar 21 — Revise IP lecture notes for 1.5 hrs. Quiz is Mar 23.", xp:30, bossDmg:25, urgent:true },
   { id:"q11", week:"Week 5 · Mar 17–23",    category:"academic",  title:"Submit IP Quiz 1",                  desc:"Mar 23 deadline 🔴", xp:50, bossDmg:40, urgent:true },
 
   // ── WEEK 6 · Mar 24–31 ─────────────────────────────────────────────────────
-  { id:"q12", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch OpenAI API Tutorial (35 min)",desc:"Tech With Tim on YouTube", link:"https://www.youtube.com/@TechWithTim/search?query=openai+api+python", xp:30, bossDmg:25, urgent:false },
-  { id:"q13", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Build OpenAI API Script",           desc:"System prompt + logging. Type it yourself — no copy-paste.", link:"https://platform.openai.com/docs/quickstart", xp:60, bossDmg:50, urgent:false },
-  { id:"q14", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Watch Prompt Engineering Guide",    desc:"AssemblyAI — 30 min", link:"https://www.youtube.com/@AssemblyAI/search?query=prompt+engineering", xp:25, bossDmg:20, urgent:false },
-  { id:"q15", week:"Week 6 · Mar 24–31",    category:"ailearn",   title:"Experiment with Temperature (0 vs 1)",desc:"Run same prompt, observe difference. Write notes.", xp:20, bossDmg:15, urgent:false },
   { id:"q16", week:"Week 6 · Mar 24–31",    category:"jobsearch", title:"Push OpenAI Script to GitHub",      desc:"Write a README. Your first AI repo!", link:"https://github.com", xp:40, bossDmg:35, urgent:false },
   { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
 
   // ── WEEK 7 · Apr 1–7 ───────────────────────────────────────────────────────
-  { id:"q17", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Watch LangChain Crash Course (40 min)",desc:"Nicholas Renotte — confirmed video", link:"https://www.youtube.com/watch?v=MlK6SIjcjE8", xp:30, bossDmg:25, urgent:false },
   { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
   { id:"q18", week:"Week 7 · Apr 1–7",      category:"academic",  title:"IP Assignment 1 — Push to finish",  desc:"Due Apr 5. Don't leave for day of.", xp:80, bossDmg:65, urgent:true },
   { id:"q19", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit IP Assignment 1",            desc:"Apr 5 — Very High priority 🔴", xp:100, bossDmg:80, urgent:true },
   { id:"q20", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit FID Persona",                desc:"Apr 5 — alongside IP A1 🔴", xp:70, bossDmg:55, urgent:true },
-  { id:"q21", week:"Week 7 · Apr 1–7",      category:"ailearn",   title:"Build Basic LangChain Chain",       desc:"Prompt template + LLM + output parser. 30 min. Type yourself.", xp:50, bossDmg:40, urgent:false },
 
   // ── WEEK 8 · Apr 7–13 ──────────────────────────────────────────────────────
-  { id:"q22", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch What are Embeddings? (25 min)",desc:"AssemblyAI on YouTube", link:"https://www.youtube.com/@AssemblyAI/search?query=embeddings", xp:25, bossDmg:20, urgent:false },
   { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
-  { id:"q23", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 1–3",      desc:"Do in one sitting (~2 hrs). Don't spread over days.", link:"https://www.coursera.org/google-certificates/google-ai", xp:60, bossDmg:50, urgent:false },
-  { id:"q24", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Google AI Cert — Modules 4–7 ✅",   desc:"Finish certificate this weekend!", link:"https://www.coursera.org/google-certificates/google-ai", xp:80, bossDmg:65, urgent:false },
   { id:"q25", week:"Week 8 · Apr 7–13",     category:"jobsearch", title:"Add Google AI Cert to LinkedIn",    desc:"Add under Licences & Certifications", link:"https://www.linkedin.com/in/", xp:20, bossDmg:15, urgent:false },
-  { id:"q26", week:"Week 8 · Apr 7–13",     category:"ailearn",   title:"Watch Pixegami — Build a RAG App",  desc:"45 min. Your Project 1 blueprint — watch before writing any code.", link:"https://www.youtube.com/watch?v=tcqEUSNCn8I", xp:35, bossDmg:30, urgent:false },
 
   // ── WEEK 9 · Apr 14–20 ─────────────────────────────────────────────────────
   { id:"q27", week:"Week 9 · Apr 14–20",    category:"project",   title:"Set Up Project 1 Repo: AI Doc Q&A", desc:"GitHub repo + README skeleton + empty FastAPI app", xp:30, bossDmg:25, urgent:false },
@@ -144,6 +132,38 @@ const QUESTS = [
   { id:"q76", week:"Interview Prep · Week 4", category:"interview", title:"System Design Lite — URL Shortener + SOLID + Patterns", desc:"Gaurav Sen System Design intro. Design URL Shortener on whiteboard. SOLID + Factory/Singleton/Observer.", xp:55, bossDmg:45, link:"https://youtube.com/@gauravsen", urgent:false },
   { id:"q77", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sat: Deploy Resume Analyzer + Add to Resume", desc:"Finish Resume Analyzer — deploy on Railway/Render. Add to resume: 'Built AI resume analyzer using Claude API'.", xp:70, bossDmg:55, link:"https://railway.app", urgent:false },
   { id:"q78", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sun: Final Review — 10 Blind 75 from Memory", desc:"Re-do 10 Blind 75 problems from memory. Review all patterns cheat sheet. Sleep early. You're ready.", xp:60, bossDmg:50, link:"https://leetcode.com/discuss/general-discussion/460599", urgent:false },
+
+  // ── AI LEARN — Java + AI Engineering Roadmap ────────────────────────────────
+  // Phase 1: Foundations (Month 1–2)
+  { id:"q79", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Complete Anthropic Prompt Engineering Interactive Tutorial", desc:"Work through the interactive tutorial — covers zero-shot, few-shot, CoT, and system prompts.", link:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", xp:35, bossDmg:30, urgent:false },
+  { id:"q80", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Watch Karpathy 'Intro to LLMs' (1 hr)", desc:"Understand tokens, next-word prediction, and emergent behaviour — required mental model.", link:"https://www.youtube.com/watch?v=zjkBMFhNj_g", xp:30, bossDmg:25, urgent:false },
+  { id:"q81", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Build Spring Boot + Claude API Service", desc:"Streaming response, error handling, and rate limiting — production-grade setup from day one.", xp:80, bossDmg:65, urgent:false },
+  { id:"q82", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Explain Tokenization, Context Window & Temperature — No Notes", desc:"Close the laptop and explain all three aloud; if you can't, re-read the docs and try again.", xp:25, bossDmg:20, urgent:false },
+
+  // Phase 2: RAG (Month 3–4)
+  { id:"q83", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Learn Embeddings, Cosine Similarity & Chunking Strategies", desc:"Read Pinecone's embedding guide — understand fixed, semantic, and recursive chunking trade-offs.", link:"https://www.pinecone.io/learn/chunking-strategies/", xp:40, bossDmg:35, urgent:false },
+  { id:"q84", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Set Up pgvector Locally via Docker", desc:"Run pgvector in Docker, connect via JDBC, store and query embeddings — all from scratch.", xp:50, bossDmg:40, urgent:false },
+  { id:"q85", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Build 'Chat with Your Docs' — Spring Boot + pgvector + Claude + Citations", desc:"Full RAG pipeline: ingest → embed → retrieve → generate, with source citations in every response.", xp:100, bossDmg:80, urgent:false },
+  { id:"q86", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Write 30-Question Eval Set — Verify RAG Beats Naive Retrieval", desc:"Build an eval harness that proves RAG outperforms keyword search on your own doc set.", xp:70, bossDmg:55, urgent:false },
+
+  // Phase 3: Agents + Tool Use (Month 5–6)
+  { id:"q87", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Deep Dive Function/Tool Calling in Spring AI", desc:"Build and invoke at least 3 custom tools — understand schema, validation, and error routing.", xp:60, bossDmg:50, urgent:false },
+  { id:"q88", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Understand ReAct Pattern and MCP (Model Context Protocol)", desc:"Read the ReAct paper + Anthropic MCP docs, then diagram the reasoning/action loop yourself.", link:"https://modelcontextprotocol.io/introduction", xp:40, bossDmg:35, urgent:false },
+  { id:"q89", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Build Agent with 4+ Tools + Full Observability", desc:"Log every tool call, latency, and cost — ship an agent you can debug without guessing.", xp:100, bossDmg:80, urgent:false },
+  { id:"q90", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Agent Completes 8/10 Runs Without Manual Intervention", desc:"Run your agent 10 times autonomously — it must succeed 8 times without you touching the keyboard.", xp:80, bossDmg:65, urgent:false },
+
+  // Phase 4: Production AI (Month 7–9)
+  { id:"q91", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Build Eval Harness in Java — JUnit Assertions on LLM Output", desc:"Assert semantic correctness, not just string equality — use LLM-as-judge or regex patterns.", xp:70, bossDmg:55, urgent:false },
+  { id:"q92", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Add Guardrails, Retries & Fallbacks to an Existing Service", desc:"Input sanitisation, output validation, exponential backoff, and a hardcoded fallback response.", xp:60, bossDmg:50, urgent:false },
+  { id:"q93", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Implement Semantic Caching and Prompt Caching", desc:"Cache by embedding similarity for semantic dedup; use Anthropic prompt caching for prefix reuse.", xp:70, bossDmg:55, urgent:false },
+  { id:"q94", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Add Micrometer Metrics — Token Count & Cost per Request", desc:"Expose token usage and estimated cost as Prometheus metrics visible in Spring Actuator or Grafana.", xp:60, bossDmg:50, urgent:false },
+  { id:"q95", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"A/B Test Two Prompt Versions — Measure Quality Delta", desc:"Run both prompts against your eval set and report a numeric quality score — not just vibes.", xp:65, bossDmg:55, urgent:false },
+
+  // Phase 5: Specialize + Ship (Month 10–12)
+  { id:"q96", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Build Flagship Fintech AI Project — FinDoc Analyst or Compliance Copilot", desc:"Full production build: auth, persistence, eval harness, observability, and a deployed public URL.", xp:150, bossDmg:120, urgent:false },
+  { id:"q97", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Write 6 Blog Posts — One Per Phase + Flagship", desc:"Publish on dev.to or Medium — one post per phase plus the flagship writeup.", xp:90, bossDmg:75, urgent:false },
+  { id:"q98", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Submit Lightning Talk to Sydney Java User Group or AI Sydney Meetup", desc:"10-minute talk on one phase's key lesson — submitting counts, speaking earns the boss reward.", xp:80, bossDmg:70, urgent:false },
+  { id:"q99", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"2 Inbound Recruiter Messages Without Applying", desc:"Build in public hard enough that recruiters find you first — track the first two inbound DMs.", xp:120, bossDmg:100, urgent:false },
 ];
 
 const CATEGORY_META = {
