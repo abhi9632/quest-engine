@@ -1310,13 +1310,12 @@ export default function QuestEngine() {
           {[["today","🎯 Today"],["quests","⚔️ Quests"],["dsa","🧩 DSA"],["bosses","👹 Bosses"],["deadlines","📅 Deadlines"],["braindump","📓 Dump"],["stats","📊 Stats"]].map(([tab,label]) => {
             const a = activeTab === tab;
             return (<button key={tab} className="tab-btn" onClick={() => setActiveTab(tab)} style={{
-              flex:"1 1 75px", padding:"9px 4px", borderRadius:10, fontSize:11, fontWeight:700,
+              flex:"1 1 75px", padding:"9px 4px", borderRadius:10, fontSize:10, fontWeight:700,
               background: a ? level.color : "rgba(5,12,25,0.8)",
               color: a ? "#000" : "#334155",
               border: `1px solid ${a ? level.color : "rgba(255,255,255,0.06)"}`,
               fontFamily: a ? "'Orbitron', monospace" : "'Share Tech Mono', monospace",
               letterSpacing: a ? 1 : 0.5,
-              fontSize: 10,
               boxShadow: a ? `0 0 20px ${level.color}66, 0 4px 12px ${level.color}44` : "none",
               transform: a ? "translateY(-1px)" : "none",
               textTransform: "uppercase"
