@@ -9,183 +9,103 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 const STORAGE_KEY = "abhishek_rpg_v3";
 
 const LEVELS = [
-  { level: 1, title: "Code Padawan",        xpRequired: 0,    color: "#94a3b8" },
-  { level: 2, title: "Script Apprentice",   xpRequired: 100,  color: "#60a5fa" },
-  { level: 3, title: "API Summoner",        xpRequired: 250,  color: "#34d399" },
-  { level: 4, title: "Backend Knight",      xpRequired: 500,  color: "#a78bfa" },
-  { level: 5, title: "LangChain Mage",      xpRequired: 900,  color: "#f59e0b" },
-  { level: 6, title: "RAG Architect",       xpRequired: 1400, color: "#f97316" },
-  { level: 7, title: "AI Deployer",         xpRequired: 2000, color: "#ef4444" },
-  { level: 8, title: "Claude Architect",    xpRequired: 2800, color: "#a78bfa" },
-  { level: 9, title: "Sydney AI Engineer",  xpRequired: 3600, color: "#fbbf24" },
+  { level:1, title:"Code Padawan",          xpRequired:0,    color:"#94a3b8" },
+  { level:2, title:"Array Apprentice",      xpRequired:100,  color:"#60a5fa" },
+  { level:3, title:"Pattern Hunter",        xpRequired:300,  color:"#34d399" },
+  { level:4, title:"SQL Slinger",           xpRequired:600,  color:"#a78bfa" },
+  { level:5, title:"Spring AI Mage",        xpRequired:1000, color:"#f59e0b" },
+  { level:6, title:"RAG Architect",         xpRequired:1500, color:"#f97316" },
+  { level:7, title:"System Designer",       xpRequired:2100, color:"#ef4444" },
+  { level:8, title:"Interview Destroyer",   xpRequired:2800, color:"#818cf8" },
+  { level:9, title:"Sydney AI Engineer",    xpRequired:3500, color:"#fbbf24" },
 ];
 
 // BOSSES are now strictly sequential — you must defeat boss N before boss N+1 unlocks
 const BOSSES = [
-  { id: "b1", name: "The Procrastination Demon",   hp: 300,  reward: "🏆 Week 1 Champion",      emoji: "👹" },
-  { id: "b2", name: "Deadline Dragon",             hp: 500,  reward: "🐉 Deadline Slayer",      emoji: "🐲" },
-  { id: "b3", name: "The Distraction Hydra",       hp: 700,  reward: "🎯 Focus Master",         emoji: "🐍" },
-  { id: "b4", name: "Imposter Syndrome Golem",     hp: 1000, reward: "💎 Confidence Crystal",   emoji: "🗿" },
-  { id: "b5", name: "The Certification Overlord",  hp: 800,  reward: "🧠 Claude Architect Badge", emoji: "🤖" },
-  { id: "b6", name: "The Final Boss: Unemployment",hp: 1500, reward: "🚀 AUD 140K+ Unlocked",   emoji: "💼" },
+  { id:"b1", name:"The Imposter Demon",        hp:400,  emoji:"👹", reward:"🧠 DSA Foundations Unlocked" },
+  { id:"b2", name:"The SQL Swamp Monster",     hp:600,  emoji:"🐊", reward:"🗄️ Data Layer Conquered" },
+  { id:"b3", name:"The Spring AI Hydra",       hp:900,  emoji:"🐍", reward:"☕ Java+AI Stack Shipped" },
+  { id:"b4", name:"The System Design Golem",   hp:1100, emoji:"🗿", reward:"🏗️ Architecture Unlocked" },
+  { id:"b5", name:"The Interview Overlord",    hp:800,  emoji:"🤖", reward:"⚔️ Interview Ready" },
+  { id:"b6", name:"Final Boss: Unemployment",  hp:1500, emoji:"💼", reward:"🚀 A$120k+ Offer Unlocked" },
 ];
 
 const QUESTS = [
-  // ── WEEK 4 · Mar 10–16 ─────────────────────────────────────────────────────
-  { id:"q1",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"iOS Quiz 1 Revision",               desc:"2 sessions of 1.5 hrs each — revise all content", xp:40,  bossDmg:30, urgent:true  },
-  { id:"q2",  week:"Week 4 · Mar 10–16",    category:"jobsearch", title:"Apply for Coursera Financial Aid",  desc:"15 min task — do it now so it's ready in 2 weeks", link:"https://www.coursera.org/financial-aid", xp:15, bossDmg:10, urgent:false },
-  { id:"q3",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit iOS Quiz 1",                 desc:"Thu Mar 12 deadline 🔴", xp:50, bossDmg:40, urgent:true },
-  { id:"q4",  week:"Week 4 · Mar 10–16",    category:"academic",  title:"Submit Team Charter",               desc:"Fri Mar 13 — ungraded but required by FID", xp:20, bossDmg:15, urgent:false },
-  { id:"q5",  week:"Week 4 · Mar 10–16",    category:"jobsearch", title:"Update LinkedIn Headline",          desc:"AI Backend Engineer | Java + Python | UTS Master's IT", link:"https://www.linkedin.com/in/", xp:25, bossDmg:20, urgent:false },
+  // ── SPRINT 1 · DSA Foundations ─────────────────────────────────────────────
+  { id:"q1",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"Java Arrays+Strings: 10 LeetCode Easies",       desc:"Two Sum, Reverse String, Valid Palindrome, Move Zeroes, Max Consecutive Ones — solve in Java, note time/space complexity.", xp:60, bossDmg:50, urgent:true },
+  { id:"q2",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"HashMap+Set Patterns: 5 Problems",               desc:"Group Anagrams, Top K Frequent, Contains Duplicate, Ransom Note, Two Sum II. Pattern: trade space for time.", xp:55, bossDmg:45, urgent:true },
+  { id:"q3",  week:"Sprint 1 · DSA Foundations", category:"sql",       title:"SQL Foundations: 15 Easy Problems",              desc:"SELECT, WHERE, GROUP BY, HAVING, ORDER BY, JOINs (INNER/LEFT/RIGHT). Use SQLZoo or LeetCode SQL.", link:"https://sqlzoo.net", xp:50, bossDmg:40, urgent:true },
+  { id:"q4",  week:"Sprint 1 · DSA Foundations", category:"java",      title:"Java Collections Deep Dive",                     desc:"ArrayList, LinkedList, HashMap, TreeMap, PriorityQueue, Stack — know internals, not just API. Write 5 mini-programs.", xp:40, bossDmg:35, urgent:false },
+  { id:"q5",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"Set Up Job Tracker in Notion",                   desc:"Columns: Company, Role, Status, Applied Date, Referral, Notes. Add all 15 target companies from research.", xp:20, bossDmg:15, urgent:false },
+  { id:"q6",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"LinkedIn: Update Headline + 3 AI Skills",        desc:"Headline: Java Backend Engineer to AI Engineering | Spring Boot | RAG | Sydney | Open to Work. Add Spring AI, pgvector, RAG as skills.", xp:25, bossDmg:20, urgent:false },
 
-  // ── WEEK 5 · Mar 17–23 ─────────────────────────────────────────────────────
-  { id:"q7",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 1",          desc:"2 hrs focused work — follow assignment brief step by step", xp:35, bossDmg:28, urgent:false },
-  { id:"q8",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Day 2",          desc:"2 hrs focused work — core features done by end of session", xp:35, bossDmg:28, urgent:false },
-  { id:"q9",  week:"Week 5 · Mar 17–23",    category:"academic",  title:"iOS Assignment 1 — Final Push",     desc:"Submit by Mar 22 🔴 Polish + upload", xp:60, bossDmg:50, urgent:true },
-  { id:"q10b",week:"Week 5 · Mar 17–23",    category:"academic",  title:"⚠️ IP Quiz 1 Revision (2 days out)",desc:"Mar 21 — Revise IP lecture notes for 1.5 hrs. Quiz is Mar 23.", xp:30, bossDmg:25, urgent:true },
-  { id:"q11", week:"Week 5 · Mar 17–23",    category:"academic",  title:"Submit IP Quiz 1",                  desc:"Mar 23 deadline 🔴", xp:50, bossDmg:40, urgent:true },
+  // ── SPRINT 2 · DSA Patterns + SQL Depth ────────────────────────────────────
+  { id:"q7",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"Two Pointers + Sliding Window: 5 Problems",      desc:"Container With Most Water, 3Sum, Longest Substring No Repeat, Min Window Substring, Trapping Rain Water.", xp:65, bossDmg:55, urgent:true },
+  { id:"q8",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"Linked Lists + Stacks: 6 Problems",              desc:"Reverse LL, Detect Cycle, Merge Two Sorted, Valid Parentheses, Min Stack, Daily Temperatures. Implement LL from scratch in Java.", xp:60, bossDmg:50, urgent:true },
+  { id:"q9",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"SQL Intermediate: Window Functions + CTEs",      desc:"Subqueries, CTEs, ROW_NUMBER, RANK, LAG/LEAD, CASE WHEN. Do 15 medium problems on LeetCode SQL.", link:"https://leetcode.com/studyplan/top-sql-50/", xp:65, bossDmg:55, urgent:true },
+  { id:"q10", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"Database Design: Normalisation + Indexes + ACID", desc:"1NF/2NF/3NF, B-tree vs hash indexes, ACID properties, transactions, deadlock. Write notes you can recite in interview.", xp:45, bossDmg:35, urgent:false },
+  { id:"q11", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"java",      title:"Spring Boot Refresher: REST API from Scratch",   desc:"Rebuild a REST API with JPA, H2, Gradle in 2 hrs. Add Actuator, basic auth, error handling.", xp:50, bossDmg:40, urgent:false },
+  { id:"q12", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"jobsearch", title:"Write 3 Cover Letter Templates",                 desc:"One for fintech (Airwallex/Tyro), one for big bank (Macquarie/Westpac), one for tech co (Canva/Atlassian).", xp:40, bossDmg:35, urgent:false },
 
-  // ── WEEK 6 · Mar 24–31 ─────────────────────────────────────────────────────
-  { id:"q16", week:"Week 6 · Mar 24–31",    category:"jobsearch", title:"Push OpenAI Script to GitHub",      desc:"Write a README. Your first AI repo!", link:"https://github.com", xp:40, bossDmg:35, urgent:false },
-  { id:"q16b",week:"Week 6 · Mar 24–31",    category:"cca",       title:"CCA Prep: Read Exam Guide + Architect's Playbook",desc:"Read the exam guide on claudecertifications.com AND the Architect's Playbook PDF (uploaded to your files). 60 min total — best intro to the exam mindset.", link:"https://claudecertifications.com/claude-certified-architect/exam-guidect-foundations-access-request", xp:30, bossDmg:25, urgent:false },
+  // ── SPRINT 3 · Trees, Graphs + Java AI Stack ───────────────────────────────
+  { id:"q13", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"Binary Trees DFS+BFS: 6 Problems",               desc:"Max Depth, Invert Tree, Level Order, Path Sum, LCA, Diameter. Implement BFS with queue in Java.", xp:65, bossDmg:55, urgent:true },
+  { id:"q14", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"Binary Search + Heaps: 5 Problems",              desc:"Search Rotated Array, Find Min Rotated, Top K Frequent, Kth Largest, Merge K Sorted Lists.", xp:60, bossDmg:50, urgent:true },
+  { id:"q15", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Spring AI Setup: ChatClient + Streaming",        desc:"Add spring-ai-anthropic-spring-boot-starter. Implement ChatClient with streaming. Understand ChatOptions, PromptTemplate, MessageConverter.", link:"https://docs.spring.io/spring-ai/reference/", xp:70, bossDmg:60, urgent:true },
+  { id:"q16", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"pgvector Setup: Docker + JDBC + Embeddings",     desc:"Run pgvector in Docker. Connect via JDBC. Store and query embeddings. Understand cosine similarity vs euclidean, HNSW index.", xp:75, bossDmg:65, urgent:true },
+  { id:"q17", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"sql",       title:"PostgreSQL: EXPLAIN ANALYZE + JSONB + pgvector", desc:"EXPLAIN ANALYZE, index tuning, JSONB queries, full-text search, pg_vector extension. Set up local Postgres via Docker.", xp:55, bossDmg:45, urgent:false },
+  { id:"q18", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"jobsearch", title:"Apply to 3 Tier-1 Jobs: Canva + Airwallex",       desc:"Canva Java AI roles + Airwallex Knowledge Platform. Customise each application.", link:"https://www.canva.com/careers/", xp:80, bossDmg:65, urgent:true },
 
-  // ── WEEK 7 · Apr 1–7 ───────────────────────────────────────────────────────
-  { id:"q17b",week:"Week 7 · Apr 1–7",      category:"cca",       title:"CCA Prep: Domain 4 — Prompt Engineering + Playbook",desc:"20% of exam. Read domain guide AND Playbook: resilient schemas (p5), null handling + few-shot (p7), retry limits (p8), tool_choice enforcement (p22).", link:"https://claudecertifications.com/claude-certified-architect/domains/prompt-engineering", xp:35, bossDmg:30, urgent:false },
-  { id:"q18", week:"Week 7 · Apr 1–7",      category:"academic",  title:"IP Assignment 1 — Push to finish",  desc:"Due Apr 5. Don't leave for day of.", xp:80, bossDmg:65, urgent:true },
-  { id:"q19", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit IP Assignment 1",            desc:"Apr 5 — Very High priority 🔴", xp:100, bossDmg:80, urgent:true },
-  { id:"q20", week:"Week 7 · Apr 1–7",      category:"academic",  title:"Submit FID Persona",                desc:"Apr 5 — alongside IP A1 🔴", xp:70, bossDmg:55, urgent:true },
+  // ── SPRINT 4 · Graphs, DP + First Project ──────────────────────────────────
+  { id:"q19", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"Graphs BFS/DFS: 5 Problems",                     desc:"Number of Islands, Clone Graph, Course Schedule, Word Ladder, Pacific Atlantic. Adjacency list in Java.", xp:70, bossDmg:60, urgent:true },
+  { id:"q20", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"Dynamic Programming 1D: 5 Problems",             desc:"Climbing Stairs, House Robber, Coin Change, Decode Ways, LIS. Define state, recurrence, base case.", xp:70, bossDmg:60, urgent:true },
+  { id:"q21", week:"Sprint 4 · Graphs, DP + First Project", category:"project",   title:"Capstone v1 — AI Compliance Auditor Skeleton",   desc:"GitHub repo, Spring Boot 3.x + Spring AI + pgvector, PDF ingestion endpoint, chunking logic, embedding store. GET /health returns 200.", link:"https://github.com", xp:100, bossDmg:80, urgent:true },
+  { id:"q22", week:"Sprint 4 · Graphs, DP + First Project", category:"interview", title:"STAR Story Bank: 5 Full Stories",                 desc:"InvestCloud impact, production incident, conflict resolution, initiative, learning fast. Time each to 90 seconds.", xp:60, bossDmg:50, urgent:false },
+  { id:"q23", week:"Sprint 4 · Graphs, DP + First Project", category:"jobsearch", title:"Apply to 3 Tier-2 Jobs: Macquarie + Westpac",     desc:"Macquarie BFS AI Engineering + Westpac UNITE program. Customise each application.", link:"https://www.macquarie.com/au/en/careers.html", xp:80, bossDmg:65, urgent:true },
 
-  // ── WEEK 8 · Apr 7–13 ──────────────────────────────────────────────────────
-  { id:"q22b",week:"Week 8 · Apr 7–13",     category:"cca",       title:"CCA Prep: Domain 2 — Tool Design & MCP + Playbook",desc:"18% of exam. Read domain guide AND Playbook: graceful tool failure isError/isRetryable (p13), MCP tool specificity/granularity (p16).", link:"https://claudecertifications.com/claude-certified-architect/domains/tool-design-mcp", xp:35, bossDmg:30, urgent:false },
-  { id:"q25", week:"Week 8 · Apr 7–13",     category:"jobsearch", title:"Add Google AI Cert to LinkedIn",    desc:"Add under Licences & Certifications", link:"https://www.linkedin.com/in/", xp:20, bossDmg:15, urgent:false },
+  // ── MONTH 2 · Build & Apply ─────────────────────────────────────────────────
+  { id:"q24", week:"Month 2 · Build & Apply", category:"project",   title:"Capstone v2 — RAG Pipeline Complete",            desc:"/ask endpoint, retrieve top-k chunks, prompt with context, return grounded answer with citations.", xp:100, bossDmg:80, urgent:false },
+  { id:"q25", week:"Month 2 · Build & Apply", category:"project",   title:"Capstone v3 — Eval Harness",                     desc:"30-question golden set, LangFuse integration, measure retrieval precision. Prove RAG beats keyword search.", xp:90, bossDmg:75, urgent:false },
+  { id:"q26", week:"Month 2 · Build & Apply", category:"project",   title:"Capstone v4 — Production Hardening",             desc:"Rate limiting, retry with backoff, cost-per-request Actuator metric, prompt caching.", xp:90, bossDmg:75, urgent:false },
+  { id:"q27", week:"Month 2 · Build & Apply", category:"project",   title:"Deploy Capstone + Loom Demo + Resume",           desc:"Deploy to Railway/Render with public URL. Record 90-sec Loom demo. Add to resume.", link:"https://railway.app", xp:80, bossDmg:65, urgent:false },
+  { id:"q28", week:"Month 2 · Build & Apply", category:"java",      title:"Kafka Fundamentals: Build a Local Event Pipeline", desc:"Producers, consumers, consumer groups, offsets, partitions, exactly-once semantics. Build simple event pipeline locally.", xp:80, bossDmg:65, urgent:false },
+  { id:"q29", week:"Month 2 · Build & Apply", category:"java",      title:"Docker + K8s Basics for Spring Boot",            desc:"Dockerfile for Spring Boot app, docker-compose with pgvector, basic K8s deployment YAML.", xp:70, bossDmg:55, urgent:false },
+  { id:"q30", week:"Month 2 · Build & Apply", category:"java",      title:"AWS Developer Associate: Study Plan",            desc:"IAM, EC2, S3, RDS, Lambda, SQS, API Gateway, CloudFormation. Use Stephane Maarek course.", link:"https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/", xp:100, bossDmg:80, urgent:false },
+  { id:"q31", week:"Month 2 · Build & Apply", category:"sql",       title:"Kafka + DB Patterns: Outbox + CDC",              desc:"Outbox pattern, event sourcing basics, CDC with Debezium.", xp:70, bossDmg:55, urgent:false },
+  { id:"q32", week:"Month 2 · Build & Apply", category:"interview", title:"System Design: URL Shortener HLD+LLD",           desc:"Design a URL shortener. Cover: load balancer, cache, DB choice, scaling. Gaurav Sen YouTube.", link:"https://www.youtube.com/@gkcs", xp:60, bossDmg:50, urgent:false },
+  { id:"q33", week:"Month 2 · Build & Apply", category:"interview", title:"Pramp Mock Interview #1 — DSA + Java",           desc:"Record yourself. Identify 3 weaknesses. Book via Pramp.", link:"https://www.pramp.com", xp:80, bossDmg:65, urgent:false },
+  { id:"q34", week:"Month 2 · Build & Apply", category:"interview", title:"Pramp Mock Interview #2 — System Design",        desc:"Second Pramp session focused on system design. Review feedback before applying anywhere.", link:"https://www.pramp.com", xp:80, bossDmg:65, urgent:false },
+  { id:"q35", week:"Month 2 · Build & Apply", category:"jobsearch", title:"LinkedIn Article: Java RAG Compliance Auditor",  desc:"Building a Java RAG Compliance Auditor with Spring AI and pgvector. 500 words + architecture diagram.", xp:70, bossDmg:55, urgent:false },
+  { id:"q36", week:"Month 2 · Build & Apply", category:"jobsearch", title:"Apply Batch 2: 5 Applications",                  desc:"Atlassian ML grad, Tyro, mid-market fintechs from SEEK. Track all responses.", link:"https://www.seek.com.au/jobs?keywords=java+ai&where=Sydney+NSW", xp:80, bossDmg:65, urgent:false },
 
-  // ── WEEK 9 · Apr 14–20 ─────────────────────────────────────────────────────
-  { id:"q27", week:"Week 9 · Apr 14–20",    category:"project",   title:"Set Up Project 1 Repo: AI Doc Q&A", desc:"GitHub repo + README skeleton + empty FastAPI app", xp:30, bossDmg:25, urgent:false },
-  { id:"q28", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build PDF Chunking + Embedding Logic",desc:"Load PDF → chunk → embed → store in ChromaDB", xp:70, bossDmg:60, urgent:false },
-  { id:"q29", week:"Week 9 · Apr 14–20",    category:"project",   title:"Build /ask Endpoint (RAG pipeline)", desc:"Retrieve chunks → generate answer with citations", xp:80, bossDmg:65, urgent:false },
-  { id:"q29b",week:"Week 9 · Apr 14–20",    category:"cca",       title:"CCA Prep: Domain 5 — Context & Reliability + Playbook",desc:"15% of exam. Read domain guide AND Playbook: constraint hierarchy (p3), human-in-the-loop calibration (p9), session resumption (p11), context pruning (p12), long session compression (p15).", link:"https://claudecertifications.com/claude-certified-architect/domains/context-management", xp:35, bossDmg:30, urgent:false },
-  { id:"q30", week:"Week 9 · Apr 14–20",    category:"project",   title:"Deploy Project 1 to Render",         desc:"Get a live public URL — this is what employers will see", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
-  { id:"q31", week:"Week 9 · Apr 14–20",    category:"project",   title:"Write Project 1 README + Diagram",   desc:"What it does, tech stack, architecture diagram (draw.io)", xp:40, bossDmg:35, urgent:false },
-
-  // ── WEEK 10 · Apr 21–27 ────────────────────────────────────────────────────
-  { id:"q32", week:"Week 10 · Apr 21–27",   category:"academic",  title:"Submit iOS Assignment 2",            desc:"Apr 27 deadline 🔴 Start Day 1 of this week — 15–20 hrs total", xp:90, bossDmg:75, urgent:true },
-  { id:"q33", week:"Week 10 · Apr 21–27",   category:"project",   title:"Sketch Project 2 Architecture",      desc:"JD Analyser: JD + resume → match score + skills gap + cover letter bullets", xp:20, bossDmg:15, urgent:false },
-  { id:"q34", week:"Week 10 · Apr 21–27",   category:"project",   title:"Build Project 2 /analyse Endpoint",  desc:"Prompt engineering for skill extraction. Return JSON.", xp:80, bossDmg:65, urgent:false },
-  { id:"q34b",week:"Week 10 · Apr 21–27",   category:"cca",       title:"CCA Prep: Domain 1 — Agentic Architecture + Playbook",desc:"27% of exam. Read domain guide AND Playbook slides: hooks/compliance (p10), fork_session (p18), shared memory (p21), parallelisation (p24), goal delegation (p25).", link:"https://claudecertifications.com/claude-certified-architect/domains/agentic-architecture", xp:50, bossDmg:45, urgent:false },
-
-  // ── WEEK 11 · Apr 28–May 3 ─────────────────────────────────────────────────
-  { id:"q35", week:"Week 11 · Apr 28–May 3",category:"academic",  title:"Submit FID Practical",               desc:"May 1 deadline 🔴 8–10 hrs needed. Prepare all week.", xp:100, bossDmg:80, urgent:true },
-  { id:"q36", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Deploy Project 2 + Write README",    desc:"Same standard as Project 1. Get live URL.", link:"https://render.com", xp:90, bossDmg:75, urgent:false },
-  { id:"q37", week:"Week 11 · Apr 28–May 3",category:"project",   title:"Record 90-sec Loom Demo of Project 2",desc:"Paste JD → show analysis output. Add link to README.", link:"https://www.loom.com", xp:50, bossDmg:40, urgent:false },
-  { id:"q37b",week:"Week 11 · Apr 28–May 3",category:"cca",       title:"CCA Prep: Domain 3 — Claude Code Config + Playbook",desc:"20% of exam. Read domain guide AND Playbook: directed codebase exploration (p17), the scratchpad pattern for long sessions (p19).", link:"https://claudecertifications.com/claude-certified-architect/domains/claude-code-config", xp:50, bossDmg:45, urgent:false },
-
-  // ── WEEK 12 · May 5–11 ─────────────────────────────────────────────────────
-  { id:"q38", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Update Resume (AI Projects First)",  desc:"Lead with AI projects, Java backend second. 1 page max.", xp:40, bossDmg:35, urgent:false },
-  { id:"q39", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Set Job Alerts on Seek + LinkedIn",  desc:"AI Engineer, Python Developer, ML Engineer — Sydney", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+python&where=Sydney+NSW", xp:20, bossDmg:15, urgent:false },
-  { id:"q39b",week:"Week 12 · May 5–11",    category:"academic",  title:"⚠️ IP Quiz 2 Revision (3 days out)", desc:"May 8 — Revise IP lecture notes for 1.5 hrs. Quiz is May 11.", xp:30, bossDmg:25, urgent:true },
-  { id:"q40", week:"Week 12 · May 5–11",    category:"academic",  title:"Submit IP Quiz 2",                   desc:"May 11 deadline", xp:60, bossDmg:50, urgent:true },
-  { id:"q41", week:"Week 12 · May 5–11",    category:"jobsearch", title:"Message Deloitte Manager",           desc:"Ask about internal AI roles AND Claude partner network access", xp:50, bossDmg:45, urgent:false },
-  { id:"q41b",week:"Week 12 · May 5–11",    category:"cca",       title:"CCA Prep: Practice Questions + Anti-Patterns",desc:"Do all 25 practice Qs on claudecertifications.com. Then read the 18 anti-patterns cheatsheet. These are the real exam traps.", link:"https://claudecertifications.com/claude-certified-architect/practice-questionst/blob/main/guide_en.MD", xp:80, bossDmg:70, urgent:false },
-
-  // ── WEEKS 13–15 · May 12–24 ────────────────────────────────────────────────
-  { id:"q42", week:"Week 13–15 · May 12–24",category:"academic",  title:"IP Assignment 2 (Group) Done",       desc:"May 24 deadline 🔴 Group project — coordinate early, don't let teammates down", xp:120, bossDmg:100, urgent:true },
-  { id:"q42b",week:"Week 13–15 · May 12–24",category:"cca",       title:"CCA Prep: Review Weak Domains",      desc:"Go back to whichever domain pages you struggled with in the practice questions.", link:"https://claudecertifications.com/claude-certified-architect/domains", xp:50, bossDmg:45, urgent:false },
-  { id:"q43", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 Targeted Applications (Batch 1)",desc:"Not 50 generic — 5 perfect ones. Customise cover letter for each.", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+python&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
-  { id:"q44", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Practice 90-Second Verbal Pitch",    desc:"Background + projects + what you want. Time yourself out loud.", xp:30, bossDmg:25, urgent:false },
-  { id:"q45", week:"Week 13–15 · May 12–24",category:"jobsearch", title:"Submit 5 More Applications (Batch 2)",desc:"Target: Accenture, REA Group, WiseTech, Canva, Atlassian", link:"https://www.linkedin.com/jobs/search/?keywords=AI+engineer&location=Sydney", xp:100, bossDmg:80, urgent:false },
-
-  // ── JUNE · CCA Exam + Apply ─────────────────────────────────────────────────
-  { id:"q46", week:"June · Exam + Apply",   category:"cca",       title:"🏆 SIT CCA Foundations Exam",        desc:"$99 or free via Deloitte partner access. 60 MCQ, 120 min. You're ready.", link:"https://anthropic.skilljar.com/claude-certified-architect-foundations-access-request", xp:200, bossDmg:200, urgent:false },
-  { id:"q47", week:"June · Exam + Apply",   category:"jobsearch", title:"Add CCA Cert to LinkedIn + Resume",  desc:"Add under Certifications immediately after passing. Major differentiator.", link:"https://www.linkedin.com/in/", xp:50, bossDmg:40, urgent:false },
-  { id:"q48", week:"June · Exam + Apply",   category:"jobsearch", title:"Pin Both Projects + Update GitHub",  desc:"Customise GitHub profile. Pin AI Doc Q&A and JD Analyser.", link:"https://github.com", xp:20, bossDmg:15, urgent:false },
-  { id:"q49", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 Enterprise Applications",   desc:"Target: WiseTech Global, Macquarie Tech, CBA Tech, Deloitte AI, Accenture", link:"https://www.seek.com.au/jobs?keywords=ai+engineer+java&where=Sydney+NSW", xp:100, bossDmg:80, urgent:false },
-  { id:"q50", week:"June · Exam + Apply",   category:"jobsearch", title:"Submit 5 More Applications",         desc:"Don't stop. Keep the pipeline full. Track everything in Notion.", xp:100, bossDmg:80, urgent:false },
-
-  // ─── INTERVIEW PREP — 4-WEEK PLAN ────────────────────────────────────────
-  // Week 1: Foundations
-  { id:"q51", week:"Interview Prep · Week 1", category:"interview", title:"Java Refresh + 3 Easy Array Problems", desc:"Revisit generics, collections, lambdas. Solve 3 Easy array problems on LeetCode in Java.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q52", week:"Interview Prep · Week 1", category:"interview", title:"Big O Notation + 5 String Problems", desc:"Watch CS Dojo Big O video. 5 Easy string manipulation problems. Revise HashMap internals.", xp:40, bossDmg:30, link:"https://youtube.com/watch?v=D6xkbGLQesk", urgent:false },
-  { id:"q53", week:"Interview Prep · Week 1", category:"interview", title:"Linked Lists — Implement + 3 Problems", desc:"William Fiset LL playlist. Reverse LL, Detect Cycle, Merge Two Lists. Implement LL from scratch.", xp:50, bossDmg:40, link:"https://youtube.com/playlist?list=PLDV1Zeh2NRsB6SWUrDFW2RmDotAfPbeHu", urgent:false },
-  { id:"q54", week:"Interview Prep · Week 1", category:"interview", title:"Stacks & Queues — 3 Classic Problems", desc:"Valid Parentheses, Min Stack, Daily Temperatures. Implement Stack using arrays.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q55", week:"Interview Prep · Week 1", category:"interview", title:"HashMaps + Sets — Two Sum, Group Anagrams, Top K", desc:"Two Sum, Group Anagrams, Top K Frequent. Understand collision handling conceptually.", xp:45, bossDmg:35, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q56", week:"Interview Prep · Week 1", category:"interview", title:"W1 Sat: Anthropic API Hello World (Java/Python)", desc:"Set up Anthropic API key. Build CLI chatbot in Java or Python — 50 lines. Read Anthropic docs overview.", xp:50, bossDmg:40, link:"https://docs.anthropic.com", urgent:false },
-  { id:"q57", week:"Interview Prep · Week 1", category:"interview", title:"W1 Sun: Review — Re-solve 3 Struggled Problems", desc:"Re-solve 3 problems you struggled with this week. Write pseudocode for each pattern learned.", xp:30, bossDmg:20, link:"https://neetcode.io/practice", urgent:false },
-  // Week 2: Patterns
-  { id:"q58", week:"Interview Prep · Week 2", category:"interview", title:"Two Pointers — Container, 3Sum, Trapping Rain", desc:"Container With Most Water, 3Sum, Trapping Rain Water. Pattern: reduce search space from both ends.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q59", week:"Interview Prep · Week 2", category:"interview", title:"Sliding Window — 3 Classic Problems", desc:"Longest Substring No Repeat, Max Subarray, Min Window Substring. Expand/shrink window pattern.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q60", week:"Interview Prep · Week 2", category:"interview", title:"Binary Search — Rotated Array + Koko Bananas", desc:"Search in Rotated Array, Find Min in Rotated, Koko Eating Bananas. Apply to answer-space not just sorted arrays.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q61", week:"Interview Prep · Week 2", category:"interview", title:"Trees DFS — Invert, Max Depth, Path Sum, LCA", desc:"NeetCode Tree playlist. Invert Tree, Max Depth, Path Sum, LCA. Implement recursive DFS from scratch.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q62", week:"Interview Prep · Week 2", category:"interview", title:"Trees BFS — Level Order, Right Side View, Zigzag", desc:"Queue-based BFS pattern. 5 tree problems timed at 20 min each.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q63", week:"Interview Prep · Week 2", category:"interview", title:"W2 Sat: Extend CLI Chatbot + Prompt Engineering", desc:"Add conversation history to your chatbot. Study system prompts, temperature, few-shot basics.", xp:50, bossDmg:40, link:"https://docs.anthropic.com", urgent:false },
-  { id:"q64", week:"Interview Prep · Week 2", category:"interview", title:"W2 Sun: Pramp Mock Interview #1", desc:"First Pramp session. Review NeetCode solutions for unsolved problems. Mark completed Blind 75.", xp:80, bossDmg:65, link:"https://www.pramp.com", urgent:false },
-  // Week 3: Advanced Patterns
-  { id:"q65", week:"Interview Prep · Week 3", category:"interview", title:"Graphs BFS/DFS — Islands, Clone Graph, Pacific Atlantic", desc:"Adjacency list in Java (HashMap). Number of Islands, Clone Graph, Pacific Atlantic. NeetCode Graphs video.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q66", week:"Interview Prep · Week 3", category:"interview", title:"Graphs Advanced — Topological Sort, Word Ladder", desc:"Course Schedule (topological sort), Word Ladder. Union-Find concept. 3 Medium graph problems timed.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q67", week:"Interview Prep · Week 3", category:"interview", title:"Backtracking — Subsets, Permutations, Combo Sum", desc:"Subsets, Permutations, Combination Sum, N-Queens. Pattern: choose → explore → unchoose.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q68", week:"Interview Prep · Week 3", category:"interview", title:"1D Dynamic Programming — Stairs, Robber, Coin Change", desc:"Climbing Stairs, House Robber, Coin Change, Decode Ways. dp[i] = f(dp[i-1], dp[i-2]) pattern.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q69", week:"Interview Prep · Week 3", category:"interview", title:"2D Dynamic Programming — Unique Paths, LCS, Knapsack", desc:"Unique Paths, Longest Common Subsequence, 0/1 Knapsack. Draw the DP table on paper first.", xp:65, bossDmg:55, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q70", week:"Interview Prep · Week 3", category:"interview", title:"W3 Sat: Start Resume Analyzer (FastAPI + Claude API)", desc:"Spec: user uploads resume → Claude returns feedback JSON. Start building, deploy on Railway/Render.", xp:60, bossDmg:50, link:"https://docs.anthropic.com", urgent:false },
-  { id:"q71", week:"Interview Prep · Week 3", category:"interview", title:"W3 Sun: Pramp Mock Interview #2 + LeetCode Contest", desc:"Pramp session #2. LeetCode weekly contest attempt (no pressure). Review weak patterns from the week.", xp:80, bossDmg:65, link:"https://www.pramp.com", urgent:false },
-  // Week 4: Interview Mode
-  { id:"q72", week:"Interview Prep · Week 4", category:"interview", title:"Heaps + Priority Queue — Top K, Kth Largest, Merge K", desc:"Top K Elements, Kth Largest, Merge K Sorted Lists. Java PriorityQueue deep dive. 4 Mediums timed.", xp:60, bossDmg:50, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q73", week:"Interview Prep · Week 4", category:"interview", title:"Intervals + Greedy — Merge, Non-overlap, Meeting Rooms", desc:"Merge Intervals, Non-overlapping, Meeting Rooms II. Activity selection pattern. 3 Medium timed.", xp:55, bossDmg:45, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q74", week:"Interview Prep · Week 4", category:"interview", title:"Full Mock Day — 3 LeetCode + Pramp #3 (Record Yourself)", desc:"1 Easy + 2 Medium (timed, no hints). Pramp session #3. Record yourself explaining one solution.", xp:100, bossDmg:80, link:"https://www.pramp.com", urgent:true },
-  { id:"q75", week:"Interview Prep · Week 4", category:"interview", title:"CS Fundamentals — OS, DBMS, Networks", desc:"OS: Processes/Threads, Deadlock, Scheduling. DBMS: ACID, Indexing, SQL joins. Networks: HTTP, REST, TCP/IP.", xp:50, bossDmg:40, link:"https://neetcode.io/practice", urgent:false },
-  { id:"q76", week:"Interview Prep · Week 4", category:"interview", title:"System Design Lite — URL Shortener + SOLID + Patterns", desc:"Gaurav Sen System Design intro. Design URL Shortener on whiteboard. SOLID + Factory/Singleton/Observer.", xp:55, bossDmg:45, link:"https://youtube.com/@gauravsen", urgent:false },
-  { id:"q77", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sat: Deploy Resume Analyzer + Add to Resume", desc:"Finish Resume Analyzer — deploy on Railway/Render. Add to resume: 'Built AI resume analyzer using Claude API'.", xp:70, bossDmg:55, link:"https://railway.app", urgent:false },
-  { id:"q78", week:"Interview Prep · Week 4", category:"interview", title:"W4 Sun: Final Review — 10 Blind 75 from Memory", desc:"Re-do 10 Blind 75 problems from memory. Review all patterns cheat sheet. Sleep early. You're ready.", xp:60, bossDmg:50, link:"https://leetcode.com/discuss/general-discussion/460599", urgent:false },
-
-  // ── AI LEARN — Java + AI Engineering Roadmap ────────────────────────────────
-  // Phase 1: Foundations (Month 1–2)
-  { id:"q79", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Complete Anthropic Prompt Engineering Interactive Tutorial", desc:"Work through the interactive tutorial — covers zero-shot, few-shot, CoT, and system prompts.", link:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", xp:35, bossDmg:30, urgent:false },
-  { id:"q80", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Watch Karpathy 'Intro to LLMs' (1 hr)", desc:"Understand tokens, next-word prediction, and emergent behaviour — required mental model.", link:"https://www.youtube.com/watch?v=zjkBMFhNj_g", xp:30, bossDmg:25, urgent:false },
-  { id:"q81", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Build Spring Boot + Claude API Service", desc:"Streaming response, error handling, and rate limiting — production-grade setup from day one.", xp:80, bossDmg:65, urgent:false },
-  { id:"q82", week:"Phase 1 · Foundations (M1–2)", category:"ailearn", title:"Explain Tokenization, Context Window & Temperature — No Notes", desc:"Close the laptop and explain all three aloud; if you can't, re-read the docs and try again.", xp:25, bossDmg:20, urgent:false },
-
-  // Phase 2: RAG (Month 3–4)
-  { id:"q83", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Learn Embeddings, Cosine Similarity & Chunking Strategies", desc:"Read Pinecone's embedding guide — understand fixed, semantic, and recursive chunking trade-offs.", link:"https://www.pinecone.io/learn/chunking-strategies/", xp:40, bossDmg:35, urgent:false },
-  { id:"q84", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Set Up pgvector Locally via Docker", desc:"Run pgvector in Docker, connect via JDBC, store and query embeddings — all from scratch.", xp:50, bossDmg:40, urgent:false },
-  { id:"q85", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Build 'Chat with Your Docs' — Spring Boot + pgvector + Claude + Citations", desc:"Full RAG pipeline: ingest → embed → retrieve → generate, with source citations in every response.", xp:100, bossDmg:80, urgent:false },
-  { id:"q86", week:"Phase 2 · RAG (M3–4)", category:"ailearn", title:"Write 30-Question Eval Set — Verify RAG Beats Naive Retrieval", desc:"Build an eval harness that proves RAG outperforms keyword search on your own doc set.", xp:70, bossDmg:55, urgent:false },
-
-  // Phase 3: Agents + Tool Use (Month 5–6)
-  { id:"q87", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Deep Dive Function/Tool Calling in Spring AI", desc:"Build and invoke at least 3 custom tools — understand schema, validation, and error routing.", xp:60, bossDmg:50, urgent:false },
-  { id:"q88", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Understand ReAct Pattern and MCP (Model Context Protocol)", desc:"Read the ReAct paper + Anthropic MCP docs, then diagram the reasoning/action loop yourself.", link:"https://modelcontextprotocol.io/introduction", xp:40, bossDmg:35, urgent:false },
-  { id:"q89", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Build Agent with 4+ Tools + Full Observability", desc:"Log every tool call, latency, and cost — ship an agent you can debug without guessing.", xp:100, bossDmg:80, urgent:false },
-  { id:"q90", week:"Phase 3 · Agents (M5–6)", category:"ailearn", title:"Agent Completes 8/10 Runs Without Manual Intervention", desc:"Run your agent 10 times autonomously — it must succeed 8 times without you touching the keyboard.", xp:80, bossDmg:65, urgent:false },
-
-  // Phase 4: Production AI (Month 7–9)
-  { id:"q91", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Build Eval Harness in Java — JUnit Assertions on LLM Output", desc:"Assert semantic correctness, not just string equality — use LLM-as-judge or regex patterns.", xp:70, bossDmg:55, urgent:false },
-  { id:"q92", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Add Guardrails, Retries & Fallbacks to an Existing Service", desc:"Input sanitisation, output validation, exponential backoff, and a hardcoded fallback response.", xp:60, bossDmg:50, urgent:false },
-  { id:"q93", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Implement Semantic Caching and Prompt Caching", desc:"Cache by embedding similarity for semantic dedup; use Anthropic prompt caching for prefix reuse.", xp:70, bossDmg:55, urgent:false },
-  { id:"q94", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"Add Micrometer Metrics — Token Count & Cost per Request", desc:"Expose token usage and estimated cost as Prometheus metrics visible in Spring Actuator or Grafana.", xp:60, bossDmg:50, urgent:false },
-  { id:"q95", week:"Phase 4 · Production (M7–9)", category:"ailearn", title:"A/B Test Two Prompt Versions — Measure Quality Delta", desc:"Run both prompts against your eval set and report a numeric quality score — not just vibes.", xp:65, bossDmg:55, urgent:false },
-
-  // Phase 5: Specialize + Ship (Month 10–12)
-  { id:"q96", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Build Flagship Fintech AI Project — FinDoc Analyst or Compliance Copilot", desc:"Full production build: auth, persistence, eval harness, observability, and a deployed public URL.", xp:150, bossDmg:120, urgent:false },
-  { id:"q97", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Write 6 Blog Posts — One Per Phase + Flagship", desc:"Publish on dev.to or Medium — one post per phase plus the flagship writeup.", xp:90, bossDmg:75, urgent:false },
-  { id:"q98", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"Submit Lightning Talk to Sydney Java User Group or AI Sydney Meetup", desc:"10-minute talk on one phase's key lesson — submitting counts, speaking earns the boss reward.", xp:80, bossDmg:70, urgent:false },
-  { id:"q99", week:"Phase 5 · Ship (M10–12)", category:"ailearn", title:"2 Inbound Recruiter Messages Without Applying", desc:"Build in public hard enough that recruiters find you first — track the first two inbound DMs.", xp:120, bossDmg:100, urgent:false },
+  // ── ONGOING · Keep Applying ─────────────────────────────────────────────────
+  { id:"q37", week:"Ongoing · Keep Applying", category:"jobsearch", title:"Apply Batch 3: 5 More Applications",             desc:"Track all responses. Expand to Brisbane if no Sydney offers after 6 weeks.", xp:80, bossDmg:65, urgent:false },
+  { id:"q38", week:"Ongoing · Keep Applying", category:"jobsearch", title:"Ask for Referral from Deloitte Manager",         desc:"Ask about any internal AI role AND check if Deloitte partner access gives free AWS vouchers.", xp:60, bossDmg:50, urgent:false },
+  { id:"q39", week:"Ongoing · Keep Applying", category:"jobsearch", title:"UTS Alumni LinkedIn Outreach: 5 People",         desc:"Find 5 UTS alumni in Java or AI roles at target companies. Personalised DMs, not templates.", xp:50, bossDmg:40, urgent:false },
+  { id:"q40", week:"Ongoing · Keep Applying", category:"java",      title:"LangChain4j Deep Dive: Compare vs Spring AI",    desc:"Build same RAG pipeline in LangChain4j. Understand tradeoffs vs Spring AI. Write comparison notes.", link:"https://github.com/langchain4j/langchain4j", xp:80, bossDmg:65, urgent:false },
+  { id:"q41", week:"Ongoing · Keep Applying", category:"java",      title:"Spring AI Agents: 3-Tool Agent with @Tool",      desc:"Tool calling with @Tool annotation, multi-step reasoning, implement a 3-tool agent.", xp:90, bossDmg:75, urgent:false },
+  { id:"q42", week:"Ongoing · Keep Applying", category:"dsa",       title:"DP 2D + Backtracking: 6 Problems",              desc:"Unique Paths, LCS, 0/1 Knapsack, Subsets, Permutations, Combination Sum.", xp:75, bossDmg:60, urgent:false },
+  { id:"q43", week:"Ongoing · Keep Applying", category:"project",   title:"Blog Post 2: Kafka Outbox Pattern",              desc:"Kafka outbox pattern with Spring Boot — exactly-once delivery in fintech. Publish on dev.to or Medium.", xp:60, bossDmg:50, urgent:false },
+  { id:"q44", week:"Ongoing · Keep Applying", category:"jobsearch", title:"AWS Developer Associate Exam — Sit and Pass",    desc:"Book and sit the exam. This goes straight on the resume.", xp:150, bossDmg:120, urgent:false },
 ];
 
 const CATEGORY_META = {
-  academic:  { label: "📚 Academic",    color: "#f87171", bg: "#450a0a" },
-  ailearn:   { label: "🐍 AI Learn",    color: "#34d399", bg: "#064e3b" },
-  project:   { label: "🚀 Project",     color: "#60a5fa", bg: "#1e3a5f" },
-  jobsearch: { label: "💼 Job Search",  color: "#fbbf24", bg: "#451a03" },
-  cca:       { label: "🧠 CCA Prep",    color: "#a78bfa", bg: "#2e1065" },
-  interview: { label: "⚔️ Interview",   color: "#f97316", bg: "#431407" },
+  dsa:       { label: "🧩 DSA",          color: "#60a5fa", bg: "#1e3a5f" },
+  java:      { label: "☕ Java + AI",     color: "#34d399", bg: "#064e3b" },
+  sql:       { label: "🗄️ SQL & Data",   color: "#a78bfa", bg: "#2e1065" },
+  project:   { label: "🚀 Project",      color: "#f97316", bg: "#431407" },
+  jobsearch: { label: "💼 Job Search",   color: "#fbbf24", bg: "#451a03" },
+  interview: { label: "⚔️ Interview",    color: "#f87171", bg: "#450a0a" },
 };
 
 const ACHIEVEMENTS = [
-  { id: "a1", title: "First Blood",        desc: "Complete your first quest",         icon: "⚔️",  xpThreshold: 1    },
-  { id: "a2", title: "On A Roll",          desc: "Complete 5 quests",                 icon: "🔥",  xpThreshold: 5    },
-  { id: "a3", title: "Week 1 Survivor",    desc: "Finish all Week 4 quests",          icon: "🛡️",  xpThreshold: 180  },
-  { id: "a4", title: "Python Wielder",     desc: "Reach 500 XP",                      icon: "🐍",  xpThreshold: 500  },
-  { id: "a5", title: "Ship It",            desc: "Deploy Project 1 — get a live URL", icon: "🚢",  xpThreshold: 1200 },
-  { id: "a6", title: "Double Deploy",      desc: "Deploy Project 2 as well",          icon: "🛸",  xpThreshold: 1800 },
-  { id: "a7", title: "Claude Architect",   desc: "Pass the CCA Exam",                 icon: "🧠",  xpThreshold: 3400 },
-  { id: "a8", title: "Sydney AI Engineer", desc: "Reach max level",                   icon: "🏆",  xpThreshold: 3600 },
+  { id:"a1", title:"First Blood",           desc:"Complete your first quest",                      icon:"⚔️",  xpThreshold:1 },
+  { id:"a2", title:"DSA Week 1 Done",       desc:"Complete all Sprint 1 DSA quests",               icon:"🧩",  xpThreshold:200 },
+  { id:"a3", title:"SQL Slayer",            desc:"Reach 400 XP",                                   icon:"🗄️", xpThreshold:400 },
+  { id:"a4", title:"Spring AI Summoner",    desc:"Reach 700 XP",                                   icon:"☕",  xpThreshold:700 },
+  { id:"a5", title:"Capstone Shipped",      desc:"Deploy RAG project with live URL",               icon:"🚀",  xpThreshold:1200 },
+  { id:"a6", title:"Interview Ready",       desc:"Complete 2 Pramp mocks + STAR stories",          icon:"🤖",  xpThreshold:1600 },
+  { id:"a7", title:"AWS Certified",         desc:"Pass AWS Developer Associate",                   icon:"☁️",  xpThreshold:2200 },
+  { id:"a8", title:"Sydney AI Engineer",    desc:"Receive and accept A$120k+ offer",               icon:"🏆",  xpThreshold:3000 },
 ];
 
 // ─── DEADLINES ──────────────────────────────────────────────────────────────
@@ -193,61 +113,11 @@ const ACHIEVEMENTS = [
 // prepDays: how many days before to start prep
 // prepDesc: what to do before the deadline
 const DEADLINES = [
-  {
-    id: "d1", label: "iOS Quiz 1", date: "2026-03-12", course: "iOS Development",
-    type: "quiz", icon: "📱",
-    prepDays: 3, prepDesc: "Revise all iOS lecture notes — 2 sessions of 1.5 hrs each"
-  },
-  {
-    id: "d2", label: "Team Charter", date: "2026-03-13", course: "FID",
-    type: "submission", icon: "📝",
-    prepDays: 1, prepDesc: "Draft team roles and responsibilities — 1 hr max"
-  },
-  {
-    id: "d3", label: "iOS Assignment 1", date: "2026-03-22", course: "iOS Development",
-    type: "assignment", icon: "📱",
-    prepDays: 7, prepDesc: "Start 7 days out — 2 hrs/day for 5 days, final polish day 6"
-  },
-  {
-    id: "d4", label: "IP Quiz 1", date: "2026-03-23", course: "Internet Programming",
-    type: "quiz", icon: "🌐",
-    prepDays: 3, prepDesc: "Revise IP lecture notes — focus on JS fundamentals and DOM"
-  },
-  {
-    id: "d5", label: "IP Assignment 1 — Dynamic Web Interface", date: "2026-04-05", course: "Internet Programming",
-    type: "assignment", icon: "🌐",
-    prepDays: 10, prepDesc: "Start 10 days out — scaffold project early, don't leave HTML/CSS/JS to last week"
-  },
-  {
-    id: "d6", label: "FID Persona", date: "2026-04-05", course: "FID",
-    type: "assignment", icon: "🎨",
-    prepDays: 5, prepDesc: "Start persona research 5 days out — user interviews, affinity mapping, write-up"
-  },
-  {
-    id: "d7", label: "iOS Assignment 2", date: "2026-04-27", course: "iOS Development",
-    type: "assignment", icon: "📱",
-    prepDays: 10, prepDesc: "Start 10 days out — plan features first, code second. Submit with 1 day buffer."
-  },
-  {
-    id: "d8", label: "FID Practical", date: "2026-05-01", course: "FID",
-    type: "practical", icon: "🎨",
-    prepDays: 7, prepDesc: "Prepare all week — 2 hrs/day. Know the brief inside out before practical day."
-  },
-  {
-    id: "d9", label: "IP Quiz 2", date: "2026-05-11", course: "Internet Programming",
-    type: "quiz", icon: "🌐",
-    prepDays: 3, prepDesc: "Revise IP notes from Weeks 7–12 — focus on advanced JS, APIs, async"
-  },
-  {
-    id: "d10", label: "IP Assignment 2 — Advanced Frontend (Group)", date: "2026-05-24", course: "Internet Programming",
-    type: "assignment", icon: "👥",
-    prepDays: 14, prepDesc: "Kickoff group meeting 14 days out — divide work immediately. Don't trust others to start without you."
-  },
-  {
-    id: "d11", label: "🏆 CCA Foundations Exam", date: "2026-06-15", course: "Claude Certified Architect",
-    type: "exam", icon: "🧠",
-    prepDays: 21, prepDesc: "Final 3 weeks: complete all 5 domain guides + practice exam + review weak areas"
-  },
+  { id:"j1", label:"Capstone v1 Skeleton Live on GitHub", date:"2026-06-01", course:"Project",      type:"submission", icon:"🚀", prepDays:7,  prepDesc:"Spring Boot + Spring AI + pgvector skeleton. /health endpoint working." },
+  { id:"j2", label:"Capstone RAG Pipeline Complete",       date:"2026-06-15", course:"Project",      type:"submission", icon:"🤖", prepDays:10, prepDesc:"Full /ask endpoint, retrieval, citations. Record Loom demo." },
+  { id:"j3", label:"10 Applications Submitted (Batch 1)",  date:"2026-06-07", course:"Job Search",   type:"submission", icon:"💼", prepDays:5,  prepDesc:"Tier 1+2 targets. Canva, Airwallex, Macquarie, Westpac, Atlassian." },
+  { id:"j4", label:"AWS Developer Associate Exam",         date:"2026-07-31", course:"Certification", type:"exam",       icon:"☁️", prepDays:30, prepDesc:"Stephane Maarek course + practice exams. Book exam 2 weeks out." },
+  { id:"j5", label:"20 Applications Submitted (Batch 2)",  date:"2026-07-15", course:"Job Search",   type:"submission", icon:"📨", prepDays:7,  prepDesc:"Expand to Brisbane if no Sydney offers. Mid-market fintechs on SEEK." },
 ];
 
 // LeetCode problem number → title slug for direct URL
@@ -298,41 +168,61 @@ const lcUrl = (num) => LC_SLUGS[num] ? `https://leetcode.com/problems/${LC_SLUGS
 // ─── DSA TRACKER ────────────────────────────────────────────────────────────
 
 const DSA_DAYS = [
-  // Phase 1 — Foundations (Days 1–14)
-  { day:1,  phase:1, topic:"Arrays Basics",         problems:[283,485,26,1] },
-  { day:2,  phase:1, topic:"Arrays Continued",      problems:[121,53,189,217] },
-  { day:3,  phase:1, topic:"Strings",               problems:[125,242,387,344] },
-  { day:4,  phase:1, topic:"HashMaps",              problems:[1,49,128,560] },
-  { day:5,  phase:1, topic:"Two Pointers",          problems:[167,15,11,125] },
-  { day:6,  phase:1, topic:"Sliding Window",        problems:[3,643,209,424] },
-  { day:7,  phase:1, topic:"Review Day",            problems:[], reviewDay:true },
-  { day:8,  phase:1, topic:"Linked List",           problems:[206,21,141,876] },
-  { day:9,  phase:1, topic:"Linked List II",        problems:[19,143,2,160] },
-  { day:10, phase:1, topic:"Stacks",                problems:[20,155,232,739] },
-  { day:11, phase:1, topic:"Queues",                problems:[225,933,346] },
-  { day:12, phase:1, topic:"Binary Search",         problems:[704,374,278,35] },
-  { day:13, phase:1, topic:"Binary Search II",      problems:[153,33,74,162] },
-  { day:14, phase:1, topic:"Review Day",            problems:[], reviewDay:true },
-  // Phase 2 — Trees (Days 15–19)
-  { day:15, phase:2, topic:"Tree Basics + DFS",     problems:[104,112,226,100] },
-  { day:16, phase:2, topic:"Tree DFS",              problems:[257,543,124,236] },
-  { day:17, phase:2, topic:"Tree BFS",              problems:[102,107,103,199] },
-  { day:18, phase:2, topic:"BST",                   problems:[700,701,230,98] },
-  { day:19, phase:2, topic:"Review Trees",          problems:[], reviewDay:true },
-  // Phase 3 — Graphs + DP (Days 20–28)
-  { day:20, phase:3, topic:"Graph BFS/DFS",         problems:[200,133,695,417] },
-  { day:21, phase:3, topic:"Graph Advanced",        problems:[207,210,994,286] },
-  { day:22, phase:3, topic:"DP 1D",                 problems:[70,198,322,139] },
-  { day:23, phase:3, topic:"DP 1D II",              problems:[300,416,494,91] },
-  { day:24, phase:3, topic:"DP 2D",                 problems:[62,63,1143,309] },
-  { day:25, phase:3, topic:"Backtracking",          problems:[78,46,39,79] },
-  { day:26, phase:3, topic:"Heaps",                 problems:[215,347,295,23] },
-  { day:27, phase:3, topic:"Review + Mock",         problems:[], mockDay:true, mockLabel:"Pramp Session" },
-  { day:28, phase:3, topic:"Mock Day",              problems:[], mockDay:true, mockLabel:"3 Timed Problems" },
+  // ── PHASE 0 — Concept First ──────────────────────────────────────────────
+  { day:1,  phase:0, topic:"Arrays — Two Sum + Max Subarray",             problems:[1,53],       conceptLink:"https://www.youtube.com/watch?v=pmN9ExDf3yQ",  conceptLabel:"CS Dojo — Arrays (7 min)" },
+  { day:2,  phase:0, topic:"HashMaps — Two Sum + Group Anagrams",         problems:[1,49],       conceptLink:"https://www.youtube.com/watch?v=sfWyugl4JWA",  conceptLabel:"CS Dojo — Hash Tables (15 min)" },
+  { day:3,  phase:0, topic:"Two Pointers — 3Sum",                         problems:[15],         conceptLink:"https://www.youtube.com/watch?v=QsKHiPSj5Qw",  conceptLabel:"Greg Hogg — Two Pointers (8 min)" },
+  { day:4,  phase:0, topic:"Sliding Window — Longest Substring",          problems:[3],          conceptLink:"https://www.youtube.com/watch?v=EHCGAZBbB88",  conceptLabel:"Aditya Verma — Sliding Window #1 (12 min)" },
+  { day:5,  phase:0, topic:"Linked Lists — Reverse LL",                   problems:[206],        conceptLink:"https://www.youtube.com/watch?v=WwfhLC16bis",  conceptLabel:"CS Dojo — Linked Lists (13 min)" },
+  { day:6,  phase:0, topic:"Stacks — Valid Parentheses",                  problems:[20],         conceptLink:"https://www.youtube.com/watch?v=FNZ5o9S9prU",  conceptLabel:"CS Dojo — Stacks & Queues (10 min)" },
+  { day:7,  phase:0, topic:"Binary Search — 704 + Search Rotated Array",  problems:[704,33],     conceptLink:"https://www.youtube.com/watch?v=6ysjqCUv7fg",  conceptLabel:"CS Dojo — Binary Search (10 min)" },
+  { day:8,  phase:0, topic:"Recursion Foundations — WATCH ONLY",          problems:[], reviewDay:true, mockLabel:"Watch freeCodeCamp Recursion (30 min) + Reducible Recursion (11 min)", conceptLink:"https://www.youtube.com/watch?v=IJDJ0kBx2LM", conceptLabel:"freeCodeCamp — Recursion (first 30 min)" },
+  { day:9,  phase:0, topic:"Trees — Max Depth + Level Order",             problems:[104,102],    conceptLink:"https://www.youtube.com/watch?v=oSWTXtMglKE",  conceptLabel:"CS Dojo — Trees & Binary Trees (12 min)" },
+  { day:10, phase:0, topic:"Graphs — Number of Islands + Course Schedule", problems:[200,207],   conceptLink:"https://www.youtube.com/watch?v=bst6h3Jh-sE",  conceptLabel:"CS Dojo — Graphs (10 min)" },
+  { day:11, phase:0, topic:"DP — Stairs + Robber + Coin Change",          problems:[70,198,322], conceptLink:"https://www.youtube.com/watch?v=oBt53YbR9Kk",  conceptLabel:"Reducible — DP Intro (19 min)" },
+
+  // ── PHASE 1 — Full Foundations Drill ─────────────────────────────────────
+  { day:12, phase:1, topic:"Arrays Basics",         problems:[283,485,26,1] },
+  { day:13, phase:1, topic:"Arrays Continued",      problems:[121,53,189,217] },
+  { day:14, phase:1, topic:"Strings",               problems:[125,242,387,344] },
+  { day:15, phase:1, topic:"HashMaps",              problems:[1,49,128,560] },
+  { day:16, phase:1, topic:"Two Pointers",          problems:[167,15,11,125] },
+  { day:17, phase:1, topic:"Sliding Window",        problems:[3,643,209,424] },
+  { day:18, phase:1, topic:"Review Day",            problems:[], reviewDay:true },
+  { day:19, phase:1, topic:"Linked List",           problems:[206,21,141,876] },
+  { day:20, phase:1, topic:"Linked List II",        problems:[19,143,2,160] },
+  { day:21, phase:1, topic:"Stacks",                problems:[20,155,232,739] },
+  { day:22, phase:1, topic:"Queues",                problems:[225,933,346] },
+  { day:23, phase:1, topic:"Binary Search",         problems:[704,374,278,35] },
+  { day:24, phase:1, topic:"Binary Search II",      problems:[153,33,74,162] },
+  { day:25, phase:1, topic:"Review Day",            problems:[], reviewDay:true },
+
+  // ── PHASE 2 — Trees ───────────────────────────────────────────────────────
+  { day:26, phase:2, topic:"Tree Basics + DFS",     problems:[104,112,226,100] },
+  { day:27, phase:2, topic:"Tree DFS",              problems:[257,543,124,236] },
+  { day:28, phase:2, topic:"Tree BFS",              problems:[102,107,103,199] },
+  { day:29, phase:2, topic:"BST",                   problems:[700,701,230,98] },
+  { day:30, phase:2, topic:"Review Trees",          problems:[], reviewDay:true },
+
+  // ── PHASE 3 — Graphs + DP ─────────────────────────────────────────────────
+  { day:31, phase:3, topic:"Graph BFS/DFS",         problems:[200,133,695,417] },
+  { day:32, phase:3, topic:"Graph Advanced",        problems:[207,210,994,286] },
+  { day:33, phase:3, topic:"DP 1D",                 problems:[70,198,322,139] },
+  { day:34, phase:3, topic:"DP 1D II",              problems:[300,416,494,91] },
+  { day:35, phase:3, topic:"DP 2D",                 problems:[62,63,1143,309] },
+  { day:36, phase:3, topic:"Backtracking",          problems:[78,46,39,79] },
+  { day:37, phase:3, topic:"Heaps",                 problems:[215,347,295,23] },
+  { day:38, phase:3, topic:"Review + Mock",         problems:[], mockDay:true, mockLabel:"Pramp Session" },
+  { day:39, phase:3, topic:"Mock Day",              problems:[], mockDay:true, mockLabel:"3 Timed Problems" },
 ];
 
-const DSA_PHASE_LABELS = { 1:"Phase 1 — Foundations", 2:"Phase 2 — Trees", 3:"Phase 3 — Graphs + DP" };
-const DSA_PHASE_RANGES = { 1:[1,14], 2:[15,19], 3:[20,28] };
+const DSA_PHASE_LABELS = {
+  0:"Phase 0 — Concept First (Do This First)",
+  1:"Phase 1 — Foundations (Full Drill)",
+  2:"Phase 2 — Trees",
+  3:"Phase 3 — Graphs + DP"
+};
+const DSA_PHASE_RANGES = { 0:[1,11], 1:[12,25], 2:[26,30], 3:[31,39] };
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
@@ -395,7 +285,7 @@ export default function QuestEngine() {
   const [bossHp, setBossHp]           = useState({});
   const [particles, setParticles]     = useState([]);
   const [toast, setToast]             = useState(null);
-  const [activeTab, setActiveTab]     = useState("quests");
+  const [activeTab, setActiveTab]     = useState("today");
   const [filter, setFilter]           = useState("all");
   const [expandedWeek, setExpandedWeek] = useState(null); // null = auto-select current week
   const [loaded, setLoaded]                   = useState(false);
@@ -415,7 +305,7 @@ export default function QuestEngine() {
   const [showAddDeadline, setShowAddDeadline] = useState(false);
   const [showAddQuest, setShowAddQuest]       = useState(false);
   const [dlForm, setDlForm] = useState({ label:"", date:"", course:"", type:"assignment", prepDays:"7", prepDesc:"" });
-  const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+  const [qForm,  setQForm]  = useState({ title:"", desc:"", category:"dsa", xp:"30", week:"Custom", link:"", urgent:false });
   const [editingDlId, setEditingDlId] = useState(null);
   const [editingQuestId, setEditingQuestId] = useState(null);
 
@@ -438,7 +328,7 @@ export default function QuestEngine() {
   // ── DSA Tracker ──────────────────────────────────────────────────────────
   const [dsaProgress, setDsaProgress] = useState({}); // { "d1-283": { status:"pending"|"completed"|"struggled", note:"" } }
 
-  const [hiddenCategories, setHiddenCategories] = useState(["ailearn","cca"]);
+  const [hiddenCategories, setHiddenCategories] = useState([]);
 
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
@@ -469,7 +359,7 @@ export default function QuestEngine() {
           setCustomQuests(d.customQuests || []);
           setBrainDump(d.brainDump || []);
           setDsaProgress(d.dsaProgress || {});
-          setHiddenCategories(d.hiddenCategories || ["ailearn","cca"]);
+          setHiddenCategories(d.hiddenCategories || []);
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -640,7 +530,7 @@ export default function QuestEngine() {
   const submitQuickCapture = () => {
     if (!quickInput.trim()) return;
     if (quickType === "quest") {
-      const newQ = { id:`cq_${Date.now()}`, week:"Custom", category:"academic", title:quickInput.trim(), desc:"", xp:30, bossDmg:24, urgent:false };
+      const newQ = { id:`cq_${Date.now()}`, week:"Custom", category:"dsa", title:quickInput.trim(), desc:"", xp:30, bossDmg:24, urgent:false };
       setCustomQuests(prev => [...prev, newQ]);
       showToast("⚔️ Quest captured!", "#34d399");
     } else {
@@ -741,7 +631,7 @@ export default function QuestEngine() {
     const allQuests = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category));
     const incomplete = allQuests.filter(q => !completed[q.id]);
     if (!incomplete.length) return null;
-    const priority = { academic:0, ailearn:2, project:3, jobsearch:4, cca:5, interview:1 };
+    const priority = { dsa:0, java:1, project:2, interview:3, sql:4, jobsearch:5 };
     const sort = (arr) => arr.sort((a,b) => (priority[a.category]||9) - (priority[b.category]||9));
     // 1. Urgent quests in current week
     const currentWeekUrgent = incomplete.filter(q => q.urgent && q.week === currentWeek);
@@ -824,7 +714,7 @@ export default function QuestEngine() {
       urgent: qForm.urgent,
     };
     setCustomQuests(prev => [...prev, newQ]);
-    setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+    setQForm({ title:"", desc:"", category:"dsa", xp:"30", week:"Custom", link:"", urgent:false });
     setShowAddQuest(false);
     showToast("⚔️ Quest added!", "#34d399");
   };
@@ -858,7 +748,7 @@ export default function QuestEngine() {
       link: qForm.link.trim() || undefined,
       urgent: qForm.urgent,
     } : q));
-    setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false });
+    setQForm({ title:"", desc:"", category:"dsa", xp:"30", week:"Custom", link:"", urgent:false });
     setEditingQuestId(null);
     setShowAddQuest(false);
     showToast("✏️ Quest updated!", "#34d399");
@@ -1444,7 +1334,7 @@ export default function QuestEngine() {
 
         {/* ── TODAY TAB ── */}
         {activeTab === "today" && (() => {
-          const priority = { interview:0, academic:1, project:2, jobsearch:3, ailearn:4, cca:5 };
+          const priority = { dsa:0, java:1, project:2, interview:3, sql:4, jobsearch:5 };
           const allActive = [...QUESTS, ...customQuests].filter(q => !hiddenCategories.includes(q.category) && !completed[q.id]);
           const thisWeek = allActive.filter(q => q.week === currentWeek || q.week === "Custom" || (q.week && q.week.startsWith("Interview Prep")));
           const urgent = [...thisWeek].filter(q => q.urgent).sort((a,b) => (priority[a.category]||9)-(priority[b.category]||9));
@@ -1477,7 +1367,7 @@ export default function QuestEngine() {
               <AnimatePresence>
               {todayList.map((quest, qi) => {
                 const done = !!completed[quest.id];
-                const c = catMeta[quest.category] || catMeta.academic;
+                const c = catMeta[quest.category] || catMeta.dsa;
                 const isActive = pomodoroQuestId === quest.id;
                 return (
                   <motion.div key={quest.id}
@@ -1528,7 +1418,7 @@ export default function QuestEngine() {
           <div>
             {/* Add Quest button */}
             <div style={{ display:"flex", justifyContent:"flex-end", marginBottom: 10 }}>
-              <button onClick={() => { setShowAddQuest(v => !v); if (showAddQuest) { setEditingQuestId(null); setQForm({ title:"", desc:"", category:"academic", xp:"30", week:"Custom", link:"", urgent:false }); } }} style={{
+              <button onClick={() => { setShowAddQuest(v => !v); if (showAddQuest) { setEditingQuestId(null); setQForm({ title:"", desc:"", category:"dsa", xp:"30", week:"Custom", link:"", urgent:false }); } }} style={{
                 background: showAddQuest ? "#334155" : "#064e3b", border: "1px solid #34d39944",
                 color: "#34d399", borderRadius: 8, padding: "5px 12px", fontSize: 12,
                 fontWeight: 700, cursor: "pointer", fontFamily: "inherit"
@@ -1654,7 +1544,7 @@ export default function QuestEngine() {
                 <div style={{ border: "1px solid #34d39944", borderTop: "none", borderRadius: "0 0 10px 10px", overflow: "hidden" }}>
                   {customQuests.filter(q => filter === "all" || q.category === filter).map((quest, i) => {
                     const done = !!completed[quest.id];
-                    const cat = CATEGORY_META[quest.category] || CATEGORY_META.academic;
+                    const cat = CATEGORY_META[quest.category] || CATEGORY_META.dsa;
                     return (
                       <div key={quest.id} style={{
                         padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
@@ -1872,19 +1762,19 @@ export default function QuestEngine() {
                 if (!allDone) return d.day;
               }
             }
-            return 28;
+            return 39;
           })();
           return (
             <div>
               {/* Phase progress bars */}
               <div style={{ display:"flex", gap:8, marginBottom:14 }}>
-                {[1,2,3].map(ph => {
+                {[0,1,2,3].map(ph => {
                   const stats = getDsaPhaseStats(ph);
                   const pct = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
-                  const phColors = { 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
+                  const phColors = { 0:"#f97316", 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
                   return (
-                    <div key={ph} style={{ flex:1, background:"#0f172a", border:"1px solid #1e293b", borderRadius:10, padding:"10px 12px" }}>
-                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:phColors[ph], letterSpacing:1, marginBottom:4 }}>PHASE {ph}</div>
+                    <div key={ph} style={{ flex:1, background:"#0f172a", border:`1px solid ${ph===0?"#f9731644":"#1e293b"}`, borderRadius:10, padding:"10px 12px" }}>
+                      <div style={{ fontFamily:"'Bebas Neue'", fontSize:11, color:phColors[ph], letterSpacing:1, marginBottom:4 }}>{ph === 0 ? "PHASE 0 ▶" : `PHASE ${ph}`}</div>
                       <div style={{ fontSize:12, color:"#e2e8f0", marginBottom:6 }}>{stats.done}/{stats.total} <span style={{ color:"#64748b" }}>· {stats.struggled} 😤</span></div>
                       <div style={{ height:5, background:"#1e293b", borderRadius:99, overflow:"hidden" }}>
                         <div style={{ height:"100%", width:`${pct}%`, background:phColors[ph], borderRadius:99, transition:"width 0.3s" }} />
@@ -1911,9 +1801,9 @@ export default function QuestEngine() {
               )}
 
               {/* Day cards by phase */}
-              {[1,2,3].map(ph => {
+              {[0,1,2,3].map(ph => {
                 const phaseDays = DSA_DAYS.filter(d => d.phase === ph);
-                const phColors = { 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
+                const phColors = { 0:"#f97316", 1:"#60a5fa", 2:"#34d399", 3:"#a78bfa" };
                 return (
                   <div key={ph} style={{ marginBottom:18 }}>
                     <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:phColors[ph], letterSpacing:2, marginBottom:8 }}>
@@ -1929,9 +1819,16 @@ export default function QuestEngine() {
                         const statusColor = prog.status === "completed" ? "#34d399" : prog.status === "struggled" ? "#f97316" : "#475569";
                         return (
                           <div key={dayObj.day} style={{ background: isCurrentDay ? "#0f1f2e" : "#0f172a", border: isCurrentDay ? "1px solid #60a5fa88" : "1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
-                            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                               <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color:"#475569", width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
                               <span style={{ fontSize:12, color:"#94a3b8", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
+                              {dayObj.conceptLink && (
+                                <a href={dayObj.conceptLink} target="_blank" rel="noopener noreferrer" style={{
+                                  fontSize:9, background:"#1e3a5f", color:"#60a5fa",
+                                  padding:"2px 7px", borderRadius:4, fontWeight:700,
+                                  textDecoration:"none", flexShrink:0, whiteSpace:"nowrap"
+                                }}>▶ {dayObj.conceptLabel || "Watch Concept"}</a>
+                              )}
                               <span style={{ fontSize:11, color:"#64748b" }}>{dayObj.mockLabel || "Use revisit queue"}</span>
                               <button onClick={(e) => cycleDsaStatus(dayObj.day, "review", e)} style={{
                                 background:"none", border:`1px solid ${statusColor}44`, borderRadius:6,
@@ -1954,9 +1851,16 @@ export default function QuestEngine() {
 
                       return (
                         <div key={dayObj.day} style={{ background: isCurrentDay ? "#0f1f2e" : "#0f172a", border: isCurrentDay ? "1px solid #60a5fa88" : "1px solid #1e293b", borderRadius:10, padding:"10px 12px", marginBottom:8 }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8, flexWrap:"wrap" }}>
                             <span style={{ fontFamily:"'Bebas Neue'", fontSize:12, color: isCurrentDay ? "#60a5fa" : phColors[ph], width:46, flexShrink:0 }}>DAY {dayObj.day}</span>
                             <span style={{ fontSize:12, color:"#e2e8f0", flex:1, fontWeight:700 }}>{dayObj.topic}</span>
+                            {dayObj.conceptLink && (
+                              <a href={dayObj.conceptLink} target="_blank" rel="noopener noreferrer" style={{
+                                fontSize:9, background:"#1e3a5f", color:"#60a5fa",
+                                padding:"2px 7px", borderRadius:4, fontWeight:700,
+                                textDecoration:"none", flexShrink:0, whiteSpace:"nowrap"
+                              }}>▶ {dayObj.conceptLabel || "Watch Concept"}</a>
+                            )}
                             {isCurrentDay && <span style={{ fontSize:10, background:"#1e3a5f", color:"#60a5fa", padding:"1px 5px", borderRadius:4, fontWeight:700 }}>TODAY</span>}
                             <span style={{ fontSize:11, color:"#64748b" }}>
                               {dayDone}/{dayObj.problems.length} ✅{dayStruggled > 0 ? `  ${dayStruggled} 😤` : ""}
@@ -2297,18 +2201,6 @@ export default function QuestEngine() {
               })}
             </div>
 
-            <div style={{ background: "#0f172a", border: "1px solid #2e1065", borderRadius: 14, padding: 16, marginBottom: 10 }}>
-              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 14, color: "#a78bfa", letterSpacing: 2, marginBottom: 8 }}>🧠 CCA CERTIFICATION PATH</div>
-              <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>
-                <div>📅 Start prep: Week 6 (Mar 24)</div>
-                <div>📚 5 Anthropic Academy modules: Weeks 6–11</div>
-                <div>🎯 Mock exam: Week 12 (May 5–11)</div>
-                <div>📝 Sit real exam: June 2026</div>
-                <div>💰 Cost: $99 (or free via Deloitte partner)</div>
-                <div style={{ marginTop: 8, color: "#a78bfa", fontWeight: 700 }}>Domains: Agentic (27%) · Code (20%) · Prompts (20%) · Tools/MCP (18%) · Context (15%)</div>
-              </div>
-            </div>
-
             {/* Interview Prep Reference */}
             <div style={{ background: "#0f172a", border: "1px solid #f9731644", borderRadius: 14, padding: 16, marginBottom: 10 }}>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 14, color: "#f97316", letterSpacing: 2, marginBottom: 12 }}>⚔️ LIVE CODING STRATEGY</div>
@@ -2345,12 +2237,12 @@ export default function QuestEngine() {
             <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 14, padding: 16 }}>
               <div style={{ fontFamily: "'Bebas Neue'", fontSize: 14, color: "#475569", letterSpacing: 2, marginBottom: 12 }}>THE 6 COMMANDMENTS</div>
               {[
-                "Academic deadlines are non-negotiable. AI learning pauses when submissions are due.",
-                "No new resources. The stack is complete. Depth > breadth.",
-                "One quest. 25 minutes. That's the whole game.",
-                "Deploy early. A live URL beats a perfect local project.",
-                "The Deloitte card is worth 15 cold applications. Ask about CCA partner access too.",
-                "You are Java + AI. Position yourself where the competition is low and salaries are high.",
+                "DSA daily — 1 hour minimum, no exceptions. Consistency beats intensity.",
+                "Spring AI or LangChain4j — pick one and go deep. Don't context-switch.",
+                "The capstone is your interview. Ship it publicly before you apply anywhere.",
+                "SQL is non-negotiable. Every Java+AI JD at a bank or fintech mentions it.",
+                "Your 485 visa is your superpower. Lead with it in conversations.",
+                "Apply wide but tailor deep. 5 perfect applications beat 50 generic ones.",
               ].map((rule, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8, fontSize: 12, color: "#94a3b8", lineHeight: 1.4 }}>
                   <span style={{ color: level.color, fontFamily: "'Bebas Neue'", fontSize: 14, flexShrink: 0 }}>{i+1}.</span>
