@@ -32,32 +32,32 @@ const BOSSES = [
 
 const QUESTS = [
   // ── SPRINT 1 · DSA Foundations ─────────────────────────────────────────────
-  { id:"q1",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"Java Arrays+Strings: 10 LeetCode Easies",       desc:"Two Sum, Reverse String, Valid Palindrome, Move Zeroes, Max Consecutive Ones — solve in Java, note time/space complexity.", xp:60, bossDmg:50, urgent:true },
-  { id:"q2",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"HashMap+Set Patterns: 5 Problems",               desc:"Group Anagrams, Top K Frequent, Contains Duplicate, Ransom Note, Two Sum II. Pattern: trade space for time.", xp:55, bossDmg:45, urgent:true },
+  { id:"q1",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"DSA Phase 0 — Concept First (Days 1–11)",        desc:"Open the DSA tab and work through Days 1–11. Watch the concept video for each day BEFORE solving — Phase 0 builds the mental models everything else depends on. Don't skip the videos.", xp:75, bossDmg:60, urgent:true },
+  { id:"q2",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"DSA Phase 1A — Arrays, HashMaps & Strings (Days 12–15)", desc:"Four back-to-back foundation topics in the DSA tab. For every problem: write out time/space complexity before submitting. Can't solve it in 20 min? Read the pattern, then redo it from scratch without looking.", xp:55, bossDmg:45, urgent:true },
   { id:"q3",  week:"Sprint 1 · DSA Foundations", category:"sql",       title:"SQL Foundations: 15 Easy Problems",              desc:"SELECT, WHERE, GROUP BY, HAVING, ORDER BY, JOINs (INNER/LEFT/RIGHT). Use SQLZoo or LeetCode SQL.", link:"https://sqlzoo.net", xp:50, bossDmg:40, urgent:true },
   { id:"q4",  week:"Sprint 1 · DSA Foundations", category:"java",      title:"Java Collections Deep Dive",                     desc:"ArrayList, LinkedList, HashMap, TreeMap, PriorityQueue, Stack — know internals, not just API. Write 5 mini-programs.", xp:40, bossDmg:35, urgent:false },
   { id:"q5",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"Set Up Job Tracker in Notion",                   desc:"Columns: Company, Role, Status, Applied Date, Referral, Notes. Add all 15 target companies from research.", xp:20, bossDmg:15, urgent:false },
   { id:"q6",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"LinkedIn: Update Headline + 3 AI Skills",        desc:"Headline: Java Backend Engineer to AI Engineering | Spring Boot | RAG | Sydney | Open to Work. Add Spring AI, pgvector, RAG as skills.", xp:25, bossDmg:20, urgent:false },
 
   // ── SPRINT 2 · DSA Patterns + SQL Depth ────────────────────────────────────
-  { id:"q7",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"Two Pointers + Sliding Window: 5 Problems",      desc:"Container With Most Water, 3Sum, Longest Substring No Repeat, Min Window Substring, Trapping Rain Water.", xp:65, bossDmg:55, urgent:true },
-  { id:"q8",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"Linked Lists + Stacks: 6 Problems",              desc:"Reverse LL, Detect Cycle, Merge Two Sorted, Valid Parentheses, Min Stack, Daily Temperatures. Implement LL from scratch in Java.", xp:60, bossDmg:50, urgent:true },
+  { id:"q7",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"DSA Phase 1B — Two Pointers, Sliding Window & Review (Days 16–18)", desc:"Days 16–18 in the DSA tab. Two Pointers and Sliding Window are the highest-ROI patterns per hour of study. Day 18 is a Review Day — revisit every problem you marked 'struggled' in Phase 1A. Those are your weak spots.", xp:60, bossDmg:50, urgent:true },
+  { id:"q8",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"DSA Phase 1C–D — Linked Lists, Stacks, Queues & Binary Search (Days 19–25)", desc:"Days 19–25 in the DSA tab. Implement linked lists and stacks in Java from scratch — don't rely on java.util. Binary search has exactly one off-by-one pattern: learn it once and every variant follows.", xp:65, bossDmg:55, urgent:true },
   { id:"q9",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"SQL Intermediate: Window Functions + CTEs",      desc:"Subqueries, CTEs, ROW_NUMBER, RANK, LAG/LEAD, CASE WHEN. Do 15 medium problems on LeetCode SQL.", link:"https://leetcode.com/studyplan/top-sql-50/", xp:65, bossDmg:55, urgent:true },
   { id:"q10", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"Database Design: Normalisation + Indexes + ACID", desc:"1NF/2NF/3NF, B-tree vs hash indexes, ACID properties, transactions, deadlock. Write notes you can recite in interview.", xp:45, bossDmg:35, urgent:false },
   { id:"q11", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"java",      title:"Spring Boot Refresher: REST API from Scratch",   desc:"Rebuild a REST API with JPA, H2, Gradle in 2 hrs. Add Actuator, basic auth, error handling.", xp:50, bossDmg:40, urgent:false },
   { id:"q12", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"jobsearch", title:"Write 3 Cover Letter Templates",                 desc:"One for fintech (Airwallex/Tyro), one for big bank (Macquarie/Westpac), one for tech co (Canva/Atlassian).", xp:40, bossDmg:35, urgent:false },
 
   // ── SPRINT 3 · Trees, Graphs + Java AI Stack ───────────────────────────────
-  { id:"q13", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"Binary Trees DFS+BFS: 6 Problems",               desc:"Max Depth, Invert Tree, Level Order, Path Sum, LCA, Diameter. Implement BFS with queue in Java.", xp:65, bossDmg:55, urgent:true },
-  { id:"q14", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"Binary Search + Heaps: 5 Problems",              desc:"Search Rotated Array, Find Min Rotated, Top K Frequent, Kth Largest, Merge K Sorted Lists.", xp:60, bossDmg:50, urgent:true },
+  { id:"q13", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"DSA Phase 2 Part 1 — Tree DFS & BFS (Days 26–28)", desc:"Days 26–28 in the DSA tab. Before writing any code, decide: DFS (recursive/stack) or BFS (queue)? Almost all tree problems are traversal, path sum, or BST property — identify the category first, then code.", xp:65, bossDmg:55, urgent:true },
+  { id:"q14", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"DSA Phase 2 Final — BST & Tree Review (Days 29–30)", desc:"Days 29–30 in the DSA tab. BST problems rely on three invariants: left < node < right, in-order traversal is sorted, deletion needs the in-order successor. Day 30 is Review — be able to whiteboard any traversal cold.", xp:60, bossDmg:50, urgent:true },
   { id:"q15", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Spring AI Setup: ChatClient + Streaming",        desc:"Add spring-ai-anthropic-spring-boot-starter. Implement ChatClient with streaming. Understand ChatOptions, PromptTemplate, MessageConverter.", link:"https://docs.spring.io/spring-ai/reference/", xp:70, bossDmg:60, urgent:true },
   { id:"q16", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"pgvector Setup: Docker + JDBC + Embeddings",     desc:"Run pgvector in Docker. Connect via JDBC. Store and query embeddings. Understand cosine similarity vs euclidean, HNSW index.", xp:75, bossDmg:65, urgent:true },
   { id:"q17", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"sql",       title:"PostgreSQL: EXPLAIN ANALYZE + JSONB + pgvector", desc:"EXPLAIN ANALYZE, index tuning, JSONB queries, full-text search, pg_vector extension. Set up local Postgres via Docker.", xp:55, bossDmg:45, urgent:false },
   { id:"q18", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"jobsearch", title:"Apply to 3 Tier-1 Jobs: Canva + Airwallex",       desc:"Canva Java AI roles + Airwallex Knowledge Platform. Customise each application.", link:"https://www.canva.com/careers/", xp:80, bossDmg:65, urgent:true },
 
   // ── SPRINT 4 · Graphs, DP + First Project ──────────────────────────────────
-  { id:"q19", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"Graphs BFS/DFS: 5 Problems",                     desc:"Number of Islands, Clone Graph, Course Schedule, Word Ladder, Pacific Atlantic. Adjacency list in Java.", xp:70, bossDmg:60, urgent:true },
-  { id:"q20", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"Dynamic Programming 1D: 5 Problems",             desc:"Climbing Stairs, House Robber, Coin Change, Decode Ways, LIS. Define state, recurrence, base case.", xp:70, bossDmg:60, urgent:true },
+  { id:"q19", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"DSA Phase 3A — Graphs (Days 31–32)",             desc:"Days 31–32 in the DSA tab. Graphs are just trees with cycles. Before coding, answer three questions: adjacency list or matrix? BFS or DFS? Directed or undirected? Those three choices dictate the entire solution.", xp:65, bossDmg:55, urgent:true },
+  { id:"q20", week:"Sprint 4 · Graphs, DP + First Project", category:"dsa",       title:"DSA Phase 3B — Dynamic Programming (Days 33–35)", desc:"Days 33–35 in the DSA tab. DP has one framework: define the state, write the recurrence, code the tabulation. Write the recurrence as a comment BEFORE coding — if you can't do that, you haven't understood the problem yet.", xp:70, bossDmg:60, urgent:true },
   { id:"q21", week:"Sprint 4 · Graphs, DP + First Project", category:"project",   title:"Capstone v1 — AI Compliance Auditor Skeleton",   desc:"GitHub repo, Spring Boot 3.x + Spring AI + pgvector, PDF ingestion endpoint, chunking logic, embedding store. GET /health returns 200.", link:"https://github.com", xp:100, bossDmg:80, urgent:true },
   { id:"q22", week:"Sprint 4 · Graphs, DP + First Project", category:"interview", title:"STAR Story Bank: 5 Full Stories",                 desc:"InvestCloud impact, production incident, conflict resolution, initiative, learning fast. Time each to 90 seconds.", xp:60, bossDmg:50, urgent:false },
   { id:"q23", week:"Sprint 4 · Graphs, DP + First Project", category:"jobsearch", title:"Apply to 3 Tier-2 Jobs: Macquarie + Westpac",     desc:"Macquarie BFS AI Engineering + Westpac UNITE program. Customise each application.", link:"https://www.macquarie.com/au/en/careers.html", xp:80, bossDmg:65, urgent:true },
@@ -83,7 +83,7 @@ const QUESTS = [
   { id:"q39", week:"Ongoing · Keep Applying", category:"jobsearch", title:"UTS Alumni LinkedIn Outreach: 5 People",         desc:"Find 5 UTS alumni in Java or AI roles at target companies. Personalised DMs, not templates.", xp:50, bossDmg:40, urgent:false },
   { id:"q40", week:"Ongoing · Keep Applying", category:"java",      title:"LangChain4j Deep Dive: Compare vs Spring AI",    desc:"Build same RAG pipeline in LangChain4j. Understand tradeoffs vs Spring AI. Write comparison notes.", link:"https://github.com/langchain4j/langchain4j", xp:80, bossDmg:65, urgent:false },
   { id:"q41", week:"Ongoing · Keep Applying", category:"java",      title:"Spring AI Agents: 3-Tool Agent with @Tool",      desc:"Tool calling with @Tool annotation, multi-step reasoning, implement a 3-tool agent.", xp:90, bossDmg:75, urgent:false },
-  { id:"q42", week:"Ongoing · Keep Applying", category:"dsa",       title:"DP 2D + Backtracking: 6 Problems",              desc:"Unique Paths, LCS, 0/1 Knapsack, Subsets, Permutations, Combination Sum.", xp:75, bossDmg:60, urgent:false },
+  { id:"q42", week:"Ongoing · Keep Applying", category:"dsa",       title:"DSA Phase 3 Final — Backtracking, Heaps & Mocks (Days 36–39)", desc:"Days 36–39 in the DSA tab — the final stretch. Days 38–39 are mock days: 45 minutes, camera on, think aloud. The mock sessions matter more than any individual problem. Mark complete only after you've done a real timed session.", xp:80, bossDmg:65, urgent:false },
   { id:"q43", week:"Ongoing · Keep Applying", category:"project",   title:"Blog Post 2: Kafka Outbox Pattern",              desc:"Kafka outbox pattern with Spring Boot — exactly-once delivery in fintech. Publish on dev.to or Medium.", xp:60, bossDmg:50, urgent:false },
   { id:"q44", week:"Ongoing · Keep Applying", category:"jobsearch", title:"AWS Developer Associate Exam — Sit and Pass",    desc:"Book and sit the exam. This goes straight on the resume.", xp:150, bossDmg:120, urgent:false },
 ];
@@ -363,23 +363,32 @@ export default function QuestEngine() {
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
-      // setLoaded must be LAST — save effect guards on this flag
+      // setLoaded must be LAST — save effect guards on this flag.
+      // justLoadedRef tells the save effect to skip the immediate post-load write.
+      justLoadedRef.current = true;
       setLoaded(true);
     }
     load();
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
-  // Uses a 1200ms debounce so the burst of setState calls from load() all
-  // settle before the first write. merge:true means a partial-state save
-  // can never wipe unrelated fields.
+  // justLoadedRef: set to true right before setLoaded(true) so the very first
+  // save effect invocation (which only re-writes what was just read) is skipped.
+  // This means user changes persist after just 300ms of inactivity rather than
+  // 1200ms, eliminating the data-loss-on-quick-refresh bug.
   const saveTimerRef = useRef(null);
   const loadedRef = useRef(false);
+  const justLoadedRef = useRef(false);
   useEffect(() => { loadedRef.current = loaded; }, [loaded]);
 
   useEffect(() => {
     if (!loaded) return;
     setCompletedCount(Object.keys(completed).length);
+    // Skip the first save after loading — it would just re-write what was read.
+    if (justLoadedRef.current) {
+      justLoadedRef.current = false;
+      return;
+    }
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       // Double-check via ref in case effect closed over stale loaded=true
@@ -389,7 +398,7 @@ export default function QuestEngine() {
         const ref = doc(db, "users", STORAGE_KEY);
         await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories }, { merge: true });
       } catch (e) { console.error("Save error", e); }
-    }, 1200);
+    }, 300);
     return () => clearTimeout(saveTimerRef.current);
   }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, loaded]);
 
