@@ -333,6 +333,9 @@ export default function QuestEngine() {
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
 
+  // ── Reset confirmation ────────────────────────────────────────────────────
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
   // ── Load from Firebase ───────────────────────────────────────────────────
   // Close quick capture on Escape
   useEffect(() => {
@@ -372,39 +375,50 @@ export default function QuestEngine() {
   }, []);
 
   // ── Save to Firebase ─────────────────────────────────────────────────────
-  // justLoadedRef: set to true right before setLoaded(true) so the very first
-  // save effect invocation (which only re-writes what was just read) is skipped.
-  // This means user changes persist after just 300ms of inactivity rather than
-  // 1200ms, eliminating the data-loss-on-quick-refresh bug.
-  const saveTimerRef = useRef(null);
-  const loadedRef = useRef(false);
+  // Saves immediately on every state change. No debounce needed — all deps are
+  // user-action-gated (completing quests, cycling DSA status, submitting brain
+  // dump entries), not raw keystrokes. justLoadedRef skips the first invocation
+  // after load, which would otherwise just re-write what was just read.
   const justLoadedRef = useRef(false);
-  useEffect(() => { loadedRef.current = loaded; }, [loaded]);
 
   useEffect(() => {
     if (!loaded) return;
     setCompletedCount(Object.keys(completed).length);
-    // Skip the first save after loading — it would just re-write what was read.
     if (justLoadedRef.current) {
       justLoadedRef.current = false;
       return;
     }
-    clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(async () => {
-      // Double-check via ref in case effect closed over stale loaded=true
-      // while another load() is still running (e.g. hot-reload)
-      if (!loadedRef.current) return;
+    const save = async () => {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
         await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories }, { merge: true });
       } catch (e) { console.error("Save error", e); }
-    }, 300);
-    return () => clearTimeout(saveTimerRef.current);
+    };
+    save();
   }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const resetProgress = async () => {
+    setXp(0);
+    setCompleted({});
+    setBossHp({});
+    setCustomDeadlines([]);
+    setCustomQuests([]);
+    setBrainDump([]);
+    setDsaProgress({});
+    setHiddenCategories([]);
+    setCompletedCount(0);
+    setShowResetConfirm(false);
+    // Write the blank slate directly — don't wait for the save effect
+    try {
+      const ref = doc(db, "users", STORAGE_KEY);
+      await setDoc(ref, { xp: 0, completed: {}, bossHp: {}, customDeadlines: [], customQuests: [], brainDump: [], dsaProgress: {}, hiddenCategories: [] }, { merge: false });
+    } catch (e) { console.error("Reset error", e); }
+    showToast("🗑 Progress reset. Starting fresh!", "#ef4444");
   };
 
   const spawnParticle = (e) => {
@@ -2279,6 +2293,46 @@ export default function QuestEngine() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* ── Danger Zone ── */}
+            <div style={{ background:"#0f172a", border:"1px solid #ef444433", borderRadius:14, padding:16 }}>
+              <div style={{ fontFamily:"'Bebas Neue'", fontSize:14, color:"#ef4444", letterSpacing:2, marginBottom:10 }}>DANGER ZONE</div>
+              {!showResetConfirm ? (
+                <button onClick={() => setShowResetConfirm(true)} style={{
+                  background:"transparent", border:"1px solid #ef444466", borderRadius:8,
+                  color:"#ef4444", fontSize:12, padding:"8px 16px", cursor:"pointer",
+                  fontFamily:"inherit", fontWeight:700, letterSpacing:1,
+                  transition:"all 0.15s"
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background="#ef444420"; e.currentTarget.style.borderColor="#ef4444"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background="transparent"; e.currentTarget.style.borderColor="#ef444466"; }}
+                >
+                  RESET ALL PROGRESS
+                </button>
+              ) : (
+                <div>
+                  <div style={{ fontSize:12, color:"#94a3b8", marginBottom:12, lineHeight:1.5 }}>
+                    This permanently deletes all XP, completed quests, boss HP, DSA progress, brain dump entries, and custom quests. There is no undo.
+                  </div>
+                  <div style={{ display:"flex", gap:8 }}>
+                    <button onClick={resetProgress} style={{
+                      background:"#ef4444", border:"none", borderRadius:8,
+                      color:"#fff", fontSize:12, padding:"8px 16px", cursor:"pointer",
+                      fontFamily:"inherit", fontWeight:700, letterSpacing:1
+                    }}>
+                      YES, RESET EVERYTHING
+                    </button>
+                    <button onClick={() => setShowResetConfirm(false)} style={{
+                      background:"transparent", border:"1px solid #334155", borderRadius:8,
+                      color:"#94a3b8", fontSize:12, padding:"8px 16px", cursor:"pointer",
+                      fontFamily:"inherit"
+                    }}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
