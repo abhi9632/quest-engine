@@ -33,7 +33,7 @@ const BOSSES = [
 const QUESTS = [
   // ── SPRINT 1 · DSA Foundations ─────────────────────────────────────────────
   { id:"q1",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"DSA Phase 0 — Concept First (Days 1–11)",        desc:"Open the DSA tab and work through Days 1–11. Watch the concept video for each day BEFORE solving — Phase 0 builds the mental models everything else depends on. Don't skip the videos.", xp:75, bossDmg:60, urgent:true },
-  { id:"q2",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"DSA Phase 1A — Arrays, HashMaps & Strings (Days 12–15)", desc:"Four back-to-back foundation topics in the DSA tab. For every problem: write out time/space complexity before submitting. Can't solve it in 20 min? Read the pattern, then redo it from scratch without looking.", xp:55, bossDmg:45, urgent:true },
+  { id:"q2",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"DSA Phase 1A — Arrays, HashMaps & Strings (Days 12–15)", desc:"Four back-to-back foundation topics in the DSA tab. For every problem: write out time/space complexity before submitting. Can't solve it in 20 min? Read the pattern, then redo it from scratch without looking.", xp:55, bossDmg:45, urgent:true },
   { id:"q3",  week:"Sprint 1 · DSA Foundations", category:"sql",       title:"SQL Foundations: 15 Easy Problems",              desc:"SELECT, WHERE, GROUP BY, HAVING, ORDER BY, JOINs (INNER/LEFT/RIGHT). Use SQLZoo or LeetCode SQL.", link:"https://sqlzoo.net", xp:50, bossDmg:40, urgent:true },
   { id:"q4",  week:"Sprint 1 · DSA Foundations", category:"java",      title:"Phase 1A — LLM Fundamentals: Raw API Calls from Java", desc:"Before any framework: call the Anthropic API from Java via plain HTTP — no SDK. Build a chatbot that maintains conversation history in List<Message>. Compare zero-shot vs few-shot vs chain-of-thought on the same task. Best playlist: Karpathy 'Intro to LLMs' (1hr, linked). Critical path — Phase 2 (Spring AI) cannot start until this is done.", link:"https://www.youtube.com/watch?v=zjkBMFhNj_g", xp:50, bossDmg:40, urgent:true },
   { id:"q5",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"Set Up Job Tracker in Notion",                   desc:"Columns: Company, Role, Status, Applied Date, Referral, Notes. Add all 15 target companies from research.", xp:20, bossDmg:15, urgent:false },
@@ -1019,22 +1019,19 @@ export default function QuestEngine() {
         ::-webkit-scrollbar-track { background:transparent; }
         ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#00ffc844,#00ffc822); border-radius:99px; }
 
-        /* ── @PROPERTY gradient hue rotation ── */
-        @property --grad-hue { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
         .focus-quest-border {
-          --grad-hue: 0deg;
-          animation: hueRotate 4s linear infinite;
-          background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03));
-          backdrop-filter: blur(20px);
-          border: 1px solid transparent;
-          background-clip: padding-box;
+          background: linear-gradient(160deg, rgba(0,8,20,0.98), rgba(0,4,12,0.99));
+          border: 1px solid rgba(0,255,200,0.18);
+          box-shadow: 0 0 20px rgba(0,255,200,0.05), 0 4px 24px rgba(0,0,0,0.6);
           position: relative;
         }
         .focus-quest-border::before {
           content: '';
-          position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
-          background: linear-gradient(var(--grad-hue), #00ffc888, #7c3aed88, #00ffc888);
-          animation: hueRotate 4s linear infinite;
+          position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+          border-radius: 14px 0 0 14px;
+          background: linear-gradient(180deg, #00ffc8, #7c3aed);
+          opacity: 0.8;
+          box-shadow: 0 0 10px rgba(0,255,200,0.4);
         }
         /* ── BOSS CARD CRITICAL ── */
         .boss-critical { animation: bossRedPulse 1.2s ease-in-out infinite; }
