@@ -35,7 +35,7 @@ const QUESTS = [
   { id:"q1",  week:"Sprint 1 · DSA Foundations", category:"dsa",       title:"DSA Phase 0 — Concept First (Days 1–11)",        desc:"Open the DSA tab and work through Days 1–11. Watch the concept video for each day BEFORE solving — Phase 0 builds the mental models everything else depends on. Don't skip the videos.", xp:75, bossDmg:60, urgent:true },
   { id:"q2",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"DSA Phase 1A — Arrays, HashMaps & Strings (Days 12–15)", desc:"Four back-to-back foundation topics in the DSA tab. For every problem: write out time/space complexity before submitting. Can't solve it in 20 min? Read the pattern, then redo it from scratch without looking.", xp:55, bossDmg:45, urgent:true },
   { id:"q3",  week:"Sprint 1 · DSA Foundations", category:"sql",       title:"SQL Foundations: 15 Easy Problems",              desc:"SELECT, WHERE, GROUP BY, HAVING, ORDER BY, JOINs (INNER/LEFT/RIGHT). Use SQLZoo or LeetCode SQL.", link:"https://sqlzoo.net", xp:50, bossDmg:40, urgent:true },
-  { id:"q4",  week:"Sprint 1 · DSA Foundations", category:"java",      title:"Phase 1A — LLM Fundamentals: Raw API Calls from Java", desc:"Before any framework: call the Anthropic API from Java via plain HTTP — no SDK. Build a chatbot that maintains conversation history in List<Message>. Compare zero-shot vs few-shot vs chain-of-thought on the same task. Best playlist: Karpathy 'Intro to LLMs' (1hr, linked). Critical path — Phase 2 (Spring AI) cannot start until this is done.", link:"https://www.youtube.com/watch?v=zjkBMFhNj_g", xp:50, bossDmg:40, urgent:true },
+  { id:"q4",  week:"Sprint 1 · DSA Foundations", category:"java",      title:"Phase 1A — LLM Fundamentals: Raw API Calls from Java", desc:"Before any framework: call the Anthropic API from Java via plain HTTP — no SDK. Build a chatbot that maintains conversation history in List<Message>. Compare zero-shot vs few-shot vs chain-of-thought on the same task. Critical path — Phase 2 (Spring AI) cannot start until this is done.", link:"https://www.youtube.com/watch?v=zjkBMFhNj_g", xp:50, bossDmg:40, urgent:true, time:"~4 hrs · 1 day", resources:[{label:"Karpathy — Intro to Large Language Models (1 hr)",url:"https://www.youtube.com/watch?v=zjkBMFhNj_g",type:"video"},{label:"3Blue1Brown — Attention in Transformers (26 min)",url:"https://www.youtube.com/watch?v=eMlx5fFNoYc",type:"video"},{label:"Anthropic Prompt Engineering Docs",url:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",type:"doc"}] },
   { id:"q5",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"Set Up Job Tracker in Notion",                   desc:"Columns: Company, Role, Status, Applied Date, Referral, Notes. Add all 15 target companies from research.", xp:20, bossDmg:15, urgent:false },
   { id:"q6",  week:"Sprint 1 · DSA Foundations", category:"jobsearch", title:"LinkedIn: Update Headline + 3 AI Skills",        desc:"Headline: Java Backend Engineer to AI Engineering | Spring Boot | RAG | Sydney | Open to Work. Add Spring AI, pgvector, RAG as skills.", xp:25, bossDmg:20, urgent:false },
 
@@ -44,14 +44,14 @@ const QUESTS = [
   { id:"q8",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"dsa",       title:"DSA Phase 1C–D — Linked Lists, Stacks, Queues & Binary Search (Days 19–25)", desc:"Days 19–25 in the DSA tab. Implement linked lists and stacks in Java from scratch — don't rely on java.util. Binary search has exactly one off-by-one pattern: learn it once and every variant follows.", xp:65, bossDmg:55, urgent:true },
   { id:"q9",  week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"SQL Intermediate: Window Functions + CTEs",      desc:"Subqueries, CTEs, ROW_NUMBER, RANK, LAG/LEAD, CASE WHEN. Do 15 medium problems on LeetCode SQL.", link:"https://leetcode.com/studyplan/top-sql-50/", xp:65, bossDmg:55, urgent:true },
   { id:"q10", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"sql",       title:"Database Design: Normalisation + Indexes + ACID", desc:"1NF/2NF/3NF, B-tree vs hash indexes, ACID properties, transactions, deadlock. Write notes you can recite in interview.", xp:45, bossDmg:35, urgent:false },
-  { id:"q11", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"java",      title:"Phase 1B — LLM Fundamentals: Embeddings + Tokenization", desc:"Generate embeddings for 10 sentences via API. Compute cosine similarity manually in Java — understand what pgvector does before you use it. Play with the OpenAI Tokenizer to see how text maps to tokens and why context windows are a hard limit. Best playlist: 3Blue1Brown 'Neural Networks' series on YouTube. Then read Anthropic's Prompt Engineering docs end to end.", link:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", xp:55, bossDmg:45, urgent:true },
+  { id:"q11", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"java",      title:"Phase 1B — LLM Fundamentals: Embeddings + Tokenization", desc:"Generate embeddings for 10 sentences via API. Compute cosine similarity manually in Java — understand what pgvector does before you use it. Use the OpenAI Tokenizer tool (ℹ) to see how text maps to tokens and why context windows are a hard limit.", link:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", xp:55, bossDmg:45, urgent:true, time:"~3 hrs · half day", resources:[{label:"OpenAI Tokenizer — interactive tool",url:"https://platform.openai.com/tokenizer",type:"tool"},{label:"Anthropic Prompt Engineering Docs",url:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",type:"doc"}] },
   { id:"q12", week:"Sprint 2 · DSA Patterns + SQL Depth", category:"jobsearch", title:"Write 3 Cover Letter Templates",                 desc:"One for fintech (Airwallex/Tyro), one for big bank (Macquarie/Westpac), one for tech co (Canva/Atlassian).", xp:40, bossDmg:35, urgent:false },
 
   // ── SPRINT 3 · Trees, Graphs + Java AI Stack ───────────────────────────────
   { id:"q13", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"DSA Phase 2 Part 1 — Tree DFS & BFS (Days 26–28)", desc:"Days 26–28 in the DSA tab. Before writing any code, decide: DFS (recursive/stack) or BFS (queue)? Almost all tree problems are traversal, path sum, or BST property — identify the category first, then code.", xp:65, bossDmg:55, urgent:true },
   { id:"q14", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"dsa",       title:"DSA Phase 2 Final — BST & Tree Review (Days 29–30)", desc:"Days 29–30 in the DSA tab. BST problems rely on three invariants: left < node < right, in-order traversal is sorted, deletion needs the in-order successor. Day 30 is Review — be able to whiteboard any traversal cold.", xp:60, bossDmg:50, urgent:true },
-  { id:"q15", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Phase 2A — Spring AI: ChatClient, Ollama + Function Calling", desc:"Add spring-ai-anthropic-spring-boot-starter. Wire ChatClient + ChatModel — swap providers without a code change. Run Ollama locally (llama3 + nomic-embed-text) for zero-cost dev. Add a Spring AI @Bean function that calls a real external API. Best playlist: Dan Vega's Spring AI series on YouTube (@DanVega) — the definitive resource, updated for Spring AI 1.0. Critical path to June 1 capstone deadline.", link:"https://www.youtube.com/@DanVega", xp:70, bossDmg:60, urgent:true },
-  { id:"q16", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Phase 2B — Spring AI: PDF Ingestion + pgvector + QuestionAnswerAdvisor", desc:"Build the skeleton your capstone runs on: PDF → TextSplitter → embed → pgvector. Wire QuestionAnswerAdvisor — RAG in ~10 lines. GET /health returns 200. This IS Capstone v1 (due June 1). Run pgvector in Docker (5-min setup). Spring AI GitHub samples repo has working reference implementations — use them.", link:"https://github.com/spring-projects/spring-ai", xp:80, bossDmg:65, urgent:true },
+  { id:"q15", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Phase 2A — Spring AI: ChatClient, Ollama + Function Calling", desc:"Add spring-ai-anthropic-spring-boot-starter. Wire ChatClient + ChatModel — swap providers without a code change. Run Ollama locally (llama3 + nomic-embed-text) for zero-cost dev. Add a Spring AI @Bean function that calls a real external API. Critical path to June 1 capstone deadline.", link:"https://www.youtube.com/@DanVega", xp:70, bossDmg:60, urgent:true, time:"~5 hrs · 1 day", resources:[{label:"Dan Vega — Spring AI YouTube Series (playlist)",url:"https://www.youtube.com/@DanVega",type:"video"},{label:"Spring AI Official Reference Docs",url:"https://docs.spring.io/spring-ai/reference/",type:"doc"},{label:"Spring AI GitHub — samples repo",url:"https://github.com/spring-projects/spring-ai",type:"repo"},{label:"Ollama — run LLMs locally (free, no API key)",url:"https://ollama.com",type:"tool"}] },
+  { id:"q16", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"java",      title:"Phase 2B — Spring AI: PDF Ingestion + pgvector + QuestionAnswerAdvisor", desc:"Build the skeleton your capstone runs on: PDF → TextSplitter → embed → pgvector. Wire QuestionAnswerAdvisor — RAG in ~10 lines. GET /health returns 200. This IS Capstone v1 (due June 1). Run pgvector in Docker (5-min setup).", link:"https://github.com/spring-projects/spring-ai", xp:80, bossDmg:65, urgent:true, time:"~6 hrs · 1–1.5 days", resources:[{label:"Piotr Minkowski — RAG with Spring AI + pgvector (blog)",url:"https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/",type:"doc"},{label:"gaetanopiazzolla — RAG + Spring AI deep dive (blog)",url:"https://gaetanopiazzolla.github.io/java/rag/2024/05/29/rag-spring-ai.html",type:"doc"},{label:"Spring AI GitHub — working sample code",url:"https://github.com/spring-projects/spring-ai",type:"repo"}] },
   { id:"q17", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"sql",       title:"PostgreSQL: EXPLAIN ANALYZE + JSONB + pgvector", desc:"EXPLAIN ANALYZE, index tuning, JSONB queries, full-text search, pg_vector extension. Set up local Postgres via Docker.", xp:55, bossDmg:45, urgent:false },
   { id:"q18", week:"Sprint 3 · Trees, Graphs + Java AI Stack", category:"jobsearch", title:"Apply to 3 Tier-1 Jobs: Canva + Airwallex",       desc:"Canva Java AI roles + Airwallex Knowledge Platform. Customise each application.", link:"https://www.canva.com/careers/", xp:80, bossDmg:65, urgent:true },
 
@@ -67,9 +67,9 @@ const QUESTS = [
   { id:"q25", week:"Month 2 · Build & Apply", category:"project",   title:"Capstone v3 — Eval Harness",                     desc:"30-question golden set, LangFuse integration, measure retrieval precision. Prove RAG beats keyword search.", xp:90, bossDmg:75, urgent:false },
   { id:"q26", week:"Month 2 · Build & Apply", category:"project",   title:"Capstone v4 — Production Hardening",             desc:"Rate limiting, retry with backoff, cost-per-request Actuator metric, prompt caching.", xp:90, bossDmg:75, urgent:false },
   { id:"q27", week:"Month 2 · Build & Apply", category:"project",   title:"Deploy Capstone + Loom Demo + Resume",           desc:"Deploy to Railway/Render with public URL. Record 90-sec Loom demo. Add to resume.", link:"https://railway.app", xp:80, bossDmg:65, urgent:false },
-  { id:"q28", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 3 — RAG Pipeline: Chunking, Metadata Filtering + Evaluation", desc:"Ingest 3–5 ASIC/AUSTRAC regulatory PDFs with chunk-level metadata: document name, page, section. Add metadata filtering ('retrieve only ASIC docs'). Evaluate retrieval manually — recall@k, MRR. Add citations in responses ('Source: ASIC RG 271, p.12'). Interviewers always ask how you measured quality — have a specific answer. LangFuse free tier instruments every retrieval call. Due June 15.", link:"https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/", xp:90, bossDmg:75, urgent:false },
-  { id:"q29", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 4A — LangChain4j: AiServices, @Tool + ChatMemory", desc:"Rewrite Phase 2B RAG using LangChain4j — compare DX vs Spring AI. Build an AiService interface with @Tool for a database lookup. Add MessageWindowChatMemory for multi-turn conversation. Both frameworks on your CV differentiates you from Python devs. Devoxx YouTube channel has Java-focused conference talks including LangChain4j deep dives from the maintainers.", link:"https://docs.langchain4j.dev", xp:75, bossDmg:60, urgent:false },
-  { id:"q30", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 4B — LangChain4j: ReAct Agent, MCP + SSE Streaming", desc:"Build a ReAct agent: tool use → observe → reason → respond. Expose a streaming SSE endpoint in Spring Boot. Explore LangChain4j v1.3.0+ native MCP support. Agentic patterns appear in 2026 AU JDs — build this before interviewing. LangChain4j GitHub tutorials folder has working agent examples. Search 'LangChain4j Devoxx' on YouTube for conference-quality deep dives.", link:"https://github.com/langchain4j/langchain4j", xp:80, bossDmg:65, urgent:false },
+  { id:"q28", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 3 — RAG Pipeline: Chunking, Metadata Filtering + Evaluation", desc:"Ingest 3–5 ASIC/AUSTRAC regulatory PDFs with chunk-level metadata: document name, page, section. Add metadata filtering ('retrieve only ASIC docs'). Evaluate retrieval manually — recall@k, MRR. Add citations ('Source: ASIC RG 271, p.12'). Interviewers always ask how you measured quality — have a specific answer. Due June 15.", link:"https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/", xp:90, bossDmg:75, urgent:false, time:"~10 hrs · 2 days", resources:[{label:"Piotr Minkowski — RAG with Spring AI + pgvector (blog)",url:"https://piotrminkowski.com/2025/02/24/using-rag-and-vector-store-with-spring-ai/",type:"doc"},{label:"gaetanopiazzolla — RAG + Spring AI deep dive (blog)",url:"https://gaetanopiazzolla.github.io/java/rag/2024/05/29/rag-spring-ai.html",type:"doc"},{label:"LlamaIndex — Production RAG + Chunking Strategies",url:"https://docs.llamaindex.ai/en/stable/optimizing/production_rag/",type:"doc"},{label:"LangFuse — LLM observability, free tier",url:"https://langfuse.com",type:"tool"}] },
+  { id:"q29", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 4A — LangChain4j: AiServices, @Tool + ChatMemory", desc:"Rewrite Phase 2B RAG using LangChain4j — compare DX vs Spring AI. Build an AiService interface with @Tool for a database lookup. Add MessageWindowChatMemory for multi-turn conversation. Both frameworks on your CV differentiates you from Python devs.", link:"https://docs.langchain4j.dev", xp:75, bossDmg:60, urgent:false, time:"~5 hrs · 1 day", resources:[{label:"LangChain4j Official Docs",url:"https://docs.langchain4j.dev",type:"doc"},{label:"LangChain4j GitHub — tutorials folder",url:"https://github.com/langchain4j/langchain4j",type:"repo"}] },
+  { id:"q30", week:"Month 2 · Build & Apply", category:"java",      title:"Phase 4B — LangChain4j: ReAct Agent, MCP + SSE Streaming", desc:"Build a ReAct agent: tool use → observe → reason → respond. Expose a streaming SSE endpoint in Spring Boot. Explore LangChain4j v1.3.0+ native MCP support. Agentic patterns appear in 2026 AU JDs — build this before interviewing.", link:"https://github.com/langchain4j/langchain4j", xp:80, bossDmg:65, urgent:false, time:"~5 hrs · 1 day", resources:[{label:"LangChain4j GitHub — agent examples + tutorials",url:"https://github.com/langchain4j/langchain4j",type:"repo"},{label:"LangChain4j Official Docs — Agents section",url:"https://docs.langchain4j.dev",type:"doc"}] },
   { id:"q31", week:"Month 2 · Build & Apply", category:"sql",       title:"Kafka + DB Patterns: Outbox + CDC",              desc:"Outbox pattern, event sourcing basics, CDC with Debezium.", xp:70, bossDmg:55, urgent:false },
   { id:"q32", week:"Month 2 · Build & Apply", category:"interview", title:"System Design: URL Shortener HLD+LLD",           desc:"Design a URL shortener. Cover: load balancer, cache, DB choice, scaling. Gaurav Sen YouTube.", link:"https://www.youtube.com/@gkcs", xp:60, bossDmg:50, urgent:false },
   { id:"q33", week:"Month 2 · Build & Apply", category:"interview", title:"Pramp Mock Interview #1 — DSA + Java",           desc:"Record yourself. Identify 3 weaknesses. Book via Pramp.", link:"https://www.pramp.com", xp:80, bossDmg:65, urgent:false },
@@ -81,8 +81,8 @@ const QUESTS = [
   { id:"q37", week:"Ongoing · Keep Applying", category:"jobsearch", title:"Apply Batch 3: 5 More Applications",             desc:"Track all responses. Expand to Brisbane if no Sydney offers after 6 weeks.", xp:80, bossDmg:65, urgent:false },
   { id:"q38", week:"Ongoing · Keep Applying", category:"jobsearch", title:"Ask for Referral from Deloitte Manager",         desc:"Ask about any internal AI role AND check if Deloitte partner access gives free AWS vouchers.", xp:60, bossDmg:50, urgent:false },
   { id:"q39", week:"Ongoing · Keep Applying", category:"jobsearch", title:"UTS Alumni LinkedIn Outreach: 5 People",         desc:"Find 5 UTS alumni in Java or AI roles at target companies. Personalised DMs, not templates.", xp:50, bossDmg:40, urgent:false },
-  { id:"q40", week:"Ongoing · Keep Applying", category:"java",      title:"Phase 5 — Cloud + Observability: AWS Bedrock, Docker Compose + LangFuse", desc:"Call Claude Haiku via AWS Bedrock Java SDK — most common LLM cloud in AU financial services JDs. Run full stack via Docker Compose (Postgres + pgvector + Ollama + app) — interviewers clone and run this. Add LangFuse tracing: instrument every retrieval + generation, see latency + token cost. Write a 5-query golden test set. Best resource: LangFuse YouTube (@langfuse) for setup walkthroughs.", link:"https://www.youtube.com/@langfuse", xp:85, bossDmg:70, urgent:false },
-  { id:"q41", week:"Ongoing · Keep Applying", category:"java",      title:"Phase 6 — Capstone: AI Compliance Auditor (Ship It)", desc:"POST /audit/transaction → ComplianceReport JSON: violation flag, rule reference, source doc + page, severity. Golden test set: 10 transactions (5 compliant, 5 violating). Swagger/OpenAPI docs. CI/CD via GitHub Actions. Architecture diagram in README (Excalidraw). Deploy to Railway — a live URL beats a GitHub link in every interview. This is the project that gets you hired.", link:"https://railway.app", xp:100, bossDmg:80, urgent:false },
+  { id:"q40", week:"Ongoing · Keep Applying", category:"java",      title:"Phase 5 — Cloud + Observability: AWS Bedrock, Docker Compose + LangFuse", desc:"Call Claude Haiku via AWS Bedrock Java SDK — most common LLM cloud in AU financial services JDs. Run full stack via Docker Compose (Postgres + pgvector + Ollama + app) — interviewers clone and run this. Add LangFuse tracing: instrument every retrieval + generation, see latency + token cost. Write a 5-query golden test set.", link:"https://www.youtube.com/@langfuse", xp:85, bossDmg:70, urgent:false, time:"~7 hrs · 1–2 days", resources:[{label:"LangFuse YouTube — setup walkthroughs",url:"https://www.youtube.com/@langfuse",type:"video"},{label:"AWS Bedrock — Java SDK Getting Started",url:"https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html",type:"doc"},{label:"Supabase — free hosted pgvector (no credit card)",url:"https://supabase.com",type:"tool"},{label:"Railway — one-command Spring Boot deploy",url:"https://railway.app",type:"tool"}] },
+  { id:"q41", week:"Ongoing · Keep Applying", category:"java",      title:"Phase 6 — Capstone: AI Compliance Auditor (Ship It)", desc:"POST /audit/transaction → ComplianceReport JSON: violation flag, rule reference, source doc + page, severity. Golden test set: 10 transactions (5 compliant, 5 violating). Swagger/OpenAPI docs. CI/CD via GitHub Actions. Architecture diagram in README. Deploy to Railway — a live URL beats a GitHub link in every interview. This is the project that gets you hired.", link:"https://railway.app", xp:100, bossDmg:80, urgent:false, time:"~20 hrs · 3–5 days", resources:[{label:"ASIC Regulatory Guides (free public PDFs)",url:"https://asic.gov.au/regulatory-resources/find-a-document/regulatory-guides/",type:"doc"},{label:"AUSTRAC AML/CTF Rules (free public PDF)",url:"https://www.austrac.gov.au/business/core-guidance/aml-ctf-rules",type:"doc"},{label:"Apache PDFBox — Java PDF parsing",url:"https://pdfbox.apache.org",type:"doc"},{label:"Excalidraw — free architecture diagrams",url:"https://excalidraw.com",type:"tool"},{label:"Hungry Coders — AI for Java Engineers (course)",url:"https://www.hungrycoders.com/course/ai-for-java-spring-boot-backend-engineers",type:"course"},{label:"Railway — deploy with public URL",url:"https://railway.app",type:"tool"}] },
   { id:"q42", week:"Ongoing · Keep Applying", category:"dsa",       title:"DSA Phase 3 Final — Backtracking, Heaps & Mocks (Days 36–39)", desc:"Days 36–39 in the DSA tab — the final stretch. Days 38–39 are mock days: 45 minutes, camera on, think aloud. The mock sessions matter more than any individual problem. Mark complete only after you've done a real timed session.", xp:80, bossDmg:65, urgent:false },
   { id:"q43", week:"Ongoing · Keep Applying", category:"project",   title:"Blog Post 2: Kafka Outbox Pattern",              desc:"Kafka outbox pattern with Spring Boot — exactly-once delivery in fintech. Publish on dev.to or Medium.", xp:60, bossDmg:50, urgent:false },
   { id:"q44", week:"Ongoing · Keep Applying", category:"jobsearch", title:"AWS Developer Associate Exam — Sit and Pass",    desc:"Book and sit the exam. This goes straight on the resume.", xp:150, bossDmg:120, urgent:false },
@@ -335,6 +335,7 @@ export default function QuestEngine() {
 
   // ── Reset confirmation ────────────────────────────────────────────────────
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [expandedResourceId, setExpandedResourceId] = useState(null);
 
   // ── Load from Firebase ───────────────────────────────────────────────────
   // Close quick capture on Escape
@@ -1663,48 +1664,78 @@ export default function QuestEngine() {
                         const done = !!completed[quest.id];
                         const cat = CATEGORY_META[quest.category];
                         return (
-                          <div key={quest.id} style={{
-                            padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
-                            background: done ? "#0d1a0d" : pomodoroQuestId === quest.id ? "#1a1400" : "#080c14",
-                            display: "flex", alignItems: "center", gap: 12,
-                            transition: "background 0.2s",
-                            outline: pomodoroQuestId === quest.id ? "1px solid #f59e0b44" : "none",
-                            borderRadius: i === 0 ? "0" : "0"
-                          }}>
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0 }}>
-                              <button className="quest-btn" onClick={(e) => done ? null : completeQuest(quest, e)} disabled={done} style={{
-                                width: 28, height: 28, borderRadius: 8, flexShrink: 0, cursor: done ? "default" : "pointer",
-                                border: done ? `2px solid #34d399` : `2px solid ${cat.color}`,
-                                background: done ? "#34d399" : "transparent",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                fontSize: 13, color: done ? "#000" : cat.color, transition: "all 0.15s", fontWeight: 900
-                              }}>{done ? "✓" : "○"}</button>
-                              {done && (
-                                <button onClick={() => uncompleteQuest(quest)} title="Undo" style={{
-                                  background: "none", border: "none", cursor: "pointer", fontSize: 10,
-                                  color: "#475569", padding: 0, lineHeight: 1, transition: "color 0.15s"
-                                }} onMouseEnter={e => e.target.style.color="#94a3b8"} onMouseLeave={e => e.target.style.color="#475569"}>↩ undo</button>
-                              )}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                                {quest.urgent && !done && <span style={{ fontSize: 10, background: "#7f1d1d", color: "#fca5a5", padding: "1px 6px", borderRadius: 4, fontWeight: 700, letterSpacing: 0.5 }}>URGENT</span>}
-                                <span style={{ fontSize: 10, background: cat.bg, color: cat.color, padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>{cat.label}</span>
-                                {quest.link && <a href={quest.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, background: "#1e293b", color: "#60a5fa", padding: "1px 7px", borderRadius: 4, fontWeight: 700, textDecoration: "none", border: "1px solid #334155" }}>🔗 Open</a>}
+                          <div key={quest.id}>
+                            <div style={{
+                              padding: "12px 16px", borderTop: i > 0 ? "1px solid #0f172a" : "none",
+                              background: done ? "#0d1a0d" : pomodoroQuestId === quest.id ? "#1a1400" : "#080c14",
+                              display: "flex", alignItems: "center", gap: 12,
+                              transition: "background 0.2s",
+                              outline: pomodoroQuestId === quest.id ? "1px solid #f59e0b44" : "none",
+                            }}>
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0 }}>
+                                <button className="quest-btn" onClick={(e) => done ? null : completeQuest(quest, e)} disabled={done} style={{
+                                  width: 28, height: 28, borderRadius: 8, flexShrink: 0, cursor: done ? "default" : "pointer",
+                                  border: done ? `2px solid #34d399` : `2px solid ${cat.color}`,
+                                  background: done ? "#34d399" : "transparent",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: 13, color: done ? "#000" : cat.color, transition: "all 0.15s", fontWeight: 900
+                                }}>{done ? "✓" : "○"}</button>
+                                {done && (
+                                  <button onClick={() => uncompleteQuest(quest)} title="Undo" style={{
+                                    background: "none", border: "none", cursor: "pointer", fontSize: 10,
+                                    color: "#475569", padding: 0, lineHeight: 1, transition: "color 0.15s"
+                                  }} onMouseEnter={e => e.target.style.color="#94a3b8"} onMouseLeave={e => e.target.style.color="#475569"}>↩ undo</button>
+                                )}
                               </div>
-                              <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none", marginTop: 3 }}>{quest.title}</div>
-                              <div style={{ fontSize: 12, color: "#64748b", marginTop: 1 }}>{quest.desc}</div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                                  {quest.urgent && !done && <span style={{ fontSize: 10, background: "#7f1d1d", color: "#fca5a5", padding: "1px 6px", borderRadius: 4, fontWeight: 700, letterSpacing: 0.5 }}>URGENT</span>}
+                                  <span style={{ fontSize: 10, background: cat.bg, color: cat.color, padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>{cat.label}</span>
+                                  {quest.link && <a href={quest.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, background: "#1e293b", color: "#60a5fa", padding: "1px 7px", borderRadius: 4, fontWeight: 700, textDecoration: "none", border: "1px solid #334155" }}>🔗 Open</a>}
+                                </div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#475569" : "#e2e8f0", textDecoration: done ? "line-through" : "none", marginTop: 3 }}>{quest.title}</div>
+                                <div style={{ fontSize: 12, color: "#64748b", marginTop: 1 }}>{quest.desc}</div>
+                              </div>
+                              <div style={{ textAlign: "right", flexShrink: 0, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3 }}>
+                                <div style={{ fontFamily: "'Bebas Neue'", fontSize: 16, color: done ? "#475569" : "#34d399" }}>+{quest.xp}</div>
+                                <div style={{ fontSize: 10, color: "#334155" }}>XP</div>
+                                {!done && (
+                                  <button onClick={() => startPomodoro(quest.id)} title="25 min focus timer" style={{
+                                    background:"none", border:"none", cursor:"pointer", fontSize:12,
+                                    color: pomodoroQuestId === quest.id ? "#f59e0b" : "#334155", padding:0, lineHeight:1
+                                  }}>⏱</button>
+                                )}
+                                {quest.resources?.length > 0 && (
+                                  <button onClick={() => setExpandedResourceId(expandedResourceId === quest.id ? null : quest.id)} title="Show resources" style={{
+                                    background: expandedResourceId === quest.id ? "rgba(96,165,250,0.1)" : "none",
+                                    border: expandedResourceId === quest.id ? "1px solid #60a5fa33" : "1px solid transparent",
+                                    cursor: "pointer", fontSize: 13, fontWeight: 700,
+                                    color: expandedResourceId === quest.id ? "#60a5fa" : "#475569",
+                                    padding: "2px 5px", borderRadius: 4, lineHeight: 1,
+                                    transition: "all 0.15s", fontFamily: "inherit",
+                                  }}>ℹ</button>
+                                )}
+                              </div>
                             </div>
-                            <div style={{ textAlign: "right", flexShrink: 0, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3 }}>
-                              <div style={{ fontFamily: "'Bebas Neue'", fontSize: 16, color: done ? "#475569" : "#34d399" }}>+{quest.xp}</div>
-                              <div style={{ fontSize: 10, color: "#334155" }}>XP</div>
-                              {!done && (
-                                <button onClick={() => startPomodoro(quest.id)} title="25 min focus timer" style={{
-                                  background:"none", border:"none", cursor:"pointer", fontSize:12,
-                                  color: pomodoroQuestId === quest.id ? "#f59e0b" : "#334155", padding:0, lineHeight:1
-                                }}>⏱</button>
-                              )}
-                            </div>
+                            {quest.resources?.length > 0 && expandedResourceId === quest.id && (
+                              <div style={{ padding: "10px 16px 14px 56px", background: "#04080f", borderTop: "1px solid #0d1629" }}>
+                                <div style={{ fontSize: 10, letterSpacing: 1.5, marginBottom: 8, color: "#334155" }}>
+                                  RESOURCES{quest.time && <span style={{ color:"#475569" }}> · {quest.time}</span>}
+                                </div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                  {quest.resources.map((r, ri) => {
+                                    const rm = ({video:{icon:"▶",color:"#ef4444",bg:"rgba(239,68,68,0.07)"},doc:{icon:"📄",color:"#60a5fa",bg:"rgba(96,165,250,0.07)"},repo:{icon:"</>",color:"#34d399",bg:"rgba(52,211,153,0.07)"},tool:{icon:"⚙",color:"#f59e0b",bg:"rgba(245,158,11,0.07)"},course:{icon:"🎓",color:"#a78bfa",bg:"rgba(167,139,250,0.07)"}})[r.type] || {icon:"↗",color:"#64748b",bg:"rgba(100,116,139,0.07)"};
+                                    return (
+                                      <a key={ri} href={r.url} target="_blank" rel="noopener noreferrer"
+                                        style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:5, border:`1px solid ${rm.color}22`, background:rm.bg, color:rm.color, fontSize:11, textDecoration:"none", fontWeight:600, transition:"all 0.12s" }}
+                                        onMouseEnter={e=>{e.currentTarget.style.borderColor=rm.color+"55";e.currentTarget.style.background=rm.color+"18";}}
+                                        onMouseLeave={e=>{e.currentTarget.style.borderColor=rm.color+"22";e.currentTarget.style.background=rm.bg;}}
+                                      ><span style={{fontSize:9}}>{rm.icon}</span> {r.label}</a>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
