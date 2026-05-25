@@ -850,10 +850,10 @@ export default function QuestEngine() {
   const openWeek = expandedWeek !== null ? expandedWeek : currentWeek;
 
   return (
-    <div style={{ fontFamily: "'Rajdhani', sans-serif", background: "#020408", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position: "relative" }}>
+    <div style={{ fontFamily: "'Rajdhani', sans-serif", background: "#020408", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position: "relative", zIndex: 0 }}>
       {/* NeuroNoise WebGL ambient background */}
       <NeuroNoise
-        style={{ position:"fixed", inset:0, width:"100%", height:"100%", zIndex:0, pointerEvents:"none" }}
+        style={{ position:"fixed", inset:0, width:"100%", height:"100%", zIndex:-1, pointerEvents:"none" }}
         colorFront="#0e2a4a"
         colorMid="#07131f"
         colorBack="#020408"
@@ -862,7 +862,7 @@ export default function QuestEngine() {
         speed={0.25}
       />
       {/* CSS grain overlay via SVG feTurbulence */}
-      <svg style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", opacity:0.035, width:"100%", height:"100%" }} aria-hidden="true">
+      <svg style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none", opacity:0.035, width:"100%", height:"100%" }} aria-hidden="true">
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch" /></filter>
         <rect width="100%" height="100%" filter="url(#grain)" />
       </svg>
@@ -1375,9 +1375,9 @@ export default function QuestEngine() {
 
         <AnimatePresence mode="wait">
         <motion.div key={activeTab}
-          initial={{ opacity: 0, x: 28 }}
+          initial={{ opacity: 1, x: 16 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -28 }}
+          exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
         >
 
