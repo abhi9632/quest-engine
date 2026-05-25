@@ -5,6 +5,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paper-design/shaders-react": "^0.0.76",
     "canvas-confetti": "^1.9.3",
     "firebase": "^12.10.0",
     "framer-motion": "^12.10.0",

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { NeuroNoise, GodRays, PulsingBorder } from "@paper-design/shaders-react";
 import { db } from "./firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -850,10 +851,16 @@ export default function QuestEngine() {
 
   return (
     <div style={{ fontFamily: "'Rajdhani', sans-serif", background: "#020408", minHeight: "100vh", color: "#e2e8f0", overflowX: "hidden", position: "relative" }}>
-      {/* Drifting ambient orbs */}
-      <div style={{ position:"fixed", top:"10%", left:"5%", width:450, height:450, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,255,200,0.07) 0%, transparent 70%)", pointerEvents:"none", zIndex:0, animation:"orbDrift1 18s ease-in-out infinite" }} />
-      <div style={{ position:"fixed", bottom:"8%", right:"6%", width:550, height:550, borderRadius:"50%", background:"radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%)", pointerEvents:"none", zIndex:0, animation:"orbDrift2 24s ease-in-out infinite" }} />
-      <div style={{ position:"fixed", top:"50%", left:"50%", width:700, height:700, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,100,60,0.05) 0%, transparent 60%)", pointerEvents:"none", zIndex:0, animation:"orbDrift3 30s ease-in-out infinite" }} />
+      {/* NeuroNoise WebGL ambient background */}
+      <NeuroNoise
+        style={{ position:"fixed", inset:0, width:"100%", height:"100%", zIndex:0, pointerEvents:"none" }}
+        colorFront="#0e2a4a"
+        colorMid="#07131f"
+        colorBack="#020408"
+        brightness={0.28}
+        contrast={0.55}
+        speed={0.25}
+      />
       {/* CSS grain overlay via SVG feTurbulence */}
       <svg style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", opacity:0.035, width:"100%", height:"100%" }} aria-hidden="true">
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" stitchTiles="stitch" /></filter>
@@ -893,11 +900,7 @@ export default function QuestEngine() {
         @keyframes float      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
         @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
         @keyframes bossEmojiFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-10px) scale(1.05)} }
-        @keyframes bossRedPulse   { 0%,100%{box-shadow:0 0 20px #ef444444,inset 0 0 60px #ef44440a} 50%{box-shadow:0 0 50px #ef4444bb,inset 0 0 80px #ef44441a} }
         @keyframes bossHpFlash    { 0%{background:rgba(255,255,255,0.7)} 100%{background:transparent} }
-        @keyframes orbDrift1  { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,-30px)} 66%{transform:translate(-25px,40px)} }
-        @keyframes orbDrift2  { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-50px,25px)} 66%{transform:translate(30px,-40px)} }
-        @keyframes orbDrift3  { 0%,100%{transform:translate(-50%,-50%)} 33%{transform:translate(calc(-50% + 35px),calc(-50% + 40px))} 66%{transform:translate(calc(-50% - 40px),calc(-50% - 30px))} }
         @keyframes hueRotate  { to{--grad-hue:360deg} }
         .quest-btn        { transition:all 0.15s cubic-bezier(.4,0,.2,1) !important; }
         .quest-btn:hover  { transform:translateY(-1px) scale(1.05); filter:brightness(1.15); }
@@ -1034,8 +1037,7 @@ export default function QuestEngine() {
           opacity: 0.8;
           box-shadow: 0 0 10px rgba(0,255,200,0.4);
         }
-        /* ── BOSS CARD CRITICAL ── */
-        .boss-critical { animation: bossRedPulse 1.2s ease-in-out infinite; }
+        /* ── BOSS CARD ── */
         .boss-emoji-float { animation: bossEmojiFloat 3s ease-in-out infinite; }
         .boss-hp-flash::after {
           content: ''; position:absolute; top:0; left:0; width:100%; height:100%;
@@ -1070,6 +1072,19 @@ export default function QuestEngine() {
             style={{ position:"fixed", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
               background:"rgba(0,0,0,0.85)", zIndex:9997, flexDirection:"column", gap:20, pointerEvents:"none" }}
           >
+            {/* GodRays shader — cinematic light behind level-up text */}
+            <GodRays
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none" }}
+              colorBack="#020408"
+              colorBloom={levelUpInfo.color}
+              colors={[levelUpInfo.color, "#ffffff"]}
+              midSize={0.22}
+              midIntensity={0.65}
+              density={0.45}
+              intensity={0.55}
+              bloom={0.5}
+              speed={0.45}
+            />
             <motion.div
               initial={{ y: 90, opacity: 0, scale: 0.6 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -1234,6 +1249,20 @@ export default function QuestEngine() {
             <div style={{ position:"absolute", inset:0, borderRadius:18, pointerEvents:"none",
               background:"repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(239,68,68,0.015) 3px,rgba(239,68,68,0.015) 4px)",
               zIndex:0 }} />
+            {/* PulsingBorder shader — replaces CSS bossRedPulse */}
+            <PulsingBorder
+              style={{ position:"absolute", inset:0, width:"100%", height:"100%", borderRadius:18, pointerEvents:"none", zIndex:0 }}
+              colorBack="rgba(0,0,0,0)"
+              colors={bossPct <= 30 ? ["#ef4444","#f97316","#fbbf24"] : ["#7f1d1d","#991b1b"]}
+              roundness={0.45}
+              thickness={0.045}
+              softness={0.75}
+              pulse={bossPct <= 30 ? 0.85 : 0.25}
+              smoke={bossPct <= 30 ? 0.35 : 0.1}
+              smokeSize={0.5}
+              bloom={0.6}
+              speed={bossPct <= 30 ? 1.1 : 0.55}
+            />
             <div style={{ position:"relative", zIndex:1 }}>
               <div style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:9, color:"#4b2020", letterSpacing:3, marginBottom:8 }}>// CURRENT_BOSS · THREAT_LEVEL_{bossPct <= 30 ? "CRITICAL" : bossPct <= 60 ? "HIGH" : "EXTREME"}</div>
               <div style={{ display:"flex", alignItems:"center", gap:16, marginBottom:14 }}>
