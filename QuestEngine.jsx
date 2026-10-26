@@ -1,13 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { NeuroNoise, GodRays, PulsingBorder } from "@paper-design/shaders-react";
 import { db } from "./firebase";
+import { localDay, streakFrom, weekXpFrom } from "./streak.mjs";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 // ─── GAME DATA ──────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = "abhishek_rpg_v3";
+
 
 const LEVELS = [
   { level:1, title:"Code Padawan",          xpRequired:0,    color:"#94a3b8" },
@@ -330,6 +332,8 @@ export default function QuestEngine() {
   const [dsaProgress, setDsaProgress] = useState({}); // { "d1-283": { status:"pending"|"completed"|"struggled", note:"" } }
 
   const [hiddenCategories, setHiddenCategories] = useState([]);
+  // XP earned per local day, { "2026-10-27": 120 }. Drives streak + weekly goal.
+  const [activity, setActivity] = useState({});
 
   // ── Daily Focus ───────────────────────────────────────────────────────────
   const [focusDismissed, setFocusDismissed] = useState(false);
@@ -365,6 +369,7 @@ export default function QuestEngine() {
           setBrainDump(d.brainDump || []);
           setDsaProgress(d.dsaProgress || {});
           setHiddenCategories(d.hiddenCategories || []);
+          setActivity(d.activity || {});
           setCompletedCount(Object.keys(d.completed || {}).length);
         }
       } catch (e) { console.error("Load error", e); }
@@ -393,11 +398,11 @@ export default function QuestEngine() {
     const save = async () => {
       try {
         const ref = doc(db, "users", STORAGE_KEY);
-        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories }, { merge: true });
+        await setDoc(ref, { xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, activity }, { merge: true });
       } catch (e) { console.error("Save error", e); }
     };
     save();
-  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, loaded]);
+  }, [xp, completed, bossHp, customDeadlines, customQuests, brainDump, dsaProgress, hiddenCategories, activity, loaded]);
 
   const showToast = (msg, color = "#fbbf24") => {
     setToast({ msg, color });
@@ -413,12 +418,13 @@ export default function QuestEngine() {
     setBrainDump([]);
     setDsaProgress({});
     setHiddenCategories([]);
+    setActivity({});
     setCompletedCount(0);
     setShowResetConfirm(false);
     // Write the blank slate directly — don't wait for the save effect
     try {
       const ref = doc(db, "users", STORAGE_KEY);
-      await setDoc(ref, { xp: 0, completed: {}, bossHp: {}, customDeadlines: [], customQuests: [], brainDump: [], dsaProgress: {}, hiddenCategories: [] }, { merge: false });
+      await setDoc(ref, { xp: 0, completed: {}, bossHp: {}, customDeadlines: [], customQuests: [], brainDump: [], dsaProgress: {}, hiddenCategories: [], activity: {} }, { merge: false });
     } catch (e) { console.error("Reset error", e); }
     showToast("🗑 Progress reset. Starting fresh!", "#ef4444");
   };
@@ -590,48 +596,24 @@ export default function QuestEngine() {
     return qw[qw.length-1] || weeks[0];
   })();
 
-  // ── Streak + Weekly Goal (local session only — no Firebase) ───────────────
-  const [streak, setStreak]       = useState(0);
-  const [weekXpGained, setWeekXpGained] = useState(0);
+  // ── Streak + Weekly Goal ──────────────────────────────────────────────────
+  // Stored per day in Firestore (activity), so they survive closing the tab
+  // and match across phone and laptop. Used to live in sessionStorage.
   const weeklyGoal = 200;
+  const streak = useMemo(() => streakFrom(activity), [activity]);
+  const weekXpGained = useMemo(() => weekXpFrom(activity), [activity]);
 
-  useEffect(() => {
-    if (!loaded) return;
-    try {
-      const todayStr = new Date().toISOString().slice(0,10);
-      const stored = JSON.parse(sessionStorage.getItem("qe_session") || "{}");
-      // Streak
-      const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-      const yStr = yesterday.toISOString().slice(0,10);
-      if (stored.lastDate === todayStr) {
-        setStreak(stored.streak || 1);
-        setWeekXpGained(stored.weekXp || 0);
-      } else {
-        const newStreak = stored.lastDate === yStr ? (stored.streak || 0) + 1 : 1;
-        setStreak(newStreak);
-        setWeekXpGained(0);
-        sessionStorage.setItem("qe_session", JSON.stringify({ lastDate: todayStr, streak: newStreak, weekXp: 0 }));
-      }
-    } catch {}
-  }, [loaded]);
-
-  // track weekly XP gain this session
+  // Log every XP gain against today's local date.
   const prevXpRef = useRef(null);
   useEffect(() => {
     if (!loaded) return;
     if (prevXpRef.current === null) { prevXpRef.current = xp; return; }
     const gained = xp - prevXpRef.current;
-    if (gained > 0) {
-      setWeekXpGained(w => {
-        const next = w + gained;
-        try {
-          const stored = JSON.parse(sessionStorage.getItem("qe_session") || "{}");
-          sessionStorage.setItem("qe_session", JSON.stringify({ ...stored, weekXp: next }));
-        } catch {}
-        return next;
-      });
-    }
     prevXpRef.current = xp;
+    if (gained > 0) {
+      const day = localDay();
+      setActivity(a => ({ ...a, [day]: (a[day] || 0) + gained }));
+    }
   }, [xp, loaded]);
 
   // ── Stats count-up animation ──────────────────────────────────────────────

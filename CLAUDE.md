@@ -46,7 +46,7 @@ The save effect uses a **1200 ms debounce** and `merge: true` to avoid wiping un
 
 Fields persisted: `xp`, `completed`, `bossHp`, `customDeadlines`, `customQuests`, `brainDump`, `dsaProgress`, `hiddenCategories`.
 
-**Streak and weekly XP goal** are stored in `sessionStorage` only (not Firebase).
+**Streak and weekly XP goal** derive from `activity` (XP earned per local day, saved in the same Firestore doc). Helpers live in `streak.mjs`; `npm test` checks them.
 
 ### Boss sequencing invariant
 
